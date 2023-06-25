@@ -17,7 +17,8 @@ class PlutoCell {
   /// for operation on cell, include custom render and change
   dynamic referenceValue;
 
-  VoidCallbackAction? onChanged;
+  ///
+  Function({dynamic value, dynamic referenceValue})? onChanged;
 
   dynamic _valueForSorting;
 
@@ -67,6 +68,8 @@ class PlutoCell {
     _value = changed;
 
     _valueForSorting = null;
+
+    onChanged?.call(value: _value, referenceValue: referenceValue);
   }
 
   dynamic get valueForSorting {
