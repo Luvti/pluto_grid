@@ -285,9 +285,15 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
     );
   }
 
-  Checkbox _plutoColumnTypeBool() {
+  Widget _plutoColumnTypeBool() {
     return Checkbox(
-        value: _controller.text == 'true' ? true : false,
-        onChanged: (bool? value) => _handleOnChanged(value?.toString() ?? ''));
+      tristate: true,
+      value: _controller.text == 'true'
+          ? true
+          : _controller.text == 'false'
+              ? false
+              : null,
+      onChanged: (value) => _handleOnChanged(value?.toString() ?? ''),
+    );
   }
 }
