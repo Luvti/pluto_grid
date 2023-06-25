@@ -5,6 +5,7 @@ class PlutoCell {
   PlutoCell({
     dynamic value,
     this.referenceValue,
+    this.onChanged,
     Key? key,
   })  : _key = key ?? UniqueKey(),
         _value = value;
@@ -15,6 +16,8 @@ class PlutoCell {
 
   /// for operation on cell, include custom render and change
   dynamic referenceValue;
+
+  VoidCallbackAction? onChanged;
 
   dynamic _valueForSorting;
 
