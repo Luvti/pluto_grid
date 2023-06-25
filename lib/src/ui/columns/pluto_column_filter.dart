@@ -240,7 +240,10 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
   @override
   Widget build(BuildContext context) {
     final style = stateManager.style;
-
+    Widget child = _textField(style);
+    if (widget.column.type is PlutoColumnTypeBool) {
+      child = _plutoColumnTypeBool();
+    }
     return SizedBox(
       height: stateManager.columnFilterHeight,
       child: DecoratedBox(
@@ -254,29 +257,37 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
         ),
         child: Padding(
           padding: _padding,
-          child: Center(
-            child: TextField(
-              focusNode: _focusNode,
-              controller: _controller,
-              enabled: _enabled,
-              style: style.cellTextStyle,
-              onTap: _handleOnTap,
-              onChanged: _handleOnChanged,
-              onEditingComplete: _handleOnEditingComplete,
-              decoration: InputDecoration(
-                hintText: _enabled ? widget.column.defaultFilter.title : '',
-                filled: true,
-                fillColor: _textFieldColor,
-                border: _border,
-                enabledBorder: _border,
-                disabledBorder: _disabledBorder,
-                focusedBorder: _enabledBorder,
-                contentPadding: const EdgeInsets.all(5),
-              ),
-            ),
-          ),
+          child: Center(child: child),
         ),
       ),
     );
+  }
+
+  TextField _textField(PlutoGridStyleConfig style) {
+    return TextField(
+      focusNode: _focusNode,
+      controller: _controller,
+      enabled: _enabled,
+      style: style.cellTextStyle,
+      onTap: _handleOnTap,
+      onChanged: _handleOnChanged,
+      onEditingComplete: _handleOnEditingComplete,
+      decoration: InputDecoration(
+        hintText: _enabled ? widget.column.defaultFilter.title : '',
+        filled: true,
+        fillColor: _textFieldColor,
+        border: _border,
+        enabledBorder: _border,
+        disabledBorder: _disabledBorder,
+        focusedBorder: _enabledBorder,
+        contentPadding: const EdgeInsets.all(5),
+      ),
+    );
+  }
+
+  Checkbox _plutoColumnTypeBool() {
+    return Checkbox(
+        value: _controller.text == 'true' ? true : false,
+        onChanged: (bool? value) => _handleOnChanged(value?.toString() ?? ''));
   }
 }

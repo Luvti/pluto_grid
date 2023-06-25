@@ -249,6 +249,8 @@ class PlutoGridStyleConfig {
     this.rowGroupEmptyIcon = Icons.noise_control_off,
     this.gridBorderRadius = BorderRadius.zero,
     this.gridPopupBorderRadius = BorderRadius.zero,
+    this.addIconColor,
+    this.removeIconColor,
   });
 
   const PlutoGridStyleConfig.dark({
@@ -309,6 +311,8 @@ class PlutoGridStyleConfig {
     this.rowGroupEmptyIcon = Icons.noise_control_off,
     this.gridBorderRadius = BorderRadius.zero,
     this.gridPopupBorderRadius = BorderRadius.zero,
+    this.addIconColor,
+    this.removeIconColor,
   });
 
   /// Enable borderShadow in [PlutoGrid].
@@ -370,6 +374,9 @@ class PlutoGridStyleConfig {
 
   /// Icon color. (column menu, cell of popup type, pagination plugin)
   final Color iconColor;
+
+  final Color? addIconColor;
+  final Color? removeIconColor;
 
   /// Disabled icon color. (pagination plugin)
   final Color disabledIconColor;

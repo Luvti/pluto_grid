@@ -532,30 +532,49 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            color: configuration!.style.iconColor,
-            iconSize: configuration!.style.iconSize,
-            onPressed: handleAddButton,
-          ),
-          IconButton(
-            icon: const Icon(Icons.remove),
-            color: configuration!.style.iconColor,
-            iconSize: configuration!.style.iconSize,
-            onPressed: handleRemoveButton,
-          ),
-          IconButton(
-            icon: const Icon(Icons.clear_sharp),
-            color: Colors.red,
-            iconSize: configuration!.style.iconSize,
-            onPressed: handleClearButton,
-          ),
-        ],
-      ),
+    final theme = Theme.of(context);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.add),
+              color: configuration!.style.addIconColor ?? theme.primaryColor,
+              iconSize: configuration!.style.iconSize,
+              onPressed: handleAddButton,
+            ),
+            SizedBox(
+              width: configuration!.style.iconSize,
+            ),
+            IconButton(
+              icon: const Icon(Icons.remove),
+              color: configuration!.style.removeIconColor ??
+                  theme.colorScheme.error,
+              iconSize: configuration!.style.iconSize,
+              onPressed: handleRemoveButton,
+            ),
+            SizedBox(
+              width: configuration!.style.iconSize,
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete_forever),
+              color: configuration!.style.removeIconColor ??
+                  theme.colorScheme.error,
+              iconSize: configuration!.style.iconSize,
+              onPressed: handleClearButton,
+            ),
+          ],
+        ),
+        IconButton(
+          icon: const Icon(Icons.close),
+          color: configuration!.style.iconColor,
+          iconSize: configuration!.style.iconSize,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
     );
   }
 }
