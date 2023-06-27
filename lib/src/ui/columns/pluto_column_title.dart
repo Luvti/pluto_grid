@@ -567,16 +567,25 @@ class _ColumnTextWidgetState extends PlutoStateWithChange<_ColumnTextWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Text.rich(
-      TextSpan(
-        text: _title,
-        children: _children,
-      ),
-      style: stateManager.configuration.style.columnTextStyle,
-      overflow: TextOverflow.ellipsis,
-      softWrap: false,
-      maxLines: 1,
-      textAlign: widget.column.titleTextAlign.value,
+    return Row(
+      children: [
+        Flexible(
+          child: Text.rich(
+            TextSpan(
+              text: _title,
+              children: _children,
+            ),
+            style: stateManager.configuration.style.columnTextStyle,
+            overflow: TextOverflow.ellipsis,
+            softWrap: true,
+            maxLines: 2,
+            textAlign: widget.column.titleTextAlign.value,
+          ),
+        ),
+        SizedBox(
+          width: stateManager.configuration.style.iconSize,
+        )
+      ],
     );
   }
 }

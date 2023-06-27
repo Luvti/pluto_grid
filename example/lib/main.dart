@@ -38,7 +38,7 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       type: PlutoColumnType.text(),
     ),
     PlutoColumn(
-      title: 'Name',
+      title: 'Name test long name in header',
       field: 'name',
       type: PlutoColumnType.text(),
     ),
