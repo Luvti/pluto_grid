@@ -563,6 +563,7 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
                   theme.colorScheme.error,
               iconSize: configuration!.style.iconSize,
               onPressed: handleClearButton,
+              tooltip: configuration!.localeText.resetFilter,
             ),
           ],
         ),

@@ -226,7 +226,9 @@ class PlutoColumn {
     this.enableAutoEditing = false,
     this.enableEditingMode = true,
     this.hide = false,
+    PlutoFilterType? defaultFilter,
   })  : _key = UniqueKey(),
+        _defaultFilter = defaultFilter,
         _checkReadOnly = checkReadOnly;
 
   final Key _key;
@@ -246,7 +248,7 @@ class PlutoColumn {
   }
 
   PlutoFilterType? _defaultFilter;
-
+  PlutoFilterType? get defaultFilterNullable => _defaultFilter;
   PlutoFilterType get defaultFilter =>
       _defaultFilter ?? const PlutoFilterTypeContains();
 

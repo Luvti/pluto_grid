@@ -45,6 +45,7 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
     PlutoColumn(
       title: 'Age',
       field: 'age',
+      defaultFilter: const PlutoFilterTypeGreaterThan(),
       type: PlutoColumnType.number(defaultValue: 11),
     ),
     PlutoColumn(
@@ -166,7 +167,15 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
           onChanged: (PlutoGridOnChangedEvent event) {
             print(event);
           },
-          configuration: const PlutoGridConfiguration(),
+          configuration: const PlutoGridConfiguration(
+            columnFilter: PlutoGridColumnFilterConfig(
+              filters: [
+                PlutoFilterTypeContains(),
+                PlutoFilterTypeGreaterThanOrEqualTo(),
+                PlutoFilterTypeLessThanOrEqualTo(),
+              ],
+            ),
+          ),
         ),
       ),
     );
