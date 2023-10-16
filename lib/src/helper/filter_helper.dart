@@ -540,6 +540,7 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
           children: [
             IconButton(
               icon: const Icon(Icons.add),
+              tooltip: configuration?.localeText.addFilter,
               color: configuration!.style.addIconColor ?? theme.primaryColor,
               iconSize: configuration!.style.iconSize,
               onPressed: handleAddButton,
@@ -549,8 +550,11 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
             ),
             IconButton(
               icon: const Icon(Icons.remove),
-              color: configuration!.style.removeIconColor ??
-                  theme.colorScheme.error,
+              tooltip: configuration?.localeText.deleteSelectedFilter,
+              color: stateManager!.currentSelectingRows.isEmpty
+                  ? configuration!.style.disabledIconColor
+                  : configuration!.style.removeIconColor ??
+                      theme.colorScheme.error,
               iconSize: configuration!.style.iconSize,
               onPressed: handleRemoveButton,
             ),
@@ -559,8 +563,10 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
             ),
             IconButton(
               icon: const Icon(Icons.delete_forever),
-              color: configuration!.style.removeIconColor ??
-                  theme.colorScheme.error,
+              color: stateManager!.rows.isEmpty
+                  ? configuration!.style.disabledIconColor
+                  : configuration!.style.removeIconColor ??
+                      theme.colorScheme.error,
               iconSize: configuration!.style.iconSize,
               onPressed: handleClearButton,
               tooltip: configuration!.localeText.resetFilter,
@@ -571,6 +577,7 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
           icon: const Icon(Icons.close),
           color: configuration!.style.iconColor,
           iconSize: configuration!.style.iconSize,
+          tooltip: configuration!.localeText.close,
           onPressed: () {
             Navigator.of(context).pop();
           },

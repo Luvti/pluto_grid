@@ -556,6 +556,7 @@ class _ColumnTextWidgetState extends PlutoStateWithChange<_ColumnTextWidget> {
                 color: stateManager.configuration.style.iconColor,
                 size: stateManager.configuration.style.iconSize,
               ),
+              tooltip: stateManager.configuration.localeText.filter,
               onPressed: _handleOnPressedFilter,
               constraints: BoxConstraints(
                 maxHeight:
