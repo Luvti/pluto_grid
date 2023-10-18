@@ -140,6 +140,8 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
       ),
     );
 
+    final theme = Theme.of(context);
+
     final contextMenuIcon = SizedBox(
       height: widget.height,
       child: Align(
@@ -153,6 +155,8 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
                 : style.columnResizeIcon,
             ascendingIcon: style.columnAscendingIcon,
             descendingIcon: style.columnDescendingIcon,
+            successColor: style.activatedColor,
+            errorColor: style.removeIconColor ?? theme.colorScheme.error,
           ),
           iconSize: style.iconSize,
           mouseCursor: contextMenuCursor,
@@ -209,6 +213,8 @@ class PlutoGridColumnIcon extends StatelessWidget {
   final Icon? ascendingIcon;
 
   final Icon? descendingIcon;
+  final Color successColor;
+  final Color errorColor;
 
   const PlutoGridColumnIcon({
     this.sort,
@@ -216,6 +222,8 @@ class PlutoGridColumnIcon extends StatelessWidget {
     this.icon = Icons.dehaze,
     this.ascendingIcon,
     this.descendingIcon,
+    this.successColor = Colors.green,
+    this.errorColor = Colors.red,
     Key? key,
   }) : super(key: key);
 
@@ -226,17 +234,17 @@ class PlutoGridColumnIcon extends StatelessWidget {
         return ascendingIcon == null
             ? Transform.rotate(
                 angle: 90 * pi / 90,
-                child: const Icon(
+                child: Icon(
                   Icons.sort,
-                  color: Colors.green,
+                  color: successColor,
                 ),
               )
             : ascendingIcon!;
       case PlutoColumnSort.descending:
         return descendingIcon == null
-            ? const Icon(
+            ? Icon(
                 Icons.sort,
-                color: Colors.red,
+                color: errorColor,
               )
             : descendingIcon!;
       default:

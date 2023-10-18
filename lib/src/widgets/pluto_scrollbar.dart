@@ -183,7 +183,7 @@ class PlutoGridCupertinoScrollbarState extends State<PlutoScrollbar>
       _painter!
         ..textDirection = _textDirection
         ..color = CupertinoDynamicColor.resolve(widget.scrollBarColor, context)
-        ..padding = MediaQuery.of(context).padding;
+        ..padding = MediaQuery.paddingOf(context);
     }
     _triggerScrollbar();
   }
@@ -215,7 +215,7 @@ class PlutoGridCupertinoScrollbarState extends State<PlutoScrollbar>
       mainAxisMargin: widget.mainAxisMargin,
       crossAxisMargin: widget.crossAxisMargin,
       radius: _radius,
-      padding: MediaQuery.of(context).padding,
+      padding: MediaQuery.paddingOf(context),
       minLength: _kScrollbarMinLength,
       minOverscrollLength: _kScrollbarMinOverscrollLength,
     );

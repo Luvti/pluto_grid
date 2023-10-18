@@ -119,7 +119,7 @@ class PlutoBodyColumnsState extends PlutoStateWithChange<PlutoBodyColumns> {
           textDirection: stateManager.textDirection,
         ),
         scrollController: _scroll,
-        initialViewportDimension: MediaQuery.of(context).size.width,
+        initialViewportDimension: MediaQuery.sizeOf(context).width,
         children: _showColumnGroups == true
             ? _columnGroups.map(_makeColumnGroup).toList(growable: false)
             : _columns.map(_makeColumn).toList(growable: false),

@@ -84,7 +84,7 @@ class PlutoBodyColumnsFooterState
           textDirection: stateManager.textDirection,
         ),
         scrollController: _scroll,
-        initialViewportDimension: MediaQuery.of(context).size.width,
+        initialViewportDimension: MediaQuery.sizeOf(context).width,
         children: _columns.map(_makeFooter).toList(growable: false),
       ),
     );
