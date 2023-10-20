@@ -551,10 +551,8 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.remove),
               tooltip: configuration?.localeText.deleteSelectedFilter,
-              color: stateManager!.currentSelectingRows.isEmpty
-                  ? configuration!.style.disabledIconColor
-                  : configuration!.style.removeIconColor ??
-                      theme.colorScheme.error,
+              color: configuration!.style.removeIconColor ??
+                  theme.colorScheme.error,
               iconSize: configuration!.style.iconSize,
               onPressed: handleRemoveButton,
             ),
@@ -563,10 +561,8 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
             ),
             IconButton(
               icon: const Icon(Icons.delete_forever),
-              color: stateManager!.rows.isEmpty
-                  ? configuration!.style.disabledIconColor
-                  : configuration!.style.removeIconColor ??
-                      theme.colorScheme.error,
+              color: configuration!.style.removeIconColor ??
+                  theme.colorScheme.error,
               iconSize: configuration!.style.iconSize,
               onPressed: handleClearButton,
               tooltip: configuration!.localeText.resetFilter,
