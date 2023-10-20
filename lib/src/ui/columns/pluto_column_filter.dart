@@ -272,6 +272,7 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
       onTap: _handleOnTap,
       onChanged: _handleOnChanged,
       onEditingComplete: _handleOnEditingComplete,
+      textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
         hintText: _enabled ? widget.column.defaultFilter.title : '',
         filled: true,
