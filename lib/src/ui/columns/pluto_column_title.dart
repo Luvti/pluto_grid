@@ -543,35 +543,11 @@ class _ColumnTextWidgetState extends PlutoStateWithChange<_ColumnTextWidget> {
     );
   }
 
-  void _handleOnPressedFilter() {
-    stateManager.showFilterPopup(
-      context,
-      calledColumn: widget.column,
-    );
-  }
-
   String? get _title =>
       widget.column.titleSpan == null ? widget.column.title : null;
 
   List<InlineSpan> get _children => [
         if (widget.column.titleSpan != null) widget.column.titleSpan!,
-        if (_isFilteredList)
-          WidgetSpan(
-            alignment: PlaceholderAlignment.middle,
-            child: IconButton(
-              icon: Icon(
-                Icons.filter_alt_outlined,
-                color: stateManager.configuration.style.iconColor,
-                size: stateManager.configuration.style.iconSize,
-              ),
-              tooltip: stateManager.configuration.localeText.filter,
-              onPressed: _handleOnPressedFilter,
-              constraints: BoxConstraints(
-                maxHeight:
-                    widget.height + (PlutoGridSettings.rowBorderWidth * 2),
-              ),
-            ),
-          ),
       ];
 
   @override

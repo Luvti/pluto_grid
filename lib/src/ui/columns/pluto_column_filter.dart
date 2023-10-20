@@ -281,7 +281,23 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
         disabledBorder: _disabledBorder,
         focusedBorder: _enabledBorder,
         contentPadding: const EdgeInsets.all(5),
+        suffix: IconButton(
+          icon: Icon(
+            Icons.filter_alt_outlined,
+            color: stateManager.configuration.style.iconColor,
+            size: stateManager.configuration.style.iconSize,
+          ),
+          tooltip: stateManager.configuration.localeText.filter,
+          onPressed: _handleOnPressedFilter,
+        ),
       ),
+    );
+  }
+
+  void _handleOnPressedFilter() {
+    stateManager.showFilterPopup(
+      context,
+      calledColumn: widget.column,
     );
   }
 
