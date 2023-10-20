@@ -456,13 +456,15 @@ class _DefaultCellWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (column.hasRenderer) {
-      return column.renderer!(PlutoColumnRendererContext(
-        column: column,
-        rowIdx: rowIdx,
-        row: row,
-        cell: cell,
-        stateManager: stateManager,
-      ));
+      return column.renderer!(
+        PlutoColumnRendererContext(
+          column: column,
+          rowIdx: rowIdx,
+          row: row,
+          cell: cell,
+          stateManager: stateManager,
+        ),
+      );
     }
 
     return Text(

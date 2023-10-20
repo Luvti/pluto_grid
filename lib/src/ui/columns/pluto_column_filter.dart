@@ -280,7 +280,6 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
         enabledBorder: _border,
         disabledBorder: _disabledBorder,
         focusedBorder: _enabledBorder,
-        contentPadding: const EdgeInsets.all(5),
         suffix: IconButton(
           icon: Icon(
             Icons.filter_alt_outlined,

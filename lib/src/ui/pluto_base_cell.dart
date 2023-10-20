@@ -294,10 +294,7 @@ class _CellContainerState extends PlutoStateWithChange<_CellContainer> {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: _decoration,
-      child: Padding(
-        padding: widget.cellPadding,
-        child: widget.child,
-      ),
+      child: widget.child,
     );
   }
 }
