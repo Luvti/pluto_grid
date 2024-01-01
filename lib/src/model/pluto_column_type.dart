@@ -608,20 +608,25 @@ mixin PlutoColumnTypeWithNumberFormat {
   }
 
   String applyFormat(dynamic value) {
-    num number = num.tryParse(
+    num? number = num.tryParse(
           value.toString().replaceAll(numberFormat.symbols.DECIMAL_SEP, '.'),
         ) ??
         defaultValue;
 
-    if (negative == false && number < 0) {
+    if (number != null && negative == false && number < 0) {
       number = defaultValue;
     }
-
+    if (number == null) {
+      return '';
+    }
     return numberFormat.format(number);
   }
 
   /// Convert [String] converted to [applyFormat] to [number].
-  dynamic toNumber(String formatted) {
+  dynamic toNumber(String? formatted) {
+    if (formatted == null || formatted.isEmpty) {
+      return null;
+    }
     String match = '0-9\\-${numberFormat.symbols.DECIMAL_SEP}';
 
     if (negative) {

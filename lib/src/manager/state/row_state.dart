@@ -101,41 +101,46 @@ abstract class IRowState {
 
 mixin RowState implements IPlutoGridState {
   @override
-  List<PlutoRow> get rows => [...refRows];
+  List<PlutoRow> get rows => <PlutoRow>[...refRows];
 
   @override
-  List<PlutoRow> get checkedRows => refRows.where((row) => row.checked!).toList(
-        growable: false,
-      );
+  List<PlutoRow> get checkedRows =>
+      refRows.where((PlutoRow row) => row.checked!).toList(
+            growable: false,
+          );
 
   @override
   List<PlutoRow> get unCheckedRows =>
-      refRows.where((row) => !row.checked!).toList(
+      refRows.where((PlutoRow row) => !row.checked!).toList(
             growable: false,
           );
 
   @override
   bool get hasCheckedRow =>
-      refRows.firstWhereOrNull((element) => element.checked!) != null;
+      refRows.firstWhereOrNull((PlutoRow element) => element.checked!) != null;
 
   @override
   bool get hasUnCheckedRow =>
-      refRows.firstWhereOrNull((element) => !element.checked!) != null;
+      refRows.firstWhereOrNull((PlutoRow element) => !element.checked!) != null;
 
   @override
   bool? get tristateCheckedRow {
-    final length = refRows.length;
+    final int length = refRows.length;
 
-    if (length == 0) return false;
+    if (length == 0) {
+      return false;
+    }
 
     int countTrue = 0;
 
     int countFalse = 0;
 
-    for (var i = 0; i < length; i += 1) {
-      refRows[i].checked == true ? ++countTrue : ++countFalse;
+    for (int i = 0; i < length; i += 1) {
+      (refRows[i].checked ?? false) ? ++countTrue : ++countFalse;
 
-      if (countTrue > 0 && countFalse > 0) return null;
+      if (countTrue > 0 && countFalse > 0) {
+        return null;
+      }
     }
 
     return countTrue == length;
@@ -163,7 +168,7 @@ mixin RowState implements IPlutoGridState {
 
     final int rowsLength = refRows.length;
 
-    for (var i = 0; i < rowsLength; i += 1) {
+    for (int i = 0; i < rowsLength; i += 1) {
       if (currentOffset <= offset && offset < currentOffset + rowTotalHeight) {
         indexToMove = i;
         break;
@@ -186,9 +191,9 @@ mixin RowState implements IPlutoGridState {
 
   @override
   PlutoRow getNewRow() {
-    final cells = <String, PlutoCell>{};
+    final Map<String, PlutoCell> cells = <String, PlutoCell>{};
 
-    for (var column in refColumns) {
+    for (PlutoColumn column in refColumns) {
       cells[column.field] = PlutoCell(
         value: column.type.defaultValue,
       );
@@ -201,14 +206,14 @@ mixin RowState implements IPlutoGridState {
   List<PlutoRow> getNewRows({
     int count = 1,
   }) {
-    List<PlutoRow> rows = [];
+    final List<PlutoRow> rows = <PlutoRow>[];
 
-    for (var i = 0; i < count; i += 1) {
+    for (int i = 0; i < count; i += 1) {
       rows.add(getNewRow());
     }
 
     if (rows.isEmpty) {
-      return [];
+      return <PlutoRow>[];
     }
 
     return rows;
@@ -220,8 +225,8 @@ mixin RowState implements IPlutoGridState {
     bool flag, {
     bool notify = true,
   }) {
-    final findRow = refRows.firstWhereOrNull(
-      (element) => element.key == row.key,
+    final PlutoRow? findRow = refRows.firstWhereOrNull(
+      (PlutoRow element) => element.key == row.key,
     );
 
     if (findRow == null) {
@@ -284,7 +289,7 @@ mixin RowState implements IPlutoGridState {
         notify: false,
       );
 
-      double offsetToMove = rows.length * rowTotalHeight;
+      final double offsetToMove = rows.length * rowTotalHeight;
 
       scrollByDirection(PlutoMoveDirection.up, offsetToMove);
     }
@@ -324,7 +329,7 @@ mixin RowState implements IPlutoGridState {
     }
 
     if (enabledRowGroups) {
-      removeRowAndGroupByKey([currentRow!.key]);
+      removeRowAndGroupByKey(<Key>[currentRow!.key]);
     } else {
       refRows.removeAt(currentRowIdx!);
     }
@@ -343,7 +348,7 @@ mixin RowState implements IPlutoGridState {
       return;
     }
 
-    final Set<Key> removeKeys = Set.from(rows.map((e) => e.key));
+    final Set<Key> removeKeys = Set.from(rows.map((PlutoRow e) => e.key));
 
     if (currentRowIdx != null &&
         refRows.length > currentRowIdx! &&
@@ -364,14 +369,16 @@ mixin RowState implements IPlutoGridState {
     if (enabledRowGroups) {
       removeRowAndGroupByKey(removeKeys);
     } else {
-      refRows.removeWhereFromOriginal((row) => removeKeys.contains(row.key));
+      refRows.removeWhereFromOriginal(
+          (PlutoRow row) => removeKeys.contains(row.key));
     }
 
     updateCurrentCellPosition(notify: false);
 
     setCurrentSelectingPositionByCellKey(selectingCellKey, notify: false);
 
-    currentSelectingRows.removeWhere((row) => removeKeys.contains(row.key));
+    currentSelectingRows
+        .removeWhere((PlutoRow row) => removeKeys.contains(row.key));
 
     notifyListeners(notify, removeRows.hashCode);
   }
@@ -395,7 +402,7 @@ mixin RowState implements IPlutoGridState {
     double offset, {
     bool notify = true,
   }) {
-    int? indexToMove = getRowIdxByOffset(offset);
+    final int? indexToMove = getRowIdxByOffset(offset);
 
     moveRowsByIndex(rows, indexToMove, notify: notify);
   }
@@ -420,15 +427,15 @@ mixin RowState implements IPlutoGridState {
       indexToMove = refRows.originalLength - 1;
     }
 
-    final Set<Key> removeKeys = Set.from(rows.map((e) => e.key));
+    final Set<Key> removeKeys = Set.from(rows.map((PlutoRow e) => e.key));
 
-    refRows.removeWhereFromOriginal((e) => removeKeys.contains(e.key));
+    refRows.removeWhereFromOriginal((PlutoRow e) => removeKeys.contains(e.key));
 
     refRows.insertAll(indexToMove, rows);
 
     int sortIdx = 0;
 
-    for (var element in refRows.originalList) {
+    for (PlutoRow element in refRows.originalList) {
       element.sortIdx = sortIdx++;
     }
 
@@ -449,7 +456,7 @@ mixin RowState implements IPlutoGridState {
     bool? flag, {
     bool notify = true,
   }) {
-    for (final row in iterateRowAndGroup) {
+    for (final PlutoRow row in iterateRowAndGroup) {
       row.setChecked(flag == true);
     }
 
@@ -461,16 +468,18 @@ mixin RowState implements IPlutoGridState {
       return;
     }
 
-    int safetyIndex = _getSafetyIndexForInsert(index);
+    final int safetyIndex = _getSafetyIndexForInsert(index);
 
     if (enabledRowGroups) {
       insertRowGroup(safetyIndex, rows);
     } else {
       final bool append = refRows.isNotEmpty && index >= refRows.length;
-      final targetIdx = append ? refRows.length - 1 : safetyIndex;
-      final target = refRows.isEmpty ? null : refRows[targetIdx];
+      final int targetIdx = append ? refRows.length - 1 : safetyIndex;
+      final PlutoRow? target = refRows.isEmpty ? null : refRows[targetIdx];
       int sortIdx = target?.sortIdx ?? 0;
-      if (append) ++sortIdx;
+      if (append) {
+        ++sortIdx;
+      }
 
       _setSortIdx(rows: rows, start: sortIdx);
 
@@ -488,7 +497,7 @@ mixin RowState implements IPlutoGridState {
         );
       }
 
-      for (final row in rows) {
+      for (final PlutoRow row in rows) {
         row.setState(PlutoRowState.added);
       }
 
@@ -522,7 +531,7 @@ mixin RowState implements IPlutoGridState {
     required List<PlutoRow> rows,
     int start = 0,
   }) {
-    for (final row in rows) {
+    for (final PlutoRow row in rows) {
       row.sortIdx = start++;
     }
   }
@@ -532,7 +541,7 @@ mixin RowState implements IPlutoGridState {
     int start = 0,
     int increase = 1,
   }) {
-    final length = rows.length;
+    final int length = rows.length;
 
     for (int i = start; i < length; i += 1) {
       rows[i].sortIdx += increase;
@@ -544,7 +553,7 @@ mixin RowState implements IPlutoGridState {
     int compare = 0,
     int increase = 1,
   }) {
-    for (final row in rows) {
+    for (final PlutoRow row in rows) {
       if (row.sortIdx < compare) {
         continue;
       }

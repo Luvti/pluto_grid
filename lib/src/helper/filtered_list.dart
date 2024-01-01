@@ -85,7 +85,9 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
   /// ```
   FilteredList({
     List<E>? initialList,
-  }) : _list = initialList ?? [];
+  }) : _list = initialList != null
+            ? <E>[...initialList]
+            : List<E>.empty(growable: true);
 
   final List<E> _list;
 
@@ -127,15 +129,15 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
           ? _list.getRange(_safetyFrom, _safetyTo).toList()
           : _list;
 
-  List<E> _filteredList = [];
+  List<E> _filteredList = <E>[];
 
   /// Returns all elements regardless of filtering or ranging.
   @override
-  List<E> get originalList => [..._list];
+  List<E> get originalList => <E>[..._list];
 
   /// Returns the filtered elements.
   @override
-  List<E> get filteredList => [..._filteredList];
+  List<E> get filteredList => <E>[..._filteredList];
 
   @override
   List<E> get filterOrOriginalList => hasFilter ? filteredList : originalList;
@@ -221,7 +223,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   @override
   void removeWhere(bool Function(E element) test) {
-    var list = _effectiveList;
+    final List<E> list = _effectiveList;
 
     _workOnOriginalList(() {
       super.removeWhere((E element) {
@@ -243,11 +245,11 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   @override
   void retainWhere(bool Function(E element) test) {
-    var list = _effectiveList;
+    final List<E> list = _effectiveList;
 
     _workOnOriginalList(() {
       super.retainWhere((E element) {
-        var isInList = _isInList(element, list);
+        final bool isInList = _isInList(element, list);
         return !isInList || (_isInList(element, list) && test(element));
       });
     });
@@ -266,7 +268,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   @override
   void clear() {
-    var list = _effectiveList;
+    final List<E> list = _effectiveList;
 
     _workOnOriginalList(() {
       super.removeWhere((E element) {
@@ -286,7 +288,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   @override
   E removeLast() {
-    var result = removeAt(_effectiveList.length - 1);
+    final E result = removeAt(_effectiveList.length - 1);
 
     _updateFilteredList();
 
@@ -335,7 +337,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   @override
   void insert(int index, E element) {
-    var originalIndex = _toOriginalIndexForInsert(index);
+    final int originalIndex = _toOriginalIndexForInsert(index);
 
     _workOnOriginalList(() {
       super.insert(originalIndex, element);
@@ -346,7 +348,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   @override
   E removeAt(int index) {
-    var originalIndex = _toOriginalIndex(index);
+    final int originalIndex = _toOriginalIndex(index);
 
     late E result;
 
@@ -361,7 +363,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   @override
   void insertAll(int index, Iterable<E> iterable) {
-    var originalIndex = _toOriginalIndexForInsert(index);
+    final int originalIndex = _toOriginalIndexForInsert(index);
 
     _workOnOriginalList(() {
       super.insertAll(originalIndex, iterable);
@@ -408,9 +410,9 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
       return;
     }
 
-    final storeFilter = _filter;
+    final FilteredListFilter<E>? storeFilter = _filter;
 
-    final storeRange = _range;
+    final FilteredListRange? storeRange = _range;
 
     setFilter(null);
 
@@ -439,15 +441,17 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
       return index;
     }
 
-    final originalValue = _effectiveList[index];
+    final E originalValue = _effectiveList[index];
 
-    final valueIndexes = _list
+    final Iterable<int> valueIndexes = _list
         .asMap()
         .entries
-        .map((e) => _compare(e.value, originalValue) ? e.key : -1)
-        .where((element) => element != -1);
+        .map(
+          (MapEntry<int, E> e) => _compare(e.value, originalValue) ? e.key : -1,
+        )
+        .where((int element) => element != -1);
 
-    final found = valueIndexes.length;
+    final int found = valueIndexes.length;
 
     if (found < 1) {
       throw Exception(
@@ -462,16 +466,16 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
   }
 
   int _toOriginalIndexForInsert(int index) {
-    var lastIndex = _effectiveList.length - 1;
+    final int lastIndex = _effectiveList.length - 1;
 
-    var greaterThanLast = index > lastIndex;
+    final bool greaterThanLast = index > lastIndex;
 
-    var originalIndex = _toOriginalIndex(greaterThanLast ? lastIndex : index);
+    int originalIndex = _toOriginalIndex(greaterThanLast ? lastIndex : index);
 
     return greaterThanLast ? ++originalIndex : originalIndex;
   }
 
   void _updateFilteredList() {
-    _filteredList = _filter == null ? [] : _list.where(_filter!).toList();
+    _filteredList = _filter == null ? <E>[] : _list.where(_filter!).toList();
   }
 }
