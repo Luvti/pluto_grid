@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:pluto_grid/pluto_grid.dart';
+import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 import '../ui.dart';
 
@@ -240,7 +240,7 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
   @override
   Widget build(BuildContext context) {
     final style = stateManager.style;
-    Widget child = _textField(style);
+    Widget child = widget.column.filterWidget ?? _textField(style);
     if (widget.column.type is PlutoColumnTypeBool) {
       child = _plutoColumnTypeBool();
     }
@@ -274,13 +274,17 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
       onEditingComplete: _handleOnEditingComplete,
       textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
-        hintText: _enabled ? widget.column.defaultFilter.title : '',
+        contentPadding: const EdgeInsets.all(5),
+        hintText: widget.column.filterHintText ??
+            (_enabled ? widget.column.defaultFilter.title : ''),
+        hintStyle: TextStyle(color: widget.column.filterHintTextColor),
         filled: true,
         fillColor: _textFieldColor,
         border: _border,
         enabledBorder: _border,
         disabledBorder: _disabledBorder,
         focusedBorder: _enabledBorder,
+        suffixIcon: widget.column.filterSuffixIcon,
         suffix: IconButton(
           icon: Icon(
             Icons.filter_alt_outlined,

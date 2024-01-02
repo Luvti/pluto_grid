@@ -2,7 +2,7 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:pluto_grid/pluto_grid.dart';
+import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 class PlutoGridConfiguration {
   /// When you select a value in the pop-up grid, it moves down.
@@ -253,6 +253,8 @@ class PlutoGridStyleConfig {
     this.gridPopupBorderRadius = BorderRadius.zero,
     this.addIconColor,
     this.removeIconColor,
+    this.filterHeaderColor,
+    this.filterHeaderIconColor,
   });
 
   const PlutoGridStyleConfig.dark({
@@ -315,6 +317,8 @@ class PlutoGridStyleConfig {
     this.gridPopupBorderRadius = BorderRadius.zero,
     this.addIconColor,
     this.removeIconColor,
+    this.filterHeaderColor,
+    this.filterHeaderIconColor,
   });
 
   /// Enable borderShadow in [PlutoGrid].
@@ -468,6 +472,12 @@ class PlutoGridStyleConfig {
   /// Apply border radius to popup opened inside [PlutoGrid].
   final BorderRadiusGeometry gridPopupBorderRadius;
 
+  /// Set color of filter popup header
+  final Color? filterHeaderColor;
+
+  /// Set color of filter popup header icon
+  final Color? filterHeaderIconColor;
+
   PlutoGridStyleConfig copyWith({
     bool? enableGridBorderShadow,
     bool? enableColumnBorderVertical,
@@ -559,8 +569,8 @@ class PlutoGridStyleConfig {
       defaultCellPadding: defaultCellPadding ?? this.defaultCellPadding,
       columnTextStyle: columnTextStyle ?? this.columnTextStyle,
       cellTextStyle: cellTextStyle ?? this.cellTextStyle,
-      tooltipTextStyle: tooltipTextStyle ?? this.tooltipTextStyle,
       columnContextIcon: columnContextIcon ?? this.columnContextIcon,
+      tooltipTextStyle: tooltipTextStyle ?? this.tooltipTextStyle,
       columnResizeIcon: columnResizeIcon ?? this.columnResizeIcon,
       columnAscendingIcon: columnAscendingIcon == null
           ? this.columnAscendingIcon
@@ -575,6 +585,8 @@ class PlutoGridStyleConfig {
       gridBorderRadius: gridBorderRadius ?? this.gridBorderRadius,
       gridPopupBorderRadius:
           gridPopupBorderRadius ?? this.gridPopupBorderRadius,
+      filterHeaderColor: filterHeaderColor ?? filterHeaderColor,
+      filterHeaderIconColor: filterHeaderIconColor ?? filterHeaderIconColor,
     );
   }
 

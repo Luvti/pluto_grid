@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 abstract class PlutoColumnType {
   dynamic get defaultValue;
@@ -98,16 +99,19 @@ abstract class PlutoColumnType {
   /// The default icon is displayed, and if this value is set to null , the icon does not appear.
   factory PlutoColumnType.select(
     List<dynamic> items, {
+    final Function(PlutoGridOnSelectedEvent event)? onItemSelected,
     dynamic defaultValue = '',
     bool enableColumnFilter = false,
     IconData? popupIcon = Icons.arrow_drop_down,
+    Widget Function(dynamic item)? builder,
   }) {
     return PlutoColumnTypeSelect(
-      defaultValue: defaultValue,
-      items: items,
-      enableColumnFilter: enableColumnFilter,
-      popupIcon: popupIcon,
-    );
+        onItemSelected: onItemSelected ?? (event) {},
+        defaultValue: defaultValue,
+        items: items,
+        enableColumnFilter: enableColumnFilter,
+        popupIcon: popupIcon,
+        builder: builder);
   }
 
   /// Set as a date column.
@@ -387,17 +391,21 @@ class PlutoColumnTypeSelect
 
   final List<dynamic> items;
 
+  final Widget Function(dynamic item)? builder;
+
   final bool enableColumnFilter;
+  final Function(PlutoGridOnSelectedEvent event) onItemSelected;
 
   @override
   final IconData? popupIcon;
 
-  const PlutoColumnTypeSelect({
-    this.defaultValue,
-    required this.items,
-    required this.enableColumnFilter,
-    this.popupIcon,
-  });
+  const PlutoColumnTypeSelect(
+      {required this.onItemSelected,
+      this.defaultValue,
+      required this.items,
+      required this.enableColumnFilter,
+      this.popupIcon,
+      this.builder});
 
   @override
   bool isValid(dynamic value) => items.contains(value) == true;

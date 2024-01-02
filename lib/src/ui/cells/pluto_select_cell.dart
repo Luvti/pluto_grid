@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pluto_grid/pluto_grid.dart';
+import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 import 'popup_cell.dart';
 
@@ -21,8 +21,8 @@ class PlutoSelectCell extends StatefulWidget implements PopupCell {
     required this.cell,
     required this.column,
     required this.row,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   PlutoSelectCellState createState() => PlutoSelectCellState();
@@ -72,6 +72,14 @@ class PlutoSelectCellState extends State<PlutoSelectCell>
         enableFilterMenuItem: enableColumnFilter,
         enableHideColumnMenuItem: false,
         enableSetColumnsMenuItem: false,
+        renderer: widget.column.type.select.builder == null
+            ? null
+            : (rendererContext) {
+                var item =
+                    widget.column.type.select.items[rendererContext.rowIdx];
+
+                return widget.column.type.select.builder!(item);
+              },
       )
     ];
 
@@ -82,6 +90,12 @@ class PlutoSelectCellState extends State<PlutoSelectCell>
         },
       );
     }).toList();
+  }
+
+  @override
+  void onSelected(PlutoGridOnSelectedEvent event) {
+    widget.column.type.select.onItemSelected(event);
+    super.onSelected(event);
   }
 
   @override

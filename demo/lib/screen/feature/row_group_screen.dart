@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pluto_grid/pluto_grid.dart';
+import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 import '../../dummy_data/development.dart';
 import '../../widget/pluto_docs_button.dart';
@@ -9,7 +9,7 @@ import '../../widget/pluto_example_screen.dart';
 class RowGroupScreen extends StatefulWidget {
   static const routeName = 'feature/row-group';
 
-  const RowGroupScreen({Key? key}) : super(key: key);
+  const RowGroupScreen({super.key});
 
   @override
   _RowGroupScreenState createState() => _RowGroupScreenState();
@@ -89,7 +89,7 @@ class _RowGroupScreenState extends State<RowGroupScreen> {
                           children: FilteredList<PlutoRow>(
                         initialList: [
                           PlutoRow(cells: {
-                            'files': PlutoCell(value: 'pluto_grid.dart')
+                            'files': PlutoCell(value: 'pluto_grid_plus.dart')
                           }),
                           PlutoRow(cells: {
                             'files': PlutoCell(value: 'pluto_dual_grid.dart')

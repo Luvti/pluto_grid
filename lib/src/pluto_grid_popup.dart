@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pluto_grid/pluto_grid.dart';
+import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 /// [PlutoGridPopup] calls [PlutoGrid] in the form of a popup.
 class PlutoGridPopup {
@@ -102,6 +102,15 @@ class PlutoGridPopup {
     open();
   }
 
+  setColumnConfig() {
+    columns.map((element) {
+      if (configuration.style.filterHeaderColor != null) {
+        element.backgroundColor = configuration.style.filterHeaderColor!;
+      }
+    }).toList();
+    return columns;
+  }
+
   Future<void> open() async {
     final textDirection = Directionality.of(context);
 
@@ -126,7 +135,7 @@ class PlutoGridPopup {
                       child: Directionality(
                         textDirection: textDirection,
                         child: PlutoGrid(
-                          columns: columns,
+                          columns: setColumnConfig(),
                           rows: rows,
                           columnGroups: columnGroups,
                           onLoaded: onLoaded,

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:pluto_grid/pluto_grid.dart';
+import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
 //
 /// For more examples, go to the demo web link on the github below.
 class PlutoGridExamplePage extends StatefulWidget {
-  const PlutoGridExamplePage({Key? key}) : super(key: key);
+  const PlutoGridExamplePage({super.key});
 
   @override
   State<PlutoGridExamplePage> createState() => _PlutoGridExamplePageState();
@@ -61,6 +61,24 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
         'Designer',
         'Owner',
       ]),
+    ),
+    PlutoColumn(
+      title: 'Role 2',
+      field: 'role2',
+      type: PlutoColumnType.select(
+        <String>[
+          'Programmer',
+          'Designer',
+          'Owner',
+        ],
+        builder: (item) {
+          return Row(children: [
+            Icon(item == 'Programmer' ? Icons.code : Icons.design_services),
+            const SizedBox(width: 8),
+            Text(item),
+          ]);
+        },
+      ),
     ),
     PlutoColumn(
       title: 'Joined',
@@ -106,6 +124,7 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
         'age': PlutoCell(value: 20),
         'buy': PlutoCell(value: false),
         'role': PlutoCell(value: 'Programmer'),
+        'role2': PlutoCell(value: 'Programmer'),
         'joined': PlutoCell(value: '2021-01-01'),
         'working_time': PlutoCell(value: '09:00'),
         'salary': PlutoCell(value: 300),
@@ -118,6 +137,7 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
         'age': PlutoCell(value: null),
         'buy': PlutoCell(value: true),
         'role': PlutoCell(value: 'Designer'),
+        'role2': PlutoCell(value: 'Designer'),
         'joined': PlutoCell(value: '2021-02-01'),
         'working_time': PlutoCell(value: '10:00'),
         'salary': PlutoCell(value: 400),
@@ -130,6 +150,7 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
         'age': PlutoCell(value: 40),
         'buy': PlutoCell(value: null),
         'role': PlutoCell(value: 'Owner'),
+        'role2': PlutoCell(value: 'Owner'),
         'joined': PlutoCell(value: '2021-03-01'),
         'working_time': PlutoCell(value: '11:00'),
         'salary': PlutoCell(value: 700),
@@ -143,7 +164,8 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
     PlutoColumnGroup(title: 'User information', fields: ['name', 'age']),
     PlutoColumnGroup(title: 'Status', children: [
       PlutoColumnGroup(title: 'A', fields: ['role'], expandedColumn: true),
-      PlutoColumnGroup(title: 'Etc.', fields: ['joined', 'working_time']),
+      PlutoColumnGroup(
+          title: 'Etc.', fields: ['joined', 'working_time', 'role2']),
     ]),
   ];
 

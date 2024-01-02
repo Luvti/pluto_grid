@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:pluto_grid/pluto_grid.dart';
-import 'package:pluto_grid/src/ui/ui.dart';
+import 'package:pluto_grid_plus/pluto_grid_plus.dart';
+import 'package:pluto_grid_plus/src/ui/ui.dart';
 
 import '../../../helper/column_helper.dart';
 import '../../../helper/row_helper.dart';
@@ -1714,9 +1714,10 @@ void main() {
         ),
       );
 
+      double oldWidth = columns.first.width;
       stateManager.autoFitColumn(context, columns.first);
 
-      expect(columns.first.width, columns.first.minWidth);
+      expect(columns.first.width, lessThan(oldWidth));
     });
 
     testWidgets('가장 넓은 셀이 컬럼 최소 넓이보다 큰 경우 최소 넓이 이상으로 변경 되어야 한다.',

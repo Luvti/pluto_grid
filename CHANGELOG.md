@@ -1,3 +1,16 @@
+## [8.2.0] - 2023. 12. 19
+* Add builder function in plutoColumnType.select allow user to customize the popup by item widget.
+
+## [8.1.0] - 2023. 12. 8
+* Customize filter column by @RamshaFarheen bosskmk#739
+* Add column title (padding, icon-size, and checkBox size to auto-fit calculation by @Milad-Akarie bosskmk#715
+* add onSelectedItem function in plutoColumnType.select bosskmk#935
+
+
+## [8.0.0] - 2023. 7. 12
+* Change Package name to pluto_grid_plus
+* Upgrade the packages to the latest version.
+
 ## [7.0.2] - 2023. 5. 13
 
 * Add Japanese, Turkish languages.
