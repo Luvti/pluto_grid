@@ -49,6 +49,15 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       type: PlutoColumnType.number(defaultValue: 11),
     ),
     PlutoColumn(
+      title: 'Age double',
+      field: 'age_double',
+      defaultFilter: const PlutoFilterTypeGreaterThan(),
+      type: PlutoColumnType.double(
+        defaultValue: 12.23,
+      ),
+      formatter: (value) => value.toString(),
+    ),
+    PlutoColumn(
       title: 'Buy',
       field: 'buy',
       type: PlutoColumnType.bool(),
@@ -122,6 +131,7 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
         'id': PlutoCell(value: 'user1'),
         'name': PlutoCell(value: 'Mike'),
         'age': PlutoCell(value: 20),
+        'age_double': PlutoCell(value: 11.1),
         'buy': PlutoCell(value: false),
         'role': PlutoCell(value: 'Programmer'),
         'role2': PlutoCell(value: 'Programmer'),
@@ -135,6 +145,7 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
         'id': PlutoCell(value: 'user2'),
         'name': PlutoCell(value: 'Jack'),
         'age': PlutoCell(value: null),
+        'age_double': PlutoCell(value: null),
         'buy': PlutoCell(value: true),
         'role': PlutoCell(value: 'Designer'),
         'role2': PlutoCell(value: 'Designer'),
@@ -147,7 +158,8 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       cells: {
         'id': PlutoCell(value: 'user3'),
         'name': PlutoCell(value: 'Suzi'),
-        'age': PlutoCell(value: 40),
+        'age': PlutoCell(value: 0.3),
+        'age_double': PlutoCell(value: 11.3),
         'buy': PlutoCell(value: null),
         'role': PlutoCell(value: 'Owner'),
         'role2': PlutoCell(value: 'Owner'),

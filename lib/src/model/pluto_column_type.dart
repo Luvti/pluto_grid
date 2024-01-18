@@ -35,7 +35,7 @@ abstract class PlutoColumnType {
   /// [locale] Specifies the numeric locale of the column.
   /// If not specified, the default locale is used.
   factory PlutoColumnType.number({
-    dynamic defaultValue = 0,
+    num defaultValue = 0,
     bool negative = true,
     String format = '#,###',
     bool applyFormatOnInit = true,
@@ -43,6 +43,24 @@ abstract class PlutoColumnType {
     String? locale,
   }) {
     return PlutoColumnTypeNumber(
+      defaultValue: defaultValue,
+      format: format,
+      negative: negative,
+      applyFormatOnInit: applyFormatOnInit,
+      allowFirstDot: allowFirstDot,
+      locale: locale,
+    );
+  }
+
+  factory PlutoColumnType.double({
+    double defaultValue = 0,
+    bool negative = true,
+    String format = '###.0#',
+    bool applyFormatOnInit = true,
+    bool allowFirstDot = false,
+    String? locale,
+  }) {
+    return PlutoColumnTypeDouble(
       defaultValue: defaultValue,
       format: format,
       negative: negative,
@@ -316,6 +334,50 @@ class PlutoColumnTypeNumber
     required this.applyFormatOnInit,
     required this.allowFirstDot,
     required this.locale,
+  })  : numberFormat = intl.NumberFormat(format, locale),
+        decimalPoint = _getDecimalPoint(format);
+
+  @override
+  final intl.NumberFormat numberFormat;
+
+  @override
+  final int decimalPoint;
+
+  static int _getDecimalPoint(String format) {
+    final int dotIndex = format.indexOf('.');
+
+    return dotIndex < 0 ? 0 : format.substring(dotIndex).length - 1;
+  }
+}
+
+class PlutoColumnTypeDouble
+    with PlutoColumnTypeWithDoubleFormat
+    implements PlutoColumnType, PlutoColumnTypeHasFormat<String> {
+  @override
+  final dynamic defaultValue;
+
+  @override
+  final bool negative;
+
+  @override
+  final String format;
+
+  @override
+  final bool applyFormatOnInit;
+
+  @override
+  final bool allowFirstDot;
+
+  @override
+  final String? locale;
+
+  PlutoColumnTypeDouble({
+    required this.negative,
+    required this.format,
+    required this.applyFormatOnInit,
+    required this.allowFirstDot,
+    required this.locale,
+    this.defaultValue,
   })  : numberFormat = intl.NumberFormat(format, locale),
         decimalPoint = _getDecimalPoint(format);
 
@@ -672,4 +734,81 @@ int _compareWithNull(
   }
 
   return resolve();
+}
+
+mixin PlutoColumnTypeWithDoubleFormat {
+  intl.NumberFormat get numberFormat;
+
+  bool get negative;
+
+  int get decimalPoint;
+
+  bool get allowFirstDot;
+
+  String? get locale;
+
+  dynamic defaultValue;
+
+  bool isValid(dynamic value) {
+    if (!isDouble(value)) {
+      return false;
+    }
+
+    if (negative == false && double.parse(value.toString()) < 0) {
+      return false;
+    }
+
+    return true;
+  }
+
+  int compare(dynamic a, dynamic b) {
+    return _compareWithNull(
+      a,
+      b,
+      () => toDouble(a.toString()).compareTo(toDouble(b.toString())),
+    );
+  }
+
+  dynamic makeCompareValue(dynamic v) {
+    return v.runtimeType != double
+        ? double.tryParse(v.toString()) ?? defaultValue
+        : v;
+  }
+
+  String applyFormat(dynamic value) {
+    double number = double.tryParse(
+          value.toString().replaceAll(numberFormat.symbols.DECIMAL_SEP, '.'),
+        ) ??
+        defaultValue;
+
+    if (negative == false && number < 0) {
+      number = defaultValue;
+    }
+
+    return numberFormat.format(number);
+  }
+
+  /// Convert [String] converted to [applyFormat] to [number].
+  dynamic toDouble(String formatted) {
+    String match = '0-9\\-${numberFormat.symbols.DECIMAL_SEP}';
+
+    if (negative) {
+      match += numberFormat.symbols.MINUS_SIGN;
+    }
+
+    formatted = formatted
+        .replaceAll(RegExp('[^$match]'), '')
+        .replaceFirst(numberFormat.symbols.DECIMAL_SEP, '.');
+
+    final double formattedNumber = double.tryParse(formatted) ?? defaultValue;
+
+    return formattedNumber.isFinite ? formattedNumber : defaultValue;
+  }
+
+  bool isDouble(dynamic s) {
+    if (s == null) {
+      return false;
+    }
+    return double.tryParse(s.toString()) != null;
+  }
 }

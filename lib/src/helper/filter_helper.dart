@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 typedef SetFilterPopupHandler = void Function(
-    PlutoGridStateManager? stateManager);
+  PlutoGridStateManager? stateManager,
+);
 
 class FilterHelper {
   /// A value to identify all column searches when searching filters.
