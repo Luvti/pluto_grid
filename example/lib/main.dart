@@ -183,33 +183,76 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
 
   /// [PlutoGridStateManager] has many methods and properties to dynamically manipulate the grid.
   /// You can manipulate the grid dynamically at runtime by passing this through the [onLoaded] callback.
-  late final PlutoGridStateManager stateManager;
+  PlutoGridStateManager? stateManager;
+  int indexKey = 0;
+
+  PlutoGridOnSortedEvent? onSorted;
 
   @override
   Widget build(BuildContext context) {
+    // stateManager.filter
+    // stateManager.setFilter();
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.all(15),
-        child: PlutoGrid(
-          columns: columns,
-          rows: rows,
-          columnGroups: columnGroups,
-          onLoaded: (PlutoGridOnLoadedEvent event) {
-            stateManager = event.stateManager;
-            stateManager.setShowColumnFilter(true);
-          },
-          onChanged: (PlutoGridOnChangedEvent event) {
-            print(event);
-          },
-          configuration: const PlutoGridConfiguration(
-            columnFilter: PlutoGridColumnFilterConfig(
-              filters: [
-                PlutoFilterTypeContains(),
-                PlutoFilterTypeGreaterThanOrEqualTo(),
-                PlutoFilterTypeLessThanOrEqualTo(),
-              ],
+        child: Column(
+          children: [
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  indexKey++;
+                });
+              },
+              child: Text('refresh'),
             ),
-          ),
+            Flexible(
+              child: PlutoGrid(
+                key: ValueKey(indexKey),
+                columns: columns,
+                rows: rows,
+                columnGroups: columnGroups,
+                onSorted: (event) {
+                  print(event);
+                  onSorted = event;
+                },
+                onLoaded: (PlutoGridOnLoadedEvent event) {
+                  if (stateManager == null) {
+                    stateManager = event.stateManager;
+                    stateManager?.setShowColumnFilter(true);
+                  } else {
+                    final filters = stateManager!.savedFilter;
+                    final filterRows = stateManager!.filterRows;
+                    stateManager = event.stateManager;
+                    stateManager?.setShowColumnFilter(true);
+                    stateManager!
+                        .setFilter(filters, filterRowsApply: filterRows);
+                    if (onSorted != null) {
+                      if (onSorted!.column.sort == PlutoColumnSort.ascending) {
+                        stateManager!.sortAscending(
+                          onSorted!.column,
+                        );
+                      }
+                      if (onSorted!.column.sort == PlutoColumnSort.descending) {
+                        stateManager!.sortDescending(onSorted!.column);
+                      }
+                    }
+                  }
+                },
+                onChanged: (PlutoGridOnChangedEvent event) {
+                  print(event);
+                },
+                configuration: const PlutoGridConfiguration(
+                  columnFilter: PlutoGridColumnFilterConfig(
+                    filters: [
+                      PlutoFilterTypeContains(),
+                      PlutoFilterTypeGreaterThanOrEqualTo(),
+                      PlutoFilterTypeLessThanOrEqualTo(),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

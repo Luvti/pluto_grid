@@ -91,6 +91,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   final List<E> _list;
 
+  FilteredListFilter<E>? get filter => _filter;
   FilteredListFilter<E>? _filter;
 
   FilteredListRange? _range;

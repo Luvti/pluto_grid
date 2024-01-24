@@ -26,6 +26,8 @@ abstract class IFilteringRowState {
     BuildContext context, {
     PlutoColumn? calledColumn,
   });
+
+  FilteredListFilter<PlutoRow>? savedFilter;
 }
 
 class _State {
@@ -43,7 +45,11 @@ mixin FilteringRowState implements IPlutoGridState {
       refRows.hasFilter || (filterOnlyEvent && filterRows.isNotEmpty);
 
   @override
-  void setFilter(FilteredListFilter<PlutoRow>? filter, {bool notify = true}) {
+  void setFilter(FilteredListFilter<PlutoRow>? filter,
+      {bool notify = true, List<PlutoRow>? filterRowsApply}) {
+    if (filterRowsApply != null) {
+      setFilterRows(filterRowsApply);
+    }
     if (filter == null) {
       setFilterRows([]);
     }
@@ -59,7 +65,7 @@ mixin FilteringRowState implements IPlutoGridState {
       row.setState(PlutoRowState.none);
     }
 
-    var savedFilter = filter;
+    savedFilter = filter;
 
     if (filter != null) {
       savedFilter = (PlutoRow row) {

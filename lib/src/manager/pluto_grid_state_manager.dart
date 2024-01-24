@@ -173,6 +173,9 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
 
     setGroupToColumn();
   }
+
+  @override
+  FilteredListFilter<PlutoRow>? savedFilter;
 }
 
 /// It manages the state of the [PlutoGrid] and contains methods used by the grid.
