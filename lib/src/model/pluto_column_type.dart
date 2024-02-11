@@ -565,7 +565,14 @@ class PlutoColumnTypeDate
     DateTime? dateFormatValue;
 
     try {
-      dateFormatValue = dateFormat.parse(v.toString());
+      if (v == null || v.toString().isEmpty) {
+        return null;
+      }
+      if (v is DateTime) {
+        dateFormatValue = v;
+      } else {
+        dateFormatValue = dateFormat.parse(v.toString());
+      }
       // ignore: avoid_catches_without_on_clauses
     } catch (e) {
       debugPrint(e.toString());
@@ -577,7 +584,12 @@ class PlutoColumnTypeDate
 
   @override
   String applyFormat(dynamic value) {
-    final parseValue = DateTime.tryParse(value.toString());
+    if (value == null || value.toString().isEmpty) {
+      return '';
+    }
+
+    final DateTime? parseValue =
+        value is DateTime ? value : DateTime.tryParse(value.toString());
 
     if (parseValue == null) {
       return '';
