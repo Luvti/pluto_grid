@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_annotating_with_dynamic
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
@@ -529,7 +531,14 @@ class PlutoColumnTypeDate
 
   @override
   bool isValid(dynamic value) {
-    final parsedDate = DateTime.tryParse(value.toString());
+    if (value == null) {
+      return false;
+    }
+    if (value is DateTime) {
+      return true;
+    }
+
+    final DateTime? parsedDate = DateTime.tryParse(value.toString());
 
     if (parsedDate == null) {
       return false;
@@ -557,7 +566,9 @@ class PlutoColumnTypeDate
 
     try {
       dateFormatValue = dateFormat.parse(v.toString());
+      // ignore: avoid_catches_without_on_clauses
     } catch (e) {
+      debugPrint(e.toString());
       dateFormatValue = null;
     }
 
@@ -589,7 +600,7 @@ class PlutoColumnTypeTime
     this.popupIcon,
   });
 
-  static final _timeFormat = RegExp(r'^([0-1]?\d|2[0-3]):[0-5]\d$');
+  static final RegExp _timeFormat = RegExp(r'^([0-1]?\d|2[0-3]):[0-5]\d$');
 
   @override
   bool isValid(dynamic value) {
@@ -667,7 +678,8 @@ mixin PlutoColumnTypeWithNumberFormat {
     return _compareWithNull(
       a,
       b,
-      () => toNumber(a.toString()).compareTo(toNumber(b.toString())),
+      () => (a is num ? a : toNumber(a.toString()))
+          .compareTo(b is num ? b : toNumber(b.toString())),
     );
   }
 
@@ -693,9 +705,9 @@ mixin PlutoColumnTypeWithNumberFormat {
   }
 
   /// Convert [String] converted to [applyFormat] to [number].
-  dynamic toNumber(String? formatted) {
+  num toNumber(String? formatted) {
     if (formatted == null || formatted.isEmpty) {
-      return null;
+      return defaultValue;
     }
     String match = '0-9\\-${numberFormat.symbols.DECIMAL_SEP}';
 
@@ -703,6 +715,7 @@ mixin PlutoColumnTypeWithNumberFormat {
       match += numberFormat.symbols.MINUS_SIGN;
     }
 
+    // ignore: parameter_assignments
     formatted = formatted
         .replaceAll(RegExp('[^$match]'), '')
         .replaceFirst(numberFormat.symbols.DECIMAL_SEP, '.');
@@ -715,6 +728,9 @@ mixin PlutoColumnTypeWithNumberFormat {
   bool isNumeric(dynamic s) {
     if (s == null) {
       return false;
+    }
+    if (s is num) {
+      return true;
     }
     return num.tryParse(s.toString()) != null;
   }
@@ -765,7 +781,8 @@ mixin PlutoColumnTypeWithDoubleFormat {
     return _compareWithNull(
       a,
       b,
-      () => toDouble(a.toString()).compareTo(toDouble(b.toString())),
+      () => (a is double ? a : toDouble(a.toString()))
+          .compareTo(b is double ? b : toDouble(b.toString())),
     );
   }
 
@@ -789,13 +806,14 @@ mixin PlutoColumnTypeWithDoubleFormat {
   }
 
   /// Convert [String] converted to [applyFormat] to [number].
-  dynamic toDouble(String formatted) {
+  double toDouble(String formatted) {
     String match = '0-9\\-${numberFormat.symbols.DECIMAL_SEP}';
 
     if (negative) {
       match += numberFormat.symbols.MINUS_SIGN;
     }
 
+    // ignore: parameter_assignments
     formatted = formatted
         .replaceAll(RegExp('[^$match]'), '')
         .replaceFirst(numberFormat.symbols.DECIMAL_SEP, '.');
@@ -808,6 +826,9 @@ mixin PlutoColumnTypeWithDoubleFormat {
   bool isDouble(dynamic s) {
     if (s == null) {
       return false;
+    }
+    if (s is double) {
+      return true;
     }
     return double.tryParse(s.toString()) != null;
   }

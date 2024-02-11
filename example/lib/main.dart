@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,6 +13,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      locale: const Locale('ru', 'RU'),
+      localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        DefaultCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const <Locale>[Locale('ru', 'RU')],
       title: 'PlutoGrid Example',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -46,7 +56,7 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       title: 'Age',
       field: 'age',
       defaultFilter: const PlutoFilterTypeGreaterThan(),
-      type: PlutoColumnType.number(defaultValue: 11),
+      type: PlutoColumnType.number(defaultValue: 11.1, format: '#.##'),
     ),
     PlutoColumn(
       title: 'Age double',
@@ -130,8 +140,8 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       cells: {
         'id': PlutoCell(value: 'user1'),
         'name': PlutoCell(value: 'Mike'),
-        'age': PlutoCell(value: 20),
-        'age_double': PlutoCell(value: 11.1),
+        'age': PlutoCell(value: 0.20),
+        'age_double': PlutoCell(value: 10),
         'buy': PlutoCell(value: false),
         'role': PlutoCell(value: 'Programmer'),
         'role2': PlutoCell(value: 'Programmer'),
@@ -144,8 +154,8 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       cells: {
         'id': PlutoCell(value: 'user2'),
         'name': PlutoCell(value: 'Jack'),
-        'age': PlutoCell(value: null),
-        'age_double': PlutoCell(value: null),
+        'age': PlutoCell(value: 2.0),
+        'age_double': PlutoCell(value: 0.9),
         'buy': PlutoCell(value: true),
         'role': PlutoCell(value: 'Designer'),
         'role2': PlutoCell(value: 'Designer'),
@@ -158,8 +168,8 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       cells: {
         'id': PlutoCell(value: 'user3'),
         'name': PlutoCell(value: 'Suzi'),
-        'age': PlutoCell(value: 0.3),
-        'age_double': PlutoCell(value: 11.3),
+        'age': PlutoCell(value: 2.1),
+        'age_double': PlutoCell(value: 0.39),
         'buy': PlutoCell(value: null),
         'role': PlutoCell(value: 'Owner'),
         'role2': PlutoCell(value: 'Owner'),
