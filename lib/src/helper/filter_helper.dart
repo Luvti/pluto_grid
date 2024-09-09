@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_asserts_with_message
+
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,21 +11,21 @@ typedef SetFilterPopupHandler = void Function(
 
 class FilterHelper {
   /// A value to identify all column searches when searching filters.
-  static const filterFieldAllColumns = 'plutoFilterAllColumns';
+  static const String filterFieldAllColumns = 'plutoFilterAllColumns';
 
   /// The field name of the column that includes the field values of the column
   /// when searching for a filter.
-  static const filterFieldColumn = 'column';
+  static const String filterFieldColumn = 'column';
 
   /// The field name of the column including the filter type
   /// when searching for a filter.
-  static const filterFieldType = 'type';
+  static const String filterFieldType = 'type';
 
   /// The field name of the column containing the value to be searched
   /// when searching for a filter.
-  static const filterFieldValue = 'value';
+  static const String filterFieldValue = 'value';
 
-  static const List<PlutoFilterType> defaultFilters = [
+  static const List<PlutoFilterType> defaultFilters = <PlutoFilterType>[
     PlutoFilterTypeContains(),
     PlutoFilterTypeEquals(),
     PlutoFilterTypeStartsWith(),
@@ -41,7 +43,7 @@ class FilterHelper {
     String? filterValue,
   }) {
     return PlutoRow(
-      cells: {
+      cells: <String, PlutoCell>{
         filterFieldColumn:
             PlutoCell(value: columnField ?? filterFieldAllColumns),
         filterFieldType:
@@ -62,25 +64,37 @@ class FilterHelper {
 
     return (PlutoRow? row) {
       bool? flag;
-
-      for (var e in rows) {
-        final filterType = e!.cells[filterFieldType]!.value as PlutoFilterType?;
-
+      if (row == null) {
+        return false;
+      }
+      for (final PlutoRow? e in rows) {
+        if (e == null) {
+          continue;
+        }
+        final PlutoCell? cellValue = e.cells[filterFieldType];
+        if (cellValue == null) {
+          continue;
+        }
+        final PlutoFilterType? filterType = cellValue.value as PlutoFilterType?;
+        if (filterType == null) {
+          continue;
+        }
         if (e.cells[filterFieldColumn]!.value == filterFieldAllColumns) {
           bool? flagAllColumns;
 
-          row!.cells.forEach((key, value) {
-            var foundColumn = enabledFilterColumns!.firstWhereOrNull(
-              (element) => element.field == key,
+          row.cells.forEach((String key, PlutoCell value) {
+            final PlutoColumn? foundColumn =
+                enabledFilterColumns?.firstWhereOrNull(
+              (PlutoColumn element) => element.field == key,
             );
 
             if (foundColumn != null) {
               flagAllColumns = compareOr(
                 flagAllColumns,
                 compareByFilterType(
-                  filterType: filterType!,
+                  filterType: filterType,
                   base: value.value.toString(),
-                  search: e.cells[filterFieldValue]!.value.toString(),
+                  search: e.cells[filterFieldValue]?.value?.toString() ?? '',
                   column: foundColumn,
                 ),
               );
@@ -89,18 +103,21 @@ class FilterHelper {
 
           flag = compareAnd(flag, flagAllColumns);
         } else {
-          var foundColumn = enabledFilterColumns!.firstWhereOrNull(
-            (element) => element.field == e.cells[filterFieldColumn]!.value,
+          final PlutoColumn? foundColumn =
+              enabledFilterColumns?.firstWhereOrNull(
+            (PlutoColumn element) =>
+                element.field == e.cells[filterFieldColumn]?.value,
           );
 
           if (foundColumn != null) {
             flag = compareAnd(
               flag,
               compareByFilterType(
-                filterType: filterType!,
-                base: row!.cells[e.cells[filterFieldColumn]!.value]!.value
-                    .toString(),
-                search: e.cells[filterFieldValue]!.value.toString(),
+                filterType: filterType,
+                base: row.cells[e.cells[filterFieldColumn]?.value]?.value
+                        ?.toString() ??
+                    '',
+                search: e.cells[filterFieldValue]?.value?.toString() ?? '',
                 column: foundColumn,
               ),
             );
@@ -108,7 +125,7 @@ class FilterHelper {
         }
       }
 
-      return flag == true;
+      return flag ?? false;
     };
   }
 
@@ -129,11 +146,14 @@ class FilterHelper {
     List<PlutoRow> filterRows, {
     String allField = 'all',
   }) {
-    final map = <String, List<Map<String, String>>>{};
+    final Map<String, List<Map<String, String>>> map =
+        <String, List<Map<String, String>>>{};
 
-    if (filterRows.isEmpty) return map;
+    if (filterRows.isEmpty) {
+      return map;
+    }
 
-    for (final row in filterRows) {
+    for (final PlutoRow row in filterRows) {
       String columnField = row.cells[FilterHelper.filterFieldColumn]!.value;
 
       if (columnField == FilterHelper.filterFieldAllColumns) {
@@ -147,10 +167,10 @@ class FilterHelper {
       final filterValue = row.cells[FilterHelper.filterFieldValue]!.value;
 
       if (map.containsKey(columnField)) {
-        map[columnField]!.add({filterType: filterValue});
+        map[columnField]!.add(<String, String>{filterType: filterValue});
       } else {
-        map[columnField] = [
-          {filterType: filterValue},
+        map[columnField] = <Map<String, String>>[
+          <String, String>{filterType: filterValue},
         ];
       }
     }
@@ -171,7 +191,7 @@ class FilterHelper {
       return false;
     }
 
-    for (var row in filteredRows) {
+    for (PlutoRow? row in filteredRows) {
       if (row!.cells[filterFieldColumn]!.value == filterFieldAllColumns ||
           row.cells[filterFieldColumn]!.value == column.field) {
         return true;
@@ -218,7 +238,8 @@ class FilterHelper {
     bool compare = false;
 
     if (column.type is PlutoColumnTypeWithNumberFormat) {
-      final numberColumn = column.type as PlutoColumnTypeWithNumberFormat;
+      final PlutoColumnTypeWithNumberFormat numberColumn =
+          column.type as PlutoColumnTypeWithNumberFormat;
 
       compare = compare ||
           filterType.compare(
@@ -379,7 +400,7 @@ class FilterPopupState {
     this.height = 450,
     this.onClosed,
   })  : assert(columns.isNotEmpty),
-        _previousFilterRows = [...filterRows];
+        _previousFilterRows = <PlutoRow?>[...filterRows];
 
   PlutoGridStateManager? _stateManager;
   List<PlutoRow?> _previousFilterRows;
@@ -422,7 +443,7 @@ class FilterPopupState {
 
   void stateListener() {
     if (listEquals(_previousFilterRows, _stateManager!.rows) == false) {
-      _previousFilterRows = [..._stateManager!.rows];
+      _previousFilterRows = <PlutoRow?>[..._stateManager!.rows];
       applyFilter();
     }
   }
@@ -447,12 +468,14 @@ class FilterPopupState {
     required PlutoGridConfiguration configuration,
     required List<PlutoColumn> columns,
   }) {
-    Map<String, String> columnMap = {
+    final Map<String, String> columnMap = <String, String>{
       FilterHelper.filterFieldAllColumns:
           configuration.localeText.filterAllColumns,
     };
 
-    columns.where((element) => element.enableFilterMenuItem).forEach((element) {
+    columns
+        .where((PlutoColumn element) => element.enableFilterMenuItem)
+        .forEach((PlutoColumn element) {
       columnMap[element.field] = element.titleWithGroup;
     });
 
@@ -463,12 +486,12 @@ class FilterPopupState {
     required PlutoGridConfiguration configuration,
     required List<PlutoColumn> columns,
   }) {
-    Map<String, String> columnMap = _makeFilterColumnMap(
+    final Map<String, String> columnMap = _makeFilterColumnMap(
       configuration: configuration,
       columns: columns,
     );
 
-    return [
+    return <PlutoColumn>[
       PlutoColumn(
         title: configuration.localeText.filterColumn,
         field: FilterHelper.filterFieldColumn,
@@ -533,12 +556,12 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
+      children: <Widget>[
         Row(
-          children: [
+          children: <Widget>[
             IconButton(
               icon: const Icon(Icons.add),
               tooltip: configuration?.localeText.addFilter,
