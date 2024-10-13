@@ -94,6 +94,7 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
             columnMenuDelegate ?? const PlutoColumnMenuDelegateDefault(),
         notifierFilterResolver = notifierFilterResolver ??
             const PlutoNotifierFilterResolverDefault(),
+        columnsMap = Map.fromEntries(columns.map((e) => MapEntry(e.field, e))),
         gridKey = GlobalKey() {
     setConfiguration(configuration);
     setGridMode(mode ?? PlutoGridMode.normal);
@@ -102,6 +103,8 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
 
   @override
   final FilteredList<PlutoColumn> refColumns;
+
+  final Map<String, PlutoColumn> columnsMap;
 
   @override
   final FilteredList<PlutoColumnGroup> refColumnGroups;

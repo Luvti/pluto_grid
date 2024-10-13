@@ -131,7 +131,9 @@ class ClassYouImplemented implements PlutoFilterType {
 
   @override
   get compare => ({
+        required dynamic baseObject,
         required String? base,
+        required dynamic searchObject,
         required String? search,
         required PlutoColumn? column,
       }) {

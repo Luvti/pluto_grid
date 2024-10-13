@@ -5,6 +5,7 @@ class PlutoCell {
   PlutoCell({
     dynamic value,
     this.referenceValue,
+    this.filterValue,
     this.onChanged,
     Key? key,
   })  : _key = key ?? UniqueKey(),
@@ -16,6 +17,7 @@ class PlutoCell {
 
   /// for operation on cell, include custom render and change
   dynamic referenceValue;
+  dynamic filterValue;
 
   ///
   Function({dynamic value, dynamic referenceValue})? onChanged;
@@ -104,8 +106,7 @@ class PlutoCell {
     _value = _column!.type.applyFormat(_value);
 
     if (_column!.type is PlutoColumnTypeWithNumberFormat) {
-      _value =
-          (_column!.type as PlutoColumnTypeWithNumberFormat).toNumber(_value);
+      _value = (_column!.type as PlutoColumnTypeWithNumberFormat).toNumber(_value);
     }
 
     _needToApplyFormatOnInit = false;
