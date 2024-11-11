@@ -373,16 +373,17 @@ class _ColumnWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DragTarget<PlutoColumn>(
-      onWillAcceptWithDetails: (DragTargetDetails<PlutoColumn> details) {
-        return details.data.key != column.key &&
+      onWillAcceptWithDetails: (columnToDrag) {
+        return columnToDrag.data.key != column.key &&
             !stateManager.limitMoveColumn(
-              column: details.data,
+              column: columnToDrag.data,
               targetColumn: column,
             );
       },
-      onAcceptWithDetails: (DragTargetDetails<PlutoColumn> details) {
-        if (details.data.key != column.key) {
-          stateManager.moveColumn(column: details.data, targetColumn: column);
+      onAcceptWithDetails: (columnToMove) {
+        if (columnToMove.data.key != column.key) {
+          stateManager.moveColumn(
+              column: columnToMove.data, targetColumn: column);
         }
       },
       builder: (dragContext, candidate, rejected) {
@@ -395,9 +396,12 @@ class _ColumnWidget extends StatelessWidget {
           height: height,
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: noDragTarget
-                  ? column.backgroundColor
-                  : style.dragTargetColumnColor,
+              gradient: column.backgroundGradient, //
+              color: column.backgroundGradient == null
+                  ? (noDragTarget
+                      ? column.backgroundColor
+                      : style.dragTargetColumnColor)
+                  : null,
               border: BorderDirectional(
                 end: style.enableColumnBorderVertical
                     ? BorderSide(color: style.borderColor, width: 1.0)
@@ -410,7 +414,9 @@ class _ColumnWidget extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Row(
                   children: [
-                    if (column.enableRowChecked)
+                    if (column.enableRowChecked &&
+                        column.rowCheckBoxGroupDepth == 0 &&
+                        column.enableTitleChecked)
                       CheckboxAllSelectionWidget(stateManager: stateManager),
                     Expanded(
                       child: _ColumnTextWidget(
@@ -492,9 +498,9 @@ class CheckboxAllSelectionWidgetState
       handleOnChanged: _handleOnChanged,
       tristate: true,
       scale: 0.86,
-      unselectedColor: stateManager.configuration.style.iconColor,
-      activeColor: stateManager.configuration.style.activatedBorderColor,
-      checkColor: stateManager.configuration.style.activatedColor,
+      unselectedColor: stateManager.configuration.style.columnUnselectedColor,
+      activeColor: stateManager.configuration.style.columnActiveColor,
+      checkColor: stateManager.configuration.style.columnCheckedColor,
     );
   }
 }

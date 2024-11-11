@@ -754,7 +754,7 @@ mixin ColumnState implements IPlutoGridState {
 
     final columns = [
       PlutoColumn(
-          title: configuration.localeText.setColumnsTitle,
+          title: configuration.localeText.setColumnsTitle.toUpperCase(),
           field: titleField,
           type: PlutoColumnType.text(),
           enableRowChecked: true,

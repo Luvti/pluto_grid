@@ -45,8 +45,10 @@ class FilterHelper {
   }) {
     return PlutoRow(
       cells: <String, PlutoCell>{
-        filterFieldColumn: PlutoCell(value: columnField ?? filterFieldAllColumns),
-        filterFieldType: PlutoCell(value: filterType ?? const PlutoFilterTypeContains()),
+        filterFieldColumn:
+            PlutoCell(value: columnField ?? filterFieldAllColumns),
+        filterFieldType:
+            PlutoCell(value: filterType ?? const PlutoFilterTypeContains()),
         filterFieldValue: PlutoCell(
           value: filterValue ?? '',
           filterValue: filterValueObject,
@@ -85,7 +87,8 @@ class FilterHelper {
           bool? flagAllColumns;
 
           row.cells.forEach((String key, PlutoCell value) {
-            final PlutoColumn? foundColumn = enabledFilterColumns?.firstWhereOrNull(
+            final PlutoColumn? foundColumn =
+                enabledFilterColumns?.firstWhereOrNull(
               (PlutoColumn element) => element.field == key,
             );
 
@@ -106,8 +109,10 @@ class FilterHelper {
 
           flag = compareAnd(flag, flagAllColumns);
         } else {
-          final PlutoColumn? foundColumn = enabledFilterColumns?.firstWhereOrNull(
-            (PlutoColumn element) => element.field == e.cells[filterFieldColumn]?.value,
+          final PlutoColumn? foundColumn =
+              enabledFilterColumns?.firstWhereOrNull(
+            (PlutoColumn element) =>
+                element.field == e.cells[filterFieldColumn]?.value,
           );
 
           if (foundColumn != null) {
@@ -115,8 +120,11 @@ class FilterHelper {
               flag,
               compareByFilterType(
                 filterType: filterType,
-                base: row.cells[e.cells[filterFieldColumn]?.value]?.value?.toString() ?? '',
-                baseObject: row.cells[e.cells[filterFieldColumn]?.value]?.filterValue,
+                base: row.cells[e.cells[filterFieldColumn]?.value]?.value
+                        ?.toString() ??
+                    '',
+                baseObject:
+                    row.cells[e.cells[filterFieldColumn]?.value]?.filterValue,
                 search: e.cells[filterFieldValue]?.value?.toString() ?? '',
                 searchObject: e.cells[filterFieldValue]?.filterValue,
                 column: foundColumn,
@@ -147,7 +155,8 @@ class FilterHelper {
     List<PlutoRow> filterRows, {
     String allField = 'all',
   }) {
-    final Map<String, List<Map<String, String>>> map = <String, List<Map<String, String>>>{};
+    final Map<String, List<Map<String, String>>> map =
+        <String, List<Map<String, String>>>{};
 
     if (filterRows.isEmpty) {
       return map;
@@ -160,7 +169,9 @@ class FilterHelper {
         columnField = allField;
       }
 
-      final String filterType = (row.cells[FilterHelper.filterFieldType]!.value as PlutoFilterType).title;
+      final String filterType =
+          (row.cells[FilterHelper.filterFieldType]!.value as PlutoFilterType)
+              .title;
 
       final filterValue = row.cells[FilterHelper.filterFieldValue]!.value;
 
@@ -190,7 +201,8 @@ class FilterHelper {
     }
 
     for (PlutoRow? row in filteredRows) {
-      if (row!.cells[filterFieldColumn]!.value == filterFieldAllColumns || row.cells[filterFieldColumn]!.value == column.field) {
+      if (row!.cells[filterFieldColumn]!.value == filterFieldAllColumns ||
+          row.cells[filterFieldColumn]!.value == column.field) {
         return true;
       }
     }
@@ -237,7 +249,8 @@ class FilterHelper {
     bool compare = false;
 
     if (column.type is PlutoColumnTypeWithNumberFormat) {
-      final PlutoColumnTypeWithNumberFormat numberColumn = column.type as PlutoColumnTypeWithNumberFormat;
+      final PlutoColumnTypeWithNumberFormat numberColumn =
+          column.type as PlutoColumnTypeWithNumberFormat;
 
       compare = compare ||
           filterType.compare(
@@ -288,10 +301,14 @@ class FilterHelper {
     required String? search,
     required PlutoColumn column,
   }) {
-    if (searchObject == null || (searchObject is Set<String> && searchObject.isEmpty)) {
+    if (searchObject == null ||
+        (searchObject is Set<String> && searchObject.isEmpty)) {
       return true;
     }
-    if (searchObject != null && searchObject is Set<String> && baseObject != null && baseObject is Set<String>) {
+    if (searchObject != null &&
+        searchObject is Set<String> &&
+        baseObject != null &&
+        baseObject is Set<String>) {
       return baseObject.any((String e) => searchObject.contains(e));
     }
     return true;
@@ -506,10 +523,13 @@ class FilterPopupState {
     required List<PlutoColumn> columns,
   }) {
     final Map<String, String> columnMap = <String, String>{
-      FilterHelper.filterFieldAllColumns: configuration.localeText.filterAllColumns,
+      FilterHelper.filterFieldAllColumns:
+          configuration.localeText.filterAllColumns,
     };
 
-    columns.where((PlutoColumn element) => element.enableFilterMenuItem).forEach((PlutoColumn element) {
+    columns
+        .where((PlutoColumn element) => element.enableFilterMenuItem)
+        .forEach((PlutoColumn element) {
       columnMap[element.field] = element.titleWithGroup;
     });
 
@@ -527,7 +547,7 @@ class FilterPopupState {
 
     return <PlutoColumn>[
       PlutoColumn(
-        title: configuration.localeText.filterColumn,
+        title: configuration.localeText.filterColumn.toUpperCase(),
         field: FilterHelper.filterFieldColumn,
         type: PlutoColumnType.select(columnMap.keys.toList(growable: false)),
         enableFilterMenuItem: false,
@@ -537,7 +557,7 @@ class FilterPopupState {
         },
       ),
       PlutoColumn(
-        title: configuration.localeText.filterType,
+        title: configuration.localeText.filterType.toUpperCase(),
         field: FilterHelper.filterFieldType,
         type: PlutoColumnType.select(configuration.columnFilter.filters),
         enableFilterMenuItem: false,
@@ -547,7 +567,7 @@ class FilterPopupState {
         },
       ),
       PlutoColumn(
-        title: configuration.localeText.filterValue,
+        title: configuration.localeText.filterValue.toUpperCase(),
         field: FilterHelper.filterFieldValue,
         type: PlutoColumnType.text(),
         enableFilterMenuItem: false,
@@ -597,9 +617,13 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
         Row(
           children: <Widget>[
             IconButton(
-              icon: const Icon(Icons.add),
+              icon: Icon(
+                Icons.add,
+                size: configuration!.style.iconSize,
+                color: configuration?.style.addIconColor ??
+                    theme.colorScheme.primary,
+              ),
               tooltip: configuration?.localeText.addFilter,
-              color: configuration!.style.addIconColor ?? theme.primaryColor,
               iconSize: configuration!.style.iconSize,
               onPressed: handleAddButton,
             ),
@@ -607,9 +631,13 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
               width: configuration!.style.iconSize,
             ),
             IconButton(
-              icon: const Icon(Icons.remove),
+              icon: Icon(
+                Icons.remove,
+                size: configuration!.style.iconSize,
+                color: configuration!.style.removeIconColor ??
+                    theme.colorScheme.error,
+              ),
               tooltip: configuration?.localeText.deleteSelectedFilter,
-              color: configuration!.style.removeIconColor ?? theme.colorScheme.error,
               iconSize: configuration!.style.iconSize,
               onPressed: handleRemoveButton,
             ),
@@ -617,8 +645,14 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
               width: configuration!.style.iconSize,
             ),
             IconButton(
-              icon: const Icon(Icons.delete_forever),
-              color: configuration!.style.removeIconColor ?? theme.colorScheme.error,
+              icon: Icon(
+                Icons.delete_forever,
+                size: configuration!.style.iconSize,
+                color: configuration!.style.removeIconColor ??
+                    theme.colorScheme.error,
+              ),
+              color: configuration!.style.removeIconColor ??
+                  theme.colorScheme.error,
               iconSize: configuration!.style.iconSize,
               onPressed: handleClearButton,
               tooltip: configuration!.localeText.resetFilter,

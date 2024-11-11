@@ -1,4 +1,4 @@
-library pluto_grid_plus;
+library;
 
 export './src/helper/filter_helper.dart';
 export './src/helper/filtered_list.dart';
@@ -43,6 +43,9 @@ export './src/pluto_grid.dart';
 export './src/pluto_grid_configuration.dart';
 export './src/pluto_grid_date_picker.dart';
 export './src/pluto_grid_popup.dart';
+export './src/pluto_grid_settings.dart';
+export './src/pluto_grid_enums.dart';
+export './src/pluto_grid_events.dart';
 export './src/widgets/pluto_linked_scroll_controller.dart';
 export './src/widgets/pluto_loading.dart';
 export './src/widgets/pluto_scaled_checkbox.dart';

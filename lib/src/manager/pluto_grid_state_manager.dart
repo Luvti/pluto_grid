@@ -23,6 +23,7 @@ import 'state/row_state.dart';
 import 'state/scroll_state.dart';
 import 'state/selecting_state.dart';
 import 'state/visibility_layout_state.dart';
+import 'state/hovering_state.dart';
 
 abstract class IPlutoGridState
     implements
@@ -43,7 +44,8 @@ abstract class IPlutoGridState
         IRowState,
         IScrollState,
         ISelectingState,
-        IVisibilityLayoutState {}
+        IVisibilityLayoutState,
+        IHoveringState {}
 
 class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
     with
@@ -63,22 +65,28 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
         RowState,
         ScrollState,
         SelectingState,
-        VisibilityLayoutState {
+        VisibilityLayoutState,
+        HoveringState {
   PlutoGridStateChangeNotifier({
     required List<PlutoColumn> columns,
     required List<PlutoRow> rows,
     required this.gridFocusNode,
     required this.scroll,
     List<PlutoColumnGroup>? columnGroups,
+    this.rowWrapper,
+    this.editCellWrapper,
     this.onChanged,
     this.onSelected,
     this.onSorted,
     this.onRowChecked,
     this.onRowDoubleTap,
     this.onRowSecondaryTap,
+    this.onRowEnter,
+    this.onRowExit,
     this.onRowsMoved,
     this.onColumnsMoved,
     this.rowColorCallback,
+    this.selectDateCallback,
     this.createHeader,
     this.createFooter,
     PlutoColumnMenuDelegate? columnMenuDelegate,
@@ -100,6 +108,13 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
     setGridMode(mode ?? PlutoGridMode.normal);
     _initialize();
   }
+
+  @override
+  final Widget Function(Widget rowWidget)? rowWrapper;
+
+  @override
+  final Widget Function(Widget editCellWidget, PlutoCell cell,
+      TextEditingController controller)? editCellWrapper;
 
   @override
   final FilteredList<PlutoColumn> refColumns;
@@ -137,6 +152,12 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
   final PlutoOnRowSecondaryTapEventCallback? onRowSecondaryTap;
 
   @override
+  final PlutoOnRowEnterEventCallback? onRowEnter;
+
+  @override
+  final PlutoOnRowExitEventCallback? onRowExit;
+
+  @override
   final PlutoOnRowsMovedEventCallback? onRowsMoved;
 
   @override
@@ -150,6 +171,9 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
 
   @override
   final CreateFooterCallBack? createFooter;
+
+  @override
+  final PlutoSelectDateCallBack? selectDateCallback;
 
   @override
   final PlutoColumnMenuDelegate columnMenuDelegate;
@@ -219,6 +243,8 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
     required super.rows,
     required super.gridFocusNode,
     required super.scroll,
+    super.rowWrapper,
+    super.editCellWrapper,
     super.columnGroups,
     super.onChanged,
     super.onSelected,
@@ -226,9 +252,12 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
     super.onRowChecked,
     super.onRowDoubleTap,
     super.onRowSecondaryTap,
+    super.onRowEnter,
+    super.onRowExit,
     super.onRowsMoved,
     super.onColumnsMoved,
     super.rowColorCallback,
+    super.selectDateCallback,
     super.createHeader,
     super.createFooter,
     super.columnMenuDelegate,

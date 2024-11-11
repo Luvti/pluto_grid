@@ -9,7 +9,8 @@ class PlutoCell {
     this.onChanged,
     Key? key,
   })  : _key = key ?? UniqueKey(),
-        _value = value;
+        _value = value,
+        _originalValue = value;
 
   final Key _key;
 
@@ -21,6 +22,7 @@ class PlutoCell {
 
   ///
   Function({dynamic value, dynamic referenceValue})? onChanged;
+  final dynamic _originalValue;
 
   dynamic _valueForSorting;
 
@@ -60,6 +62,10 @@ class PlutoCell {
     }
 
     return _value;
+  }
+
+  dynamic get originalValue {
+    return _originalValue;
   }
 
   set value(dynamic changed) {
@@ -106,7 +112,8 @@ class PlutoCell {
     _value = _column!.type.applyFormat(_value);
 
     if (_column!.type is PlutoColumnTypeWithNumberFormat) {
-      _value = (_column!.type as PlutoColumnTypeWithNumberFormat).toNumber(_value);
+      _value =
+          (_column!.type as PlutoColumnTypeWithNumberFormat).toNumber(_value);
     }
 
     _needToApplyFormatOnInit = false;

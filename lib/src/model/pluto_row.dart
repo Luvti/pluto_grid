@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
-class PlutoRow {
+class PlutoRow<T> {
   PlutoRow({
     required this.cells,
     PlutoRowType? type,
     this.sortIdx = 0,
+    this.data,
     bool checked = false,
     Key? key,
   })  : type = type ?? PlutoRowTypeNormal.instance,
@@ -17,6 +18,8 @@ class PlutoRow {
 
   final Key _key;
 
+  T? data;
+
   Map<String, PlutoCell> cells;
 
   /// Value to maintain the default sort order when sorting columns.
@@ -24,6 +27,8 @@ class PlutoRow {
   int sortIdx;
 
   bool? _checked;
+
+  bool? _checkedViaSelect;
 
   PlutoRow? _parent;
 
@@ -65,6 +70,10 @@ class PlutoRow {
   /// or PlutoStateManager.toggleAllRowChecked methods.
   bool? get checked {
     return type.isGroup ? _tristateCheckedRow : _checked;
+  }
+
+  bool get checkedViaSelect {
+    return (checked ?? false) && (_checkedViaSelect ?? false);
   }
 
   bool? get _tristateCheckedRow {
@@ -119,8 +128,11 @@ class PlutoRow {
     _parent = row;
   }
 
-  void setChecked(bool? flag) {
+  void setData(T data) => this.data = data;
+
+  void setChecked(bool? flag, {bool viaSelect = false}) {
     _checked = flag;
+    _checkedViaSelect = viaSelect;
     if (type.isGroup) {
       for (final child in type.group.children) {
         child.setChecked(flag);

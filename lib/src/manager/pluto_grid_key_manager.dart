@@ -66,7 +66,8 @@ class PlutoGridKeyManager {
     final movingStream =
         _subject.stream.where((event) => event.needsThrottle).transform(
               ThrottleStreamTransformer(
-                (_) => TimerStream(_, const Duration(milliseconds: 1)),
+                // ignore: void_checks
+                (e) => TimerStream(e, const Duration(milliseconds: 1)),
               ),
             );
 

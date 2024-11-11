@@ -145,6 +145,10 @@ abstract class PlutoChangeNotifierFilterResolver {
       stateManager.clearCurrentSelecting.hashCode: 'clearCurrentSelecting',
       stateManager.toggleSelectingRow.hashCode: 'toggleSelectingRow',
       stateManager.handleAfterSelectingRow.hashCode: 'handleAfterSelectingRow',
+
+      /// hovering_state
+      stateManager.setHoveredRowIdx.hashCode: 'setHoveredRowIdx',
+      stateManager.isRowIdxHovered.hashCode: 'isRowIdxHovered',
     };
   }
 }
@@ -156,29 +160,29 @@ class PlutoNotifierFilterResolverDefault
   @override
   Set<int> resolve(PlutoGridStateManager stateManager, Type type) {
     switch (type) {
-      case PlutoGrid:
+      case const (PlutoGrid):
         return defaultGridFilter(stateManager);
-      case PlutoBodyColumns:
-      case PlutoBodyColumnsFooter:
-      case PlutoLeftFrozenColumns:
-      case PlutoLeftFrozenColumnsFooter:
-      case PlutoRightFrozenColumns:
-      case PlutoRightFrozenColumnsFooter:
+      case const (PlutoBodyColumns):
+      case const (PlutoBodyColumnsFooter):
+      case const (PlutoLeftFrozenColumns):
+      case const (PlutoLeftFrozenColumnsFooter):
+      case const (PlutoRightFrozenColumns):
+      case const (PlutoRightFrozenColumnsFooter):
         return defaultColumnsFilter(stateManager);
-      case PlutoBodyRows:
-      case PlutoLeftFrozenRows:
-      case PlutoRightFrozenRows:
+      case const (PlutoBodyRows):
+      case const (PlutoLeftFrozenRows):
+      case const (PlutoRightFrozenRows):
         return defaultRowsFilter(stateManager);
-      case PlutoNoRowsWidget:
+      case const (PlutoNoRowsWidget):
         return {
           ...defaultRowsFilter(stateManager),
           stateManager.setShowLoading.hashCode,
         };
-      case PlutoAggregateColumnFooter:
+      case const (PlutoAggregateColumnFooter):
         return defaultAggregateColumnFooterFilter(stateManager);
-      case CheckboxSelectionWidget:
+      case const (CheckboxSelectionWidget):
         return defaultCheckboxFilter(stateManager);
-      case CheckboxAllSelectionWidget:
+      case const (CheckboxAllSelectionWidget):
         return defaultCheckboxAllFilter(stateManager);
     }
 

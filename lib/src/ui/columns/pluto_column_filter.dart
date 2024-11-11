@@ -241,10 +241,10 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
   @override
   Widget build(BuildContext context) {
     final style = stateManager.style;
-    Widget child = widget.column.filterWidget ?? _textField(style);
-    if (widget.column.type is PlutoColumnTypeBool) {
-      child = _plutoColumnTypeBool();
-    }
+    // Widget child = widget.column.filterWidget ?? _textField(style);
+    // if (widget.column.type is PlutoColumnTypeBool) {
+    //   child = _plutoColumnTypeBool();
+    // }
     return SizedBox(
       height: stateManager.columnFilterHeight,
       child: DecoratedBox(
@@ -258,7 +258,35 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
         ),
         child: Padding(
           padding: _padding,
-          child: Center(child: child),
+          child: (widget.column.type is PlutoColumnTypeBool)
+              ? _plutoColumnTypeBool()
+              : // Center(child: child),
+              widget.column.filterWidget ??
+                  widget.column.filterWidgetBuilder?.call(_focusNode,
+                      _controller, _enabled, _handleOnChanged, stateManager) ??
+                  TextField(
+                    focusNode: _focusNode,
+                    controller: _controller,
+                    enabled: _enabled,
+                    style: style.cellTextStyle,
+                    onTap: _handleOnTap,
+                    onChanged: _handleOnChanged,
+                    onEditingComplete: _handleOnEditingComplete,
+                    decoration: InputDecoration(
+                      suffixIcon: widget.column.filterSuffixIcon,
+                      hintText: widget.column.filterHintText ??
+                          (_enabled ? widget.column.defaultFilter.title : ''),
+                      filled: true,
+                      hintStyle:
+                          TextStyle(color: widget.column.filterHintTextColor),
+                      fillColor: _textFieldColor,
+                      border: _border,
+                      enabledBorder: _border,
+                      disabledBorder: _disabledBorder,
+                      focusedBorder: _enabledBorder,
+                      contentPadding: const EdgeInsets.all(5),
+                    ),
+                  ),
         ),
       ),
     );
@@ -289,7 +317,7 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
         suffix: IconButton(
           icon: Icon(
             Icons.filter_alt_outlined,
-            color: stateManager.configuration.style.iconColor,
+            color: stateManager.configuration.style.filterHeaderIconColor,
             size: stateManager.configuration.style.iconSize,
           ),
           tooltip: stateManager.configuration.localeText.filter,
