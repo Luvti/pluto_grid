@@ -130,12 +130,23 @@ class PlutoRow<T> {
 
   void setData(T data) => this.data = data;
 
-  void setChecked(bool? flag, {bool viaSelect = false}) {
+  void setChecked(
+    bool? flag, {
+    bool viaSelect = false,
+    required List<PlutoRow> checkedRows,
+  }) {
     _checked = flag;
+    if (_checked ?? false) {
+      checkedRows.add(this);
+    } else {
+      checkedRows.remove(this);
+    }
+
     _checkedViaSelect = viaSelect;
+
     if (type.isGroup) {
       for (final child in type.group.children) {
-        child.setChecked(flag);
+        child.setChecked(flag, checkedRows: checkedRows);
       }
     }
   }

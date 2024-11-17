@@ -74,7 +74,7 @@ void main() {
         final row = rows[rowIdx];
 
         if (checked) {
-          row.setChecked(true);
+          row.setChecked(true, checkedRows: stateManager.checkedRows);
         }
 
         // when

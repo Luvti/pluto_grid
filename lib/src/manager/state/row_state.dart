@@ -108,10 +108,10 @@ mixin RowState implements IPlutoGridState {
   List<PlutoRow> get rows => <PlutoRow>[...refRows];
 
   @override
-  List<PlutoRow> get checkedRows =>
-      refRows.where((PlutoRow row) => row.checked!).toList(
-            growable: false,
-          );
+  List<PlutoRow> checkedRows = [];
+  // refRows.where((PlutoRow row) => row.checked!).toList(
+  //       growable: false,
+  //     );
 
   @override
   List<PlutoRow> get checkedRowsViaSelect =>
@@ -242,7 +242,8 @@ mixin RowState implements IPlutoGridState {
       return;
     }
 
-    findRow.setChecked(flag, viaSelect: checkedViaSelect);
+    findRow.setChecked(flag,
+        viaSelect: checkedViaSelect, checkedRows: checkedRows);
 
     notifyListeners(notify, setRowChecked.hashCode);
   }
@@ -466,7 +467,7 @@ mixin RowState implements IPlutoGridState {
     bool notify = true,
   }) {
     for (final PlutoRow row in iterateRowAndGroup) {
-      row.setChecked(flag == true);
+      row.setChecked(flag == true, checkedRows: checkedRows);
     }
 
     notifyListeners(notify, toggleAllRowChecked.hashCode);
