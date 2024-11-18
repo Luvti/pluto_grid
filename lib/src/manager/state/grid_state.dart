@@ -235,22 +235,19 @@ mixin GridState implements IPlutoGridState {
         break;
       case PlutoGridRowSelectionCheckBoxBehavior.singleRowCheck:
         for (var row in checkedRowsViaSelect) {
-          row.setChecked(false, checkedRows: stateManager.checkedRows);
+          row.setChecked(false);
         }
-        currentRow!.setChecked(true,
-            viaSelect: true, checkedRows: stateManager.checkedRows);
+        currentRow!.setChecked(true, viaSelect: true);
         stateManager.notifyListeners();
         break;
       case PlutoGridRowSelectionCheckBoxBehavior.toggleSingleRowCheck:
         for (var row in checkedRowsViaSelect) {
-          row.setChecked(false, checkedRows: stateManager.checkedRows);
+          row.setChecked(false);
         }
         if (checkedRowsViaSelect.contains(currentRow)) {
-          currentRow!.setChecked(false,
-              viaSelect: false, checkedRows: stateManager.checkedRows);
+          currentRow!.setChecked(false, viaSelect: false);
         } else {
-          currentRow!.setChecked(true,
-              viaSelect: true, checkedRows: stateManager.checkedRows);
+          currentRow!.setChecked(true, viaSelect: true);
         }
         stateManager.notifyListeners();
         break;
