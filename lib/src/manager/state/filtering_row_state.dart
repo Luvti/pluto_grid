@@ -110,6 +110,9 @@ mixin FilteringRowState implements IPlutoGridState {
               .isNotEmpty,
         )
         .toList();
+    final PlutoGridSetColumnFilterEvent event =
+        PlutoGridSetColumnFilterEvent(filterRows: rows);
+    onFiltered?.call(event);
   }
 
   @override

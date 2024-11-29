@@ -53,6 +53,8 @@ typedef PlutoRowColorCallback = Color Function(
 
 typedef PlutoSelectDateCallBack = Future<DateTime?> Function(
     PlutoCell dateCell, PlutoColumn column);
+typedef PlutoOnFilteredEventCallback = void Function(
+    PlutoGridSetColumnFilterEvent event);
 
 /// [PlutoGrid] is a widget that receives columns and rows and is expressed as a grid-type UI.
 ///
@@ -71,6 +73,7 @@ class PlutoGrid extends PlutoStatefulWidget {
     this.editCellWrapper,
     this.columnGroups,
     this.onLoaded,
+    this.onFiltered,
     this.onChanged,
     this.onSelected,
     this.onSorted,
@@ -160,6 +163,7 @@ class PlutoGrid extends PlutoStatefulWidget {
   /// ```
   /// {@endtemplate}
   final PlutoOnLoadedEventCallback? onLoaded;
+  final PlutoOnFilteredEventCallback? onFiltered;
 
   /// {@template pluto_grid_property_onChanged}
   /// [onChanged] is called when the cell value changes.
@@ -557,6 +561,7 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
       notifierFilterResolver: widget.notifierFilterResolver,
       configuration: widget.configuration,
       mode: widget.mode,
+      onFiltered: widget.onFiltered,
     );
 
     // Dispose

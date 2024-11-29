@@ -195,6 +195,7 @@ class PlutoDualGridState extends State<PlutoDualGrid> {
         configuration: props.configuration,
         mode: mode,
         key: props.key,
+        onFiltered: props.onFiltered,
       ),
     );
   }
@@ -514,6 +515,8 @@ class PlutoDualGridProps {
   /// {@macro pluto_grid_property_onLoaded}
   final PlutoOnLoadedEventCallback? onLoaded;
 
+  final PlutoOnFilteredEventCallback? onFiltered;
+
   /// {@macro pluto_grid_property_onChanged}
   final PlutoOnChangedEventCallback? onChanged;
 
@@ -572,6 +575,7 @@ class PlutoDualGridProps {
     required this.rows,
     this.columnGroups,
     this.onLoaded,
+    this.onFiltered,
     this.onChanged,
     this.onSorted,
     this.onRowChecked,
@@ -608,6 +612,7 @@ class PlutoDualGridProps {
     PlutoOptional<PlutoColumnMenuDelegate?>? columnMenuDelegate,
     PlutoGridConfiguration? configuration,
     PlutoOptional<PlutoGridMode?>? mode,
+    PlutoOptional<PlutoOnFilteredEventCallback?>? onFiltered,
     Key? key,
   }) {
     return PlutoDualGridProps(
@@ -643,6 +648,7 @@ class PlutoDualGridProps {
       configuration: configuration ?? this.configuration,
       mode: mode == null ? this.mode : mode.value,
       key: key ?? this.key,
+      onFiltered: onFiltered == null ? this.onFiltered : onFiltered.value,
     );
   }
 }

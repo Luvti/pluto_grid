@@ -18,6 +18,8 @@ abstract class IGridState {
 
   PlutoOnSortedEventCallback? get onSorted;
 
+  PlutoOnFilteredEventCallback? get onFiltered;
+
   PlutoOnRowCheckedEventCallback? get onRowChecked;
 
   PlutoOnRowDoubleTapEventCallback? get onRowDoubleTap;

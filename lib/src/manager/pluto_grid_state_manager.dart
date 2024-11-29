@@ -84,6 +84,7 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
     this.onRowEnter,
     this.onRowExit,
     this.onRowsMoved,
+    this.onFiltered,
     this.onColumnsMoved,
     this.rowColorCallback,
     this.selectDateCallback,
@@ -141,6 +142,9 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
 
   @override
   final PlutoOnSortedEventCallback? onSorted;
+
+  @override
+  final PlutoOnFilteredEventCallback? onFiltered;
 
   @override
   final PlutoOnRowCheckedEventCallback? onRowChecked;
@@ -264,6 +268,7 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
     super.notifierFilterResolver,
     super.configuration,
     super.mode,
+    super.onFiltered,
   });
 
   PlutoChangeNotifierFilter<T> resolveNotifierFilter<T>() {
