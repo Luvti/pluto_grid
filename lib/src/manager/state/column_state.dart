@@ -685,8 +685,8 @@ mixin ColumnState implements IPlutoGridState {
     if (sortOnlyEvent) return;
 
     compare(a, b) => column.type.compare(
-          a.cells[column.field]!.valueForSorting,
-          b.cells[column.field]!.valueForSorting,
+          a.cells[column.field]?.valueForSorting,
+          b.cells[column.field]?.valueForSorting,
         );
 
     if (enabledRowGroups) {
@@ -707,8 +707,8 @@ mixin ColumnState implements IPlutoGridState {
     if (sortOnlyEvent) return;
 
     compare(b, a) => column.type.compare(
-          a.cells[column.field]!.valueForSorting,
-          b.cells[column.field]!.valueForSorting,
+          a.cells[column.field]?.valueForSorting,
+          b.cells[column.field]?.valueForSorting,
         );
 
     if (enabledRowGroups) {
@@ -782,7 +782,7 @@ mixin ColumnState implements IPlutoGridState {
       if (event.isAll) {
         hideColumns(refColumns.originalList, event.isChecked != true);
       } else {
-        final checkedField = event.row!.cells[columnField]!.value.toString();
+        final checkedField = event.row!.cells[columnField]?.value.toString();
         final checkedColumn = refColumns.originalList.firstWhere(
           (column) => column.field == checkedField,
         );
