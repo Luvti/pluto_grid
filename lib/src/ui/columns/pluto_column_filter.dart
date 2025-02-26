@@ -286,6 +286,12 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
                       focusedBorder: _enabledBorder,
                       contentPadding: const EdgeInsets.all(5),
                     ),
+                    onSubmitted: (String value) {
+                      _handleOnChanged(value);
+                      // This gets called when the user taps the "Done" button
+                      FocusScope.of(context)
+                          .unfocus(); // This hides the keyboard
+                    },
                   ),
         ),
       ),
