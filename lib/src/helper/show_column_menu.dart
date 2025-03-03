@@ -62,7 +62,13 @@ class PlutoColumnMenuDelegateDefault
         stateManager.showSetColumnsPopup(context);
         break;
       case PlutoGridColumnMenuItem.setFilter:
-        if (!mounted) return;
+        if (!mounted) {
+          return;
+        }
+        if (stateManager.showFilterPopupCustom != null) {
+          stateManager.showFilterPopupCustom!(context, calledColumn: column);
+          break;
+        }
         stateManager.showFilterPopup(context, calledColumn: column);
         break;
       case PlutoGridColumnMenuItem.resetFilter:

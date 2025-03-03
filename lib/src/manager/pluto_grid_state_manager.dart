@@ -90,6 +90,7 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
     this.selectDateCallback,
     this.createHeader,
     this.createFooter,
+    this.showFilterPopupCustom,
     PlutoColumnMenuDelegate? columnMenuDelegate,
     PlutoChangeNotifierFilterResolver? notifierFilterResolver,
     PlutoGridConfiguration configuration = const PlutoGridConfiguration(),
@@ -187,6 +188,12 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
   @override
   final GlobalKey gridKey;
 
+  void Function(
+    BuildContext context, {
+    PlutoColumn? calledColumn,
+    void Function()? onClosed,
+  })? showFilterPopupCustom;
+
   void _initialize() {
     PlutoGridStateManager.initializeRows(
       refColumns.originalList,
@@ -269,6 +276,7 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
     super.configuration,
     super.mode,
     super.onFiltered,
+    super.showFilterPopupCustom,
   });
 
   PlutoChangeNotifierFilter<T> resolveNotifierFilter<T>() {

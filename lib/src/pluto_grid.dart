@@ -53,6 +53,7 @@ typedef PlutoRowColorCallback = Color Function(
 
 typedef PlutoSelectDateCallBack = Future<DateTime?> Function(
     PlutoCell dateCell, PlutoColumn column);
+
 typedef PlutoOnFilteredEventCallback = void Function(
     PlutoGridSetColumnFilterEvent event);
 
@@ -92,6 +93,7 @@ class PlutoGrid extends PlutoStatefulWidget {
     this.columnMenuDelegate,
     this.configuration = const PlutoGridConfiguration(),
     this.notifierFilterResolver,
+    this.showFilterPopupCustom,
     this.mode = PlutoGridMode.normal,
   });
 
@@ -334,6 +336,12 @@ class PlutoGrid extends PlutoStatefulWidget {
   /// {@endtemplate}
   final PlutoColumnMenuDelegate? columnMenuDelegate;
 
+  final void Function(
+    BuildContext context, {
+    PlutoColumn? calledColumn,
+    void Function()? onClosed,
+  })? showFilterPopupCustom;
+
   /// {@template pluto_grid_property_configuration}
   /// In [configuration], you can change the style and settings or text used in [PlutoGrid].
   /// {@endtemplate}
@@ -562,6 +570,7 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
       configuration: widget.configuration,
       mode: widget.mode,
       onFiltered: widget.onFiltered,
+      showFilterPopupCustom: widget.showFilterPopupCustom,
     );
 
     // Dispose
