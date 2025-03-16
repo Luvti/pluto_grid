@@ -27,12 +27,13 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
 
   bool _isPointMoving = false;
 
-  PlutoColumnSort _sort = PlutoColumnSort.none;
+  PlutoColumnSort? _sort;
 
   bool get showContextIcon {
+    _sort ??= widget.column.sort;
     return widget.column.enableContextMenu ||
         widget.column.enableDropToResize ||
-        !_sort.isNone;
+        !_sort!.isNone;
   }
 
   bool get enableGesture {
@@ -55,14 +56,16 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
   @override
   void initState() {
     super.initState();
+    _sort ??= widget.column.sort;
 
     updateState(PlutoNotifierEventForceUpdate.instance);
   }
 
   @override
   void updateState(PlutoNotifierEvent event) {
+    _sort ??= widget.column.sort;
     _sort = update<PlutoColumnSort>(
-      _sort,
+      _sort!,
       widget.column.sort,
     );
   }
