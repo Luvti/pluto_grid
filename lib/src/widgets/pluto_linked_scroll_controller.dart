@@ -24,9 +24,12 @@ class LinkedScrollControllerGroup {
     _offsetNotifier = _LinkedScrollControllerGroupOffsetNotifier(this);
   }
 
-  final _allControllers = <_LinkedScrollController>[];
+  final List<_LinkedScrollController> _allControllers =
+      <_LinkedScrollController>[];
 
   late _LinkedScrollControllerGroupOffsetNotifier _offsetNotifier;
+
+  bool get attached => _attachedControllers.isNotEmpty;
 
   /// The current scroll offset of the group.
   double get offset {
@@ -40,10 +43,10 @@ class LinkedScrollControllerGroup {
 
   /// Creates a new controller that is linked to any existing ones.
   ScrollController addAndGet() {
-    final initialScrollOffset = _attachedControllers.isEmpty
+    final double initialScrollOffset = _attachedControllers.isEmpty
         ? 0.0
         : _attachedControllers.first.position.pixels;
-    final controller =
+    final _LinkedScrollController controller =
         _LinkedScrollController(this, initialScrollOffset: initialScrollOffset);
     _allControllers.add(controller);
     controller.addListener(_offsetNotifier.notifyListeners);
@@ -60,8 +63,8 @@ class LinkedScrollControllerGroup {
     _offsetNotifier.removeListener(listener);
   }
 
-  Iterable<_LinkedScrollController> get _attachedControllers =>
-      _allControllers.where((controller) => controller.hasClients);
+  Iterable<_LinkedScrollController> get _attachedControllers => _allControllers
+      .where((_LinkedScrollController controller) => controller.hasClients);
 
   /// Animates the scroll position of all linked controllers to [offset].
   Future<void> animateTo(
@@ -69,8 +72,8 @@ class LinkedScrollControllerGroup {
     required Curve curve,
     required Duration duration,
   }) async {
-    final animations = <Future<void>>[];
-    for (final controller in _attachedControllers) {
+    final List<Future<void>> animations = <Future<void>>[];
+    for (final _LinkedScrollController controller in _attachedControllers) {
       animations
           .add(controller.animateTo(offset, duration: duration, curve: curve));
     }
@@ -79,7 +82,7 @@ class LinkedScrollControllerGroup {
 
   /// Jumps the scroll position of all linked controllers to [value].
   void jumpTo(double value) {
-    for (final controller in _attachedControllers) {
+    for (final _LinkedScrollController controller in _attachedControllers) {
       controller.jumpTo(value);
     }
   }
@@ -91,14 +94,14 @@ class LinkedScrollControllerGroup {
 
   /// Applies the viewportDimension of all linked controllers to [value].
   void applyViewportDimension(double value) {
-    for (final controller in _attachedControllers) {
+    for (final _LinkedScrollController controller in _attachedControllers) {
       controller.position.applyViewportDimension(value);
     }
   }
 
   /// Notifies the scroll listener of all linked controllers.
   void notifyListeners() {
-    for (final controller in _attachedControllers) {
+    for (final _LinkedScrollController controller in _attachedControllers) {
       controller.position.notifyListeners();
     }
   }
@@ -121,7 +124,7 @@ class _LinkedScrollControllerGroupOffsetNotifier extends ChangeNotifier {
 
   @override
   void notifyListeners() {
-    final currentOffset = controllerGroup.offset;
+    final double currentOffset = controllerGroup.offset;
     if (currentOffset != _cachedOffset) {
       _cachedOffset = currentOffset;
       super.notifyListeners();
@@ -178,22 +181,24 @@ class _LinkedScrollController extends ScrollController {
   _LinkedScrollPosition get position => super.position as _LinkedScrollPosition;
 
   Iterable<_LinkedScrollController> get _allPeersWithClients =>
-      _controllers._attachedControllers.where((peer) => peer != this);
+      _controllers._attachedControllers
+          .where((_LinkedScrollController peer) => peer != this);
 
   bool get canLinkWithPeers => _allPeersWithClients.isNotEmpty;
 
   Iterable<_LinkedScrollActivity> linkWithPeers(_LinkedScrollPosition driver) {
     assert(canLinkWithPeers);
     return _allPeersWithClients
-        .map((peer) => peer.link(driver))
-        .expand((e) => e);
+        .map((_LinkedScrollController peer) => peer.link(driver))
+        .expand((Iterable<_LinkedScrollActivity> e) => e);
   }
 
   Iterable<_LinkedScrollActivity> link(_LinkedScrollPosition driver) {
     assert(hasClients);
-    final activities = <_LinkedScrollActivity>[];
-    for (final position in positions) {
-      final linkedPosition = position as _LinkedScrollPosition;
+    final List<_LinkedScrollActivity> activities = <_LinkedScrollActivity>[];
+    for (final ScrollPosition position in positions) {
+      final _LinkedScrollPosition linkedPosition =
+          position as _LinkedScrollPosition;
       activities.add(linkedPosition.link(driver));
     }
     return activities;
@@ -223,7 +228,8 @@ class _LinkedScrollPosition extends ScrollPositionWithSingleContext {
   // We override hold to propagate it to all peer controllers.
   @override
   ScrollHoldController hold(VoidCallback holdCancelCallback) {
-    for (final controller in owner._allPeersWithClients) {
+    for (final _LinkedScrollController controller
+        in owner._allPeersWithClients) {
       controller.position._holdInternal();
     }
     return super.hold(holdCancelCallback);
@@ -239,7 +245,7 @@ class _LinkedScrollPosition extends ScrollPositionWithSingleContext {
     if (newActivity == null) {
       return;
     }
-    for (var activity in _peerActivities) {
+    for (_LinkedScrollActivity activity in _peerActivities) {
       activity.unlink(this);
     }
 
@@ -259,7 +265,7 @@ class _LinkedScrollPosition extends ScrollPositionWithSingleContext {
 
     if (owner.canLinkWithPeers) {
       _peerActivities.addAll(owner.linkWithPeers(this));
-      for (var activity in _peerActivities) {
+      for (_LinkedScrollActivity activity in _peerActivities) {
         activity.moveTo(newPixels);
       }
     }
@@ -282,7 +288,7 @@ class _LinkedScrollPosition extends ScrollPositionWithSingleContext {
 
     if (owner.canLinkWithPeers) {
       _peerActivities.addAll(owner.linkWithPeers(this));
-      for (var activity in _peerActivities) {
+      for (_LinkedScrollActivity activity in _peerActivities) {
         activity.jumpTo(value);
       }
     }
@@ -365,7 +371,7 @@ class _LinkedScrollActivity extends ScrollActivity {
   void _updateUserScrollDirection() {
     assert(drivers.isNotEmpty);
     ScrollDirection commonDirection = drivers.first.userScrollDirection;
-    for (var driver in drivers) {
+    for (_LinkedScrollPosition driver in drivers) {
       if (driver.userScrollDirection != commonDirection) {
         commonDirection = ScrollDirection.idle;
       }
@@ -375,7 +381,7 @@ class _LinkedScrollActivity extends ScrollActivity {
 
   @override
   void dispose() {
-    for (var driver in drivers) {
+    for (_LinkedScrollPosition driver in drivers) {
       driver.unlink(this);
     }
     super.dispose();
