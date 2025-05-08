@@ -167,17 +167,29 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
         ),
       ),
     );
-
+    Offset position = Offset.zero;
     return Stack(
-      children: [
+      children: <Widget>[
         Positioned(
           left: 0,
           right: 0,
           child: widget.column.enableColumnDrag
-              ? _DraggableWidget(
-                  stateManager: stateManager,
-                  column: widget.column,
-                  child: columnWidget,
+              ? Listener(
+                  onPointerUp: (PointerUpEvent event) {
+                    position = event.position;
+                  },
+                  child: GestureDetector(
+                    onSecondaryTap: () {
+                      if (mounted && widget.column.enableContextMenu) {
+                        _showContextMenu(context, position, null);
+                      }
+                    },
+                    child: _DraggableWidget(
+                      stateManager: stateManager,
+                      column: widget.column,
+                      child: columnWidget,
+                    ),
+                  ),
                 )
               : columnWidget,
         ),
@@ -345,6 +357,7 @@ class _SortableWidget extends StatelessWidget {
             child: GestureDetector(
               key: const ValueKey('ColumnTitleSortableGesture'),
               onTap: _onTap,
+              onDoubleTap: _onTap,
               child: child,
             ),
           )
