@@ -85,3 +85,5 @@ demo/linux/flutter/ephemeral/.plugin_symlinks/file_saver
 demo/linux/flutter/ephemeral/.plugin_symlinks/path_provider_linux
 demo/linux/flutter/ephemeral/.plugin_symlinks/printing
 demo/linux/flutter/ephemeral/.plugin_symlinks/url_launcher_linux
+example/macos/Flutter/GeneratedPluginRegistrant.swift
+example/macos/Flutter/ephemeral/
