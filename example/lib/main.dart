@@ -66,6 +66,24 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
         defaultValue: 12.23,
       ),
       formatter: (value) => value.toString(),
+      footerRenderer: (context) {
+        return PlutoAggregateColumnFooter(
+          rendererContext: context,
+          type: PlutoAggregateColumnType.average,
+          format: '#.##',
+          alignment: Alignment.center,
+          titleSpanBuilder: (text) {
+            return [
+              const TextSpan(
+                text: 'Avg',
+                style: TextStyle(color: Colors.blue),
+              ),
+              const TextSpan(text: ' : '),
+              TextSpan(text: text),
+            ];
+          },
+        );
+      },
     ),
     PlutoColumn(
       title: 'Buy',

@@ -35,6 +35,23 @@ class PlutoAggregateHelper {
     required PlutoColumn column,
     PlutoAggregateFilter? filter,
   }) {
+    if (column.type is PlutoColumnTypeWithDoubleFormat) {
+      final numberColumn = column.type as PlutoColumnTypeWithDoubleFormat;
+
+      final foundItems = filter != null
+          ? rows.where((row) => filter(row.cells[column.field]!))
+          : rows;
+
+      final Iterable<double> numbers = foundItems
+          .map(
+            (e) => e.cells[column.field]?.valueForSorting as double?,
+          )
+          .whereNotNull();
+
+      return numbers.isNotEmpty
+          ? numberColumn.toDouble(numberColumn.applyFormat(numbers.average))
+          : null;
+    }
     if (column.type is! PlutoColumnTypeWithNumberFormat ||
         !_hasColumnField(rows: rows, column: column)) {
       return 0;
