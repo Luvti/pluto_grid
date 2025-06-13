@@ -254,6 +254,7 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
     required super.rows,
     required super.gridFocusNode,
     required super.scroll,
+    this.gridStateKey,
     super.rowWrapper,
     super.editCellWrapper,
     super.columnGroups,
@@ -287,6 +288,8 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
           : null,
     );
   }
+
+  String? gridStateKey;
 
   /// It handles the necessary settings when [rows] are first set or added to the [PlutoGrid].
   ///

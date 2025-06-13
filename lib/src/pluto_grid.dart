@@ -94,6 +94,7 @@ class PlutoGrid extends PlutoStatefulWidget {
     this.configuration = const PlutoGridConfiguration(),
     this.notifierFilterResolver,
     this.showFilterPopupCustom,
+    this.gridStateKey,
     this.mode = PlutoGridMode.normal,
   });
 
@@ -367,6 +368,8 @@ class PlutoGrid extends PlutoStatefulWidget {
   /// {@macro pluto_grid_mode_popup}
   final PlutoGridMode mode;
 
+  final String? gridStateKey;
+
   /// [setDefaultLocale] sets locale when [Intl] package is used in [PlutoGrid].
   ///
   /// {@template intl_default_locale}
@@ -541,6 +544,7 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
 
   void _initStateManager() {
     _stateManager = PlutoGridStateManager(
+      gridStateKey: widget.gridStateKey,
       columns: widget.columns,
       rows: widget.rows,
       rowWrapper: widget.rowWrapper,
