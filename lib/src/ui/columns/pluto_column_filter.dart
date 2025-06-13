@@ -80,7 +80,7 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
   PlutoGridStateManager get stateManager => widget.stateManager;
 
   @override
-  initState() {
+  void initState() {
     super.initState();
 
     _focusNode = FocusNode(onKeyEvent: _handleOnKey);
@@ -95,8 +95,8 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
   }
 
   @override
-  dispose() {
-    _event.cancel();
+  void dispose() {
+    unawaited(_event.cancel());
 
     _controller.dispose();
 
@@ -298,36 +298,41 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
     );
   }
 
-  TextField _textField(PlutoGridStyleConfig style) {
-    return TextField(
-      focusNode: _focusNode,
-      controller: _controller,
-      enabled: _enabled,
-      style: style.cellTextStyle,
-      onTap: _handleOnTap,
-      onChanged: _handleOnChanged,
-      onEditingComplete: _handleOnEditingComplete,
-      textAlignVertical: TextAlignVertical.center,
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.all(5),
-        hintText: widget.column.filterHintText ??
-            (_enabled ? widget.column.defaultFilter.title : ''),
-        hintStyle: TextStyle(color: widget.column.filterHintTextColor),
-        filled: true,
-        fillColor: _textFieldColor,
-        border: _border,
-        enabledBorder: _border,
-        disabledBorder: _disabledBorder,
-        focusedBorder: _enabledBorder,
-        suffixIcon: widget.column.filterSuffixIcon,
-        suffix: IconButton(
-          icon: Icon(
-            Icons.filter_alt_outlined,
-            color: stateManager.configuration.style.filterHeaderIconColor,
-            size: stateManager.configuration.style.iconSize,
+  Widget _textField(PlutoGridStyleConfig style) {
+    return Tooltip(
+      message: widget.column.filterHintText ??
+          (_enabled ? widget.column.defaultFilter.title : ''),
+      showDuration: const Duration(milliseconds: 300),
+      child: TextField(
+        focusNode: _focusNode,
+        controller: _controller,
+        enabled: _enabled,
+        style: style.cellTextStyle,
+        onTap: _handleOnTap,
+        onChanged: _handleOnChanged,
+        onEditingComplete: _handleOnEditingComplete,
+        textAlignVertical: TextAlignVertical.center,
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.all(5),
+          hintText: widget.column.filterHintText ??
+              (_enabled ? widget.column.defaultFilter.title : ''),
+          hintStyle: TextStyle(color: widget.column.filterHintTextColor),
+          filled: true,
+          fillColor: _textFieldColor,
+          border: _border,
+          enabledBorder: _border,
+          disabledBorder: _disabledBorder,
+          focusedBorder: _enabledBorder,
+          suffixIcon: widget.column.filterSuffixIcon,
+          suffix: IconButton(
+            icon: Icon(
+              Icons.filter_alt_outlined,
+              color: stateManager.configuration.style.filterHeaderIconColor,
+              size: stateManager.configuration.style.iconSize,
+            ),
+            tooltip: stateManager.configuration.localeText.filter,
+            onPressed: _handleOnPressedFilter,
           ),
-          tooltip: stateManager.configuration.localeText.filter,
-          onPressed: _handleOnPressedFilter,
         ),
       ),
     );
