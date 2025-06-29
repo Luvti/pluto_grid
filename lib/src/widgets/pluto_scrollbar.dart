@@ -488,7 +488,7 @@ class PlutoGridCupertinoScrollbarState extends State<PlutoScrollbar>
         _currentAxis = Axis.vertical;
         _currentController = widget.verticalController;
         needUpdate = _needUpdatePainterByHover(Axis.vertical);
-        if (needUpdate) {
+        if (needUpdate && (widget.verticalController?.hasClients ?? false)) {
           metrics = FixedScrollMetrics(
             minScrollExtent:
                 widget.verticalController?.position.minScrollExtent,
@@ -507,7 +507,7 @@ class PlutoGridCupertinoScrollbarState extends State<PlutoScrollbar>
         _currentAxis = Axis.horizontal;
         _currentController = widget.horizontalController;
         needUpdate = _needUpdatePainterByHover(Axis.horizontal);
-        if (needUpdate) {
+        if (needUpdate && (widget.horizontalController?.hasClients ?? false)) {
           metrics = FixedScrollMetrics(
             minScrollExtent:
                 widget.horizontalController?.position.minScrollExtent,

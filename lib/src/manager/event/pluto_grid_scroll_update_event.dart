@@ -129,7 +129,7 @@ class PlutoGridScrollUpdateEvent extends PlutoGridEvent {
         : stateManager!.scroll.bodyRowsVertical!;
 
     // If scrolling is in progress, the previous scroll animation continues.
-    if (scroll.position.isScrollingNotifier.value) {
+    if (!scroll.hasClients || scroll.position.isScrollingNotifier.value) {
       return;
     }
 

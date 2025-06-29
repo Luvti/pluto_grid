@@ -452,12 +452,14 @@ class PlutoGridScrollController {
 
   double get maxScrollHorizontal {
     assert(_bodyRowsHorizontal != null);
+    assert(_bodyRowsHorizontal!.hasClients);
 
     return _bodyRowsHorizontal!.position.maxScrollExtent;
   }
 
   double get maxScrollVertical {
     assert(_bodyRowsVertical != null);
+    assert(_bodyRowsVertical!.hasClients);
 
     return _bodyRowsVertical!.position.maxScrollExtent;
   }

@@ -161,7 +161,9 @@ class _PlutoInfinityScrollRowsState extends State<PlutoInfinityScrollRows> {
   }
 
   void _scrollListener() {
-    if (scroll.offset == scroll.position.maxScrollExtent && !_isFetching) {
+    if (scroll.hasClients &&
+        scroll.offset == scroll.position.maxScrollExtent &&
+        !_isFetching) {
       _update(stateManager.refRows.last);
     }
   }

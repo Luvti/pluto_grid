@@ -208,6 +208,7 @@ mixin ScrollState implements IPlutoGridState {
   @override
   void updateScrollViewport() {
     if (maxWidth == null ||
+        scroll.bodyRowsHorizontal?.hasClients != true ||
         scroll.bodyRowsHorizontal?.position.hasViewportDimension != true) {
       return;
     }

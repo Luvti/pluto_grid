@@ -91,7 +91,8 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
   double get _visibleLast => _visibleFirst + _contentSize;
 
   double get _contentSize {
-    return scrollController.position.hasViewportDimension == true
+    return scrollController.hasClients &&
+            scrollController.position.hasViewportDimension == true
         ? scrollController.position.viewportDimension
         : initialViewportDimension;
   }
@@ -124,6 +125,7 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
         _visibleLast <= _previousVisibleLastX2;
 
     final bool sameMaxScrollExtent = _previousMaxScroll == _maxScrollExtent &&
+        scrollController.hasClients &&
         scrollController.position.maxScrollExtent == _maxScrollExtent;
 
     if (sameBoundScroll && sameMaxScrollExtent) {

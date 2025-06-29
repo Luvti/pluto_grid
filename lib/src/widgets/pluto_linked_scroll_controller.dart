@@ -178,7 +178,12 @@ class _LinkedScrollController extends ScrollController {
       : _controllers.offset;
 
   @override
-  _LinkedScrollPosition get position => super.position as _LinkedScrollPosition;
+  _LinkedScrollPosition get position {
+    if (!hasClients) {
+      throw StateError('ScrollController not attached to any scroll views.');
+    }
+    return super.position as _LinkedScrollPosition;
+  }
 
   Iterable<_LinkedScrollController> get _allPeersWithClients =>
       _controllers._attachedControllers
