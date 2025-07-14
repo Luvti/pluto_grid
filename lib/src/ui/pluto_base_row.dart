@@ -65,11 +65,16 @@ class PlutoBaseRow extends StatelessWidget {
       debugPrint(
         'PlutoGrid: The cell with field "${column.field}" does not exist in the row.',
       );
+      var cell = PlutoCell(
+        key: ValueKey<String>('missingCell_${column.field}'),
+      )
+        ..setColumn(column)
+        ..setRow(row);
       return PlutoVisibilityLayoutId(
         id: column.field,
         child: PlutoBaseCell(
           key: ValueKey<String>('missingCell_${column.field}'),
-          cell: PlutoCell(),
+          cell: cell,
           column: column,
           rowIdx: rowIdx,
           row: row,
