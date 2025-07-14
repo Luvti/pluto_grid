@@ -60,6 +60,23 @@ class PlutoBaseRow extends StatelessWidget {
   }
 
   PlutoVisibilityLayoutId _makeCell(PlutoColumn column) {
+    // check exist and more readable warning
+    if (!row.cells.containsKey(column.field)) {
+      debugPrint(
+        'PlutoGrid: The cell with field "${column.field}" does not exist in the row.',
+      );
+      return PlutoVisibilityLayoutId(
+        id: column.field,
+        child: PlutoBaseCell(
+          key: ValueKey<String>('missingCell_${column.field}'),
+          cell: PlutoCell(),
+          column: column,
+          rowIdx: rowIdx,
+          row: row,
+          stateManager: stateManager,
+        ),
+      );
+    }
     return PlutoVisibilityLayoutId(
       id: column.field,
       child: PlutoBaseCell(
