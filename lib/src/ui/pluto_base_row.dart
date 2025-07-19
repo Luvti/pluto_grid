@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/src/gestures/events.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 import 'package:pluto_grid_plus/src/manager/event/pluto_grid_row_hover_event.dart';
 
@@ -29,9 +30,9 @@ class PlutoBaseRow extends StatelessWidget {
     final List<PlutoRow> selectedRows =
         stateManager.currentSelectingRows.isNotEmpty
             ? stateManager.currentSelectingRows
-            : [draggingRow.data];
+            : <PlutoRow>[draggingRow.data];
 
-    final end = rowIdx + selectedRows.length;
+    final int end = rowIdx + selectedRows.length;
 
     for (int i = rowIdx; i < end; i += 1) {
       if (stateManager.refRows[i].key != selectedRows[i - rowIdx].key) {
@@ -47,9 +48,10 @@ class PlutoBaseRow extends StatelessWidget {
   }
 
   void _handleOnAccept(DragTargetDetails<PlutoRow> draggingRow) async {
-    final draggingRows = stateManager.currentSelectingRows.isNotEmpty
-        ? stateManager.currentSelectingRows
-        : [draggingRow.data];
+    final List<PlutoRow> draggingRows =
+        stateManager.currentSelectingRows.isNotEmpty
+            ? stateManager.currentSelectingRows
+            : <PlutoRow>[draggingRow.data];
 
     stateManager.eventManager!.addEvent(
       PlutoGridDragRowsEvent(
@@ -65,7 +67,7 @@ class PlutoBaseRow extends StatelessWidget {
       debugPrint(
         'PlutoGrid: The cell with field "${column.field}" does not exist in the row.',
       );
-      var cell = PlutoCell(
+      PlutoCell cell = PlutoCell(
         key: ValueKey<String>('missingCell_${column.field}'),
       )
         ..setColumn(column)
@@ -150,8 +152,8 @@ class PlutoBaseRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
-      onEnter: (event) => _handleOnEnter(),
-      onExit: (event) => _handleOnExit(),
+      onEnter: (PointerEnterEvent event) => _handleOnEnter(),
+      onExit: (PointerExitEvent event) => _handleOnExit(),
       child: DragTarget<PlutoRow>(
         onWillAcceptWithDetails: _handleOnWillAccept,
         onAcceptWithDetails: _handleOnAccept,
@@ -168,6 +170,9 @@ class _RowCellsLayoutDelegate extends MultiChildLayoutDelegate {
 
   final TextDirection textDirection;
 
+  // Cache for total width calculation
+  double? _cachedWidth;
+
   _RowCellsLayoutDelegate({
     required this.stateManager,
     required this.columns,
@@ -176,22 +181,27 @@ class _RowCellsLayoutDelegate extends MultiChildLayoutDelegate {
 
   @override
   Size getSize(BoxConstraints constraints) {
-    final double width = columns.fold(
-      0,
-      (previousValue, element) => previousValue + element.width,
-    );
+    // Since delegate is recreated when columns change (via resizingChangeNotifier),
+    // we can safely cache the width calculation
+    if (_cachedWidth == null) {
+      double width = 0;
+      for (final PlutoColumn column in columns) {
+        width += column.width;
+      }
+      _cachedWidth = width;
+    }
 
-    return Size(width, stateManager.rowHeight);
+    return Size(_cachedWidth!, stateManager.rowHeight);
   }
 
   @override
   void performLayout(Size size) {
-    final isLTR = textDirection == TextDirection.ltr;
-    final items = isLTR ? columns : columns.reversed;
+    final bool isLTR = textDirection == TextDirection.ltr;
+    final Iterable<PlutoColumn> items = isLTR ? columns : columns.reversed;
     double dx = 0;
 
-    for (var element in items) {
-      var width = element.width;
+    for (PlutoColumn element in items) {
+      double width = element.width;
 
       if (hasChild(element.field)) {
         layoutChild(
@@ -339,11 +349,11 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
 
     final bool isCheckedRow = widget.row.checked == true;
 
-    final alreadyTarget = stateManager.dragRows
-            .firstWhereOrNull((element) => element.key == widget.row.key) !=
+    final bool alreadyTarget = stateManager.dragRows.firstWhereOrNull(
+            (PlutoRow element) => element.key == widget.row.key) !=
         null;
 
-    final isDraggingRow = stateManager.isDraggingRow;
+    final bool isDraggingRow = stateManager.isDraggingRow;
 
     final bool isDragTarget = isDraggingRow &&
         !alreadyTarget &&
