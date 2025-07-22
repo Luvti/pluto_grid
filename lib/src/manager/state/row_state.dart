@@ -1,3 +1,5 @@
+// ignore_for_file: always_specify_types
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
@@ -109,7 +111,7 @@ mixin RowState implements IPlutoGridState {
 
   @override
   List<PlutoRow> get checkedRows =>
-      refRows.where((PlutoRow row) => row.checked!).toList(
+      refRows.where((PlutoRow row) => row.checked ?? false).toList(
             growable: false,
           );
 
@@ -119,17 +121,22 @@ mixin RowState implements IPlutoGridState {
 
   @override
   List<PlutoRow> get unCheckedRows =>
-      refRows.where((PlutoRow row) => !row.checked!).toList(
+      refRows.where((PlutoRow row) => !(row.checked ?? false)).toList(
             growable: false,
           );
 
   @override
   bool get hasCheckedRow =>
-      refRows.firstWhereOrNull((PlutoRow element) => element.checked!) != null;
+      refRows
+          .firstWhereOrNull((PlutoRow element) => element.checked ?? false) !=
+      null;
 
   @override
   bool get hasUnCheckedRow =>
-      refRows.firstWhereOrNull((PlutoRow element) => !element.checked!) != null;
+      refRows.firstWhereOrNull(
+        (PlutoRow element) => !(element.checked ?? false),
+      ) !=
+      null;
 
   @override
   bool? get tristateCheckedRow {
@@ -379,7 +386,8 @@ mixin RowState implements IPlutoGridState {
       removeRowAndGroupByKey(removeKeys);
     } else {
       refRows.removeWhereFromOriginal(
-          (PlutoRow row) => removeKeys.contains(row.key));
+        (PlutoRow row) => removeKeys.contains(row.key),
+      );
     }
 
     updateCurrentCellPosition(notify: false);
@@ -451,10 +459,12 @@ mixin RowState implements IPlutoGridState {
     updateCurrentCellPosition(notify: false);
 
     if (onRowsMoved != null) {
-      onRowsMoved!(PlutoGridOnRowsMovedEvent(
-        idx: indexToMove,
-        rows: rows,
-      ));
+      onRowsMoved!(
+        PlutoGridOnRowsMovedEvent(
+          idx: indexToMove,
+          rows: rows,
+        ),
+      );
     }
 
     notifyListeners(notify, moveRowsByIndex.hashCode);
