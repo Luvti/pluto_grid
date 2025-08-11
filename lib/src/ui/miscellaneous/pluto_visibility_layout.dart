@@ -101,10 +101,14 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
     return _maxSize - _contentSize;
   }
 
-  double get _maxSize => _widgetChildren.isNotEmpty
-      ? (_widgetChildren.last.layoutChild.startPosition +
-          _widgetChildren.last.layoutChild.width)
-      : 0;
+  double get _maxSize {
+    if (_widgetChildren.isEmpty) {
+      return 0;
+    }
+    final PlutoVisibilityLayoutId lastChild = _widgetChildren.last;
+
+    return lastChild.layoutChild.startPosition + lastChild.layoutChild.width;
+  }
 
   double _previousMaxScroll = 0;
 
@@ -173,6 +177,18 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
   void performRebuild() {
     super.performRebuild();
 
+    // Safety check to prevent crashes with empty widget children
+    if (_widgetChildren.isEmpty) {
+      _children = updateChildren(
+        _children,
+        <Widget>[],
+        forgottenChildren: _forgottenChildren,
+        slots: <IndexedSlot>[],
+      );
+      _forgottenChildren.clear();
+      return;
+    }
+
     final visibleWidgets = <Widget>[];
     final slots = <IndexedSlot>[];
 
@@ -237,6 +253,12 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
 
     scrollController.addListener(scrollListener);
 
+    // Safety check to prevent crashes with empty widget children
+    if (_widgetChildren.isEmpty) {
+      _children = <Element>[];
+      return;
+    }
+
     final List<Element> children = List<Element>.filled(
       _widgetChildren.length,
       _NullElement.instance,
@@ -286,6 +308,17 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
       widget,
       _widgetChildren,
     ));
+
+    // Safety check to prevent crashes with empty widget children
+    if (_widgetChildren.isEmpty) {
+      _children = updateChildren(
+        _children,
+        <Widget>[],
+        forgottenChildren: _forgottenChildren,
+      );
+      _forgottenChildren.clear();
+      return;
+    }
 
     final List<Widget> visibleWidgets = [];
     double startOffset = 0;
