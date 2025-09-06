@@ -110,7 +110,7 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
 
     if (!_isPointMoving) return;
 
-    final moveOffset = event.position.dx - _columnRightPosition.dx;
+    final double moveOffset = event.position.dx - _columnRightPosition.dx;
 
     final bool isLTR = stateManager.isLTR;
 
@@ -131,9 +131,9 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
 
   @override
   Widget build(BuildContext context) {
-    final style = stateManager.configuration.style;
+    final PlutoGridStyleConfig style = stateManager.configuration.style;
 
-    final columnWidget = _SortableWidget(
+    final _SortableWidget columnWidget = _SortableWidget(
       stateManager: stateManager,
       column: widget.column,
       child: _ColumnWidget(
@@ -143,9 +143,9 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
       ),
     );
 
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
-    final contextMenuIcon = SizedBox(
+    final SizedBox contextMenuIcon = SizedBox(
       height: widget.height,
       child: Align(
         alignment: Alignment.center,
@@ -317,7 +317,8 @@ class _DraggableWidget extends StatelessWidget {
             borderColor: stateManager.configuration.style.gridBorderColor,
             child: Text(
               column.title,
-              style: stateManager.configuration.style.columnTextStyle.copyWith(
+              style: stateManager.configuration.style.columnHeaderTextStyle
+                  ?.copyWith(
                 fontSize: 12,
               ),
               overflow: TextOverflow.ellipsis,
@@ -389,23 +390,24 @@ class _ColumnWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DragTarget<PlutoColumn>(
-      onWillAcceptWithDetails: (columnToDrag) {
+      onWillAcceptWithDetails: (DragTargetDetails<PlutoColumn> columnToDrag) {
         return columnToDrag.data.key != column.key &&
             !stateManager.limitMoveColumn(
               column: columnToDrag.data,
               targetColumn: column,
             );
       },
-      onAcceptWithDetails: (columnToMove) {
+      onAcceptWithDetails: (DragTargetDetails<PlutoColumn> columnToMove) {
         if (columnToMove.data.key != column.key) {
           stateManager.moveColumn(
               column: columnToMove.data, targetColumn: column);
         }
       },
-      builder: (dragContext, candidate, rejected) {
+      builder: (BuildContext dragContext, List<PlutoColumn?> candidate,
+          List rejected) {
         final bool noDragTarget = candidate.isEmpty;
 
-        final style = stateManager.style;
+        final PlutoGridStyleConfig style = stateManager.style;
 
         return SizedBox(
           width: column.width,
@@ -429,7 +431,7 @@ class _ColumnWidget extends StatelessWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Row(
-                  children: [
+                  children: <Widget>[
                     if (column.enableRowChecked &&
                         column.rowCheckBoxGroupDepth == 0 &&
                         column.enableTitleChecked)
@@ -562,21 +564,22 @@ class _ColumnTextWidgetState extends PlutoStateWithChange<_ColumnTextWidget> {
   String? get _title =>
       widget.column.titleSpan == null ? widget.column.title : null;
 
-  List<InlineSpan> get _children => [
+  List<InlineSpan> get _children => <InlineSpan>[
         if (widget.column.titleSpan != null) widget.column.titleSpan!,
       ];
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: [
+      children: <Widget>[
         Flexible(
           child: Text.rich(
             TextSpan(
               text: _title,
               children: _children,
+              style: stateManager.configuration.style.columnHeaderTextStyle,
             ),
-            style: stateManager.configuration.style.columnTextStyle,
+            style: stateManager.configuration.style.columnHeaderTextStyle,
             overflow: TextOverflow.ellipsis,
             softWrap: true,
             maxLines: 2,

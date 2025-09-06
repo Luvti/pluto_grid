@@ -105,7 +105,7 @@ class _ColumnGroupTitle extends StatelessWidget {
   String? get _title =>
       columnGroup.group.titleSpan == null ? columnGroup.group.title : null;
 
-  List<InlineSpan>? get _children => [
+  List<InlineSpan> get _children => [
         if (columnGroup.group.titleSpan != null) columnGroup.group.titleSpan!,
       ];
 
@@ -143,9 +143,10 @@ class _ColumnGroupTitle extends StatelessWidget {
             child: Text.rich(
               TextSpan(
                 text: _title,
+                style: style.columnHeaderTextStyle,
                 children: _children,
               ),
-              style: style.columnTextStyle,
+              style: style.columnHeaderTextStyle,
               overflow: TextOverflow.ellipsis,
               softWrap: false,
               maxLines: 1,

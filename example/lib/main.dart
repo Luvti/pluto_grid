@@ -269,7 +269,21 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
                 onChanged: (PlutoGridOnChangedEvent event) {
                   print(event);
                 },
-                configuration: const PlutoGridConfiguration(
+                configuration: PlutoGridConfiguration(
+                  style: PlutoGridStyleConfig(
+                    columnHeaderTextStyle: Theme.of(context)
+                        .textTheme
+                        .bodyMedium!
+                        .copyWith(color: Colors.blue),
+                    filterHintTextStyle: Theme.of(context)
+                        .textTheme
+                        .bodySmall!
+                        .copyWith(color: Colors.red),
+                    filterTextStyle: Theme.of(context)
+                        .textTheme
+                        .bodySmall!
+                        .copyWith(color: Colors.green),
+                  ),
                   columnFilter: PlutoGridColumnFilterConfig(
                     filters: [
                       PlutoFilterTypeContains(),

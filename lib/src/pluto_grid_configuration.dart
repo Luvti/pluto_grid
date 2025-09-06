@@ -287,6 +287,11 @@ class PlutoGridStyleConfig {
     this.gridBorderWidth = PlutoGridSettings.gridBorderWidth,
     this.filterHeaderColor,
     this.filterHeaderIconColor,
+    //
+    this.columnHeaderTextStyle,
+    this.filterTextStyle,
+    this.filterHintTextStyle,
+    //
   })  : columnCheckedColor = (columnCheckedColor ?? activatedColor),
         cellCheckedColor = (cellCheckedColor ?? activatedColor),
         columnUnselectedColor = (columnUnselectedColor ?? iconColor),
@@ -364,6 +369,11 @@ class PlutoGridStyleConfig {
     this.removeIconColor,
     this.filterHeaderColor,
     this.filterHeaderIconColor,
+    //
+    this.columnHeaderTextStyle,
+    this.filterTextStyle,
+    this.filterHintTextStyle,
+//
     this.gridPadding = PlutoGridSettings.gridPadding,
     this.gridBorderWidth = PlutoGridSettings.gridBorderWidth,
   })  : columnCheckedColor = (columnCheckedColor ?? activatedColor),
@@ -501,6 +511,7 @@ class PlutoGridStyleConfig {
 
   /// Column - text style
   final TextStyle columnTextStyle;
+  final TextStyle? columnHeaderTextStyle;
 
   /// Unselected color of the column.
   final Color columnUnselectedColor;
@@ -516,6 +527,8 @@ class PlutoGridStyleConfig {
 
   /// Cell - text style
   final TextStyle cellTextStyle;
+  final TextStyle? filterTextStyle;
+  final TextStyle? filterHintTextStyle;
 
   /// Cell - text style
   final TextStyle tooltipTextStyle;

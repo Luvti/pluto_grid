@@ -268,7 +268,7 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
                     focusNode: _focusNode,
                     controller: _controller,
                     enabled: _enabled,
-                    style: style.cellTextStyle,
+                    style: style.filterTextStyle,
                     onTap: _handleOnTap,
                     onChanged: _handleOnChanged,
                     onEditingComplete: _handleOnEditingComplete,
@@ -277,7 +277,7 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
                       hintText: widget.column.filterHintText ??
                           (_enabled ? widget.column.defaultFilter.title : ''),
                       filled: true,
-                      hintStyle:
+                      hintStyle: style.filterHintTextStyle ??
                           TextStyle(color: widget.column.filterHintTextColor),
                       fillColor: _textFieldColor,
                       border: _border,
