@@ -59,6 +59,12 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       type: PlutoColumnType.number(defaultValue: 11.1, format: '#.##'),
     ),
     PlutoColumn(
+      title: 'set',
+      field: 'set',
+      defaultFilter: const PlutoFilterTypeContainsSet(),
+      type: PlutoColumnType.text(),
+    ),
+    PlutoColumn(
       title: 'Age double',
       field: 'age_double',
       defaultFilter: const PlutoFilterTypeGreaterThan(),
@@ -158,6 +164,7 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       cells: {
         'id': PlutoCell(value: 'user1'),
         'name': PlutoCell(value: 'Mike'),
+        'set': PlutoCell(value: 'set1', filterValue: {'1', '2', '3', '4'}),
         'age': PlutoCell(value: 0.20),
         'age_double': PlutoCell(value: 10),
         'buy': PlutoCell(value: false),
@@ -172,6 +179,7 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       cells: {
         'id': PlutoCell(value: 'user2'),
         'name': PlutoCell(value: 'Jack'),
+        'set': PlutoCell(value: 'set2', filterValue: {'5', '6', '7', '8'}),
         'age': PlutoCell(value: 2.0),
         'age_double': PlutoCell(value: 0.9),
         'buy': PlutoCell(value: true),
@@ -186,6 +194,7 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       cells: {
         'id': PlutoCell(value: 'user3'),
         'name': PlutoCell(value: 'Suzi'),
+        'set': PlutoCell(value: 'set3', filterValue: {'9', '10', '11', '12'}),
         'age': PlutoCell(value: 2.1),
         'age_double': PlutoCell(value: 0.39),
         'buy': PlutoCell(value: null),

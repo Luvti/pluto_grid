@@ -301,15 +301,25 @@ class FilterHelper {
     required String? search,
     required PlutoColumn column,
   }) {
-    if (searchObject == null ||
-        (searchObject is Set<String> && searchObject.isEmpty)) {
+    Set<String>? searchSet;
+    if (searchObject != null && searchObject is Set<String>) {
+      searchSet = searchObject;
+    }
+    if (searchSet == null && search != null && search.isNotEmpty) {
+      searchSet = search
+          .split(RegExp('[;,]'))
+          .map((String e) => e.trim().replaceAll('{', '').replaceAll('}', ''))
+          .where((String e) => e.isNotEmpty)
+          .toSet();
+      if (searchSet.isEmpty) {
+        searchSet = <String>{search};
+      }
+    }
+    if (searchSet == null || (searchSet.isEmpty)) {
       return true;
     }
-    if (searchObject != null &&
-        searchObject is Set<String> &&
-        baseObject != null &&
-        baseObject is Set<String>) {
-      return baseObject.any((String e) => searchObject.contains(e));
+    if (baseObject != null && baseObject is Set<String>) {
+      return baseObject.any((String e) => searchSet!.contains(e));
     }
     return true;
   }
