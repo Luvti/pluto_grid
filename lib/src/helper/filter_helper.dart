@@ -321,6 +321,9 @@ class FilterHelper {
     if (baseObject != null && baseObject is Set<String>) {
       return baseObject.any((String e) => searchSet!.contains(e));
     }
+    if (baseObject != null && baseObject is Set<String?>) {
+      return baseObject.any((String? e) => e != null && searchSet!.contains(e));
+    }
     return true;
   }
 
