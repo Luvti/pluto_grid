@@ -5,9 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
-typedef SetFilterPopupHandler = void Function(
-  PlutoGridStateManager? stateManager,
-);
+typedef SetFilterPopupHandler =
+    void Function(PlutoGridStateManager? stateManager);
 
 class FilterHelper {
   /// A value to identify all column searches when searching filters.
@@ -34,6 +33,8 @@ class FilterHelper {
     PlutoFilterTypeGreaterThanOrEqualTo(),
     PlutoFilterTypeLessThan(),
     PlutoFilterTypeLessThanOrEqualTo(),
+    PlutoFilterTypeIsEmpty(),
+    PlutoFilterTypeIsNotEmpty(),
   ];
 
   /// Create a row to contain filter information.
@@ -45,10 +46,12 @@ class FilterHelper {
   }) {
     return PlutoRow(
       cells: <String, PlutoCell>{
-        filterFieldColumn:
-            PlutoCell(value: columnField ?? filterFieldAllColumns),
-        filterFieldType:
-            PlutoCell(value: filterType ?? const PlutoFilterTypeContains()),
+        filterFieldColumn: PlutoCell(
+          value: columnField ?? filterFieldAllColumns,
+        ),
+        filterFieldType: PlutoCell(
+          value: filterType ?? const PlutoFilterTypeContains(),
+        ),
         filterFieldValue: PlutoCell(
           value: filterValue ?? '',
           filterValue: filterValueObject,
@@ -87,10 +90,10 @@ class FilterHelper {
           bool? flagAllColumns;
 
           row.cells.forEach((String key, PlutoCell value) {
-            final PlutoColumn? foundColumn =
-                enabledFilterColumns?.firstWhereOrNull(
-              (PlutoColumn element) => element.field == key,
-            );
+            final PlutoColumn? foundColumn = enabledFilterColumns
+                ?.firstWhereOrNull(
+                  (PlutoColumn element) => element.field == key,
+                );
 
             if (foundColumn != null) {
               flagAllColumns = compareOr(
@@ -109,18 +112,19 @@ class FilterHelper {
 
           flag = compareAnd(flag, flagAllColumns);
         } else {
-          final PlutoColumn? foundColumn =
-              enabledFilterColumns?.firstWhereOrNull(
-            (PlutoColumn element) =>
-                element.field == e.cells[filterFieldColumn]?.value,
-          );
+          final PlutoColumn? foundColumn = enabledFilterColumns
+              ?.firstWhereOrNull(
+                (PlutoColumn element) =>
+                    element.field == e.cells[filterFieldColumn]?.value,
+              );
 
           if (foundColumn != null) {
             flag = compareAnd(
               flag,
               compareByFilterType(
                 filterType: filterType,
-                base: row.cells[e.cells[filterFieldColumn]?.value]?.value
+                base:
+                    row.cells[e.cells[filterFieldColumn]?.value]?.value
                         ?.toString() ??
                     '',
                 baseObject:
@@ -252,7 +256,8 @@ class FilterHelper {
       final PlutoColumnTypeWithNumberFormat numberColumn =
           column.type as PlutoColumnTypeWithNumberFormat;
 
-      compare = compare ||
+      compare =
+          compare ||
           filterType.compare(
             base: numberColumn.applyFormat(base),
             search: search,
@@ -285,13 +290,18 @@ class FilterHelper {
     required String? search,
     required PlutoColumn column,
   }) {
-    // if (filterValue != null && filterValue is Set<String>) {
-    //   return filterValue.contains(search);
-    // }
-    return _compareWithRegExp(
-      RegExp.escape(search!),
-      base!,
-    );
+    return _compareWithRegExp(RegExp.escape(search!), base!);
+  }
+
+  /// Whether [search] is not contains in [base].
+  static bool compareNotContains({
+    required dynamic baseObject,
+    required String? base,
+    required dynamic searchObject,
+    required String? search,
+    required PlutoColumn column,
+  }) {
+    return !_compareWithRegExp(RegExp.escape(search!), base!);
   }
 
   static bool compareContainsSet({
@@ -325,6 +335,67 @@ class FilterHelper {
       return baseObject.any((String? e) => e != null && searchSet!.contains(e));
     }
     return true;
+  }
+
+  static bool compareNotContainsSet({
+    required dynamic baseObject,
+    required String? base,
+    required dynamic searchObject,
+    required String? search,
+    required PlutoColumn column,
+  }) {
+    Set<String>? searchSet;
+    if (searchObject != null && searchObject is Set<String>) {
+      searchSet = searchObject;
+    }
+    if (searchSet == null && search != null && search.isNotEmpty) {
+      searchSet = search
+          .split(RegExp('[;,]'))
+          .map((String e) => e.trim().replaceAll('{', '').replaceAll('}', ''))
+          .where((String e) => e.isNotEmpty)
+          .toSet();
+      if (searchSet.isEmpty) {
+        searchSet = <String>{search};
+      }
+    }
+    if (searchSet == null || (searchSet.isEmpty)) {
+      return true;
+    }
+    if (baseObject != null && baseObject is Set<String>) {
+      return !baseObject.any((String e) => searchSet!.contains(e));
+    }
+    if (baseObject != null && baseObject is Set<String?>) {
+      return !baseObject.any(
+        (String? e) => e != null && searchSet!.contains(e),
+      );
+    }
+    return true;
+  }
+
+  static bool compareIsEmptySet({
+    required dynamic baseObject,
+    required String? base,
+    required dynamic searchObject,
+    required String? search,
+    required PlutoColumn column,
+  }) {
+    if (baseObject != null && baseObject is Set) {
+      return baseObject.isEmpty;
+    }
+    return base == null || base.isEmpty;
+  }
+
+  static bool compareIsNotEmptySet({
+    required dynamic baseObject,
+    required String? base,
+    required dynamic searchObject,
+    required String? search,
+    required PlutoColumn column,
+  }) {
+    if (baseObject != null && baseObject is Set) {
+      return baseObject.isNotEmpty;
+    }
+    return base != null && base.isNotEmpty;
   }
 
   /// Whether [search] is equals to [base].
@@ -417,10 +488,27 @@ class FilterHelper {
     String value, {
     bool caseSensitive = false,
   }) {
-    return RegExp(
-      pattern,
-      caseSensitive: caseSensitive,
-    ).hasMatch(value);
+    return RegExp(pattern, caseSensitive: caseSensitive).hasMatch(value);
+  }
+
+  static bool compareIsEmpty({
+    required dynamic baseObject,
+    required String? base,
+    required dynamic searchObject,
+    required String? search,
+    required PlutoColumn column,
+  }) {
+    return base == null || base.isEmpty;
+  }
+
+  static bool compareIsNotEmpty({
+    required dynamic baseObject,
+    required String? base,
+    required dynamic searchObject,
+    required String? search,
+    required PlutoColumn column,
+  }) {
+    return base != null && base.isNotEmpty;
   }
 }
 
@@ -466,8 +554,8 @@ class FilterPopupState {
     this.width = 600,
     this.height = 450,
     this.onClosed,
-  })  : assert(columns.isNotEmpty),
-        _previousFilterRows = <PlutoRow?>[...filterRows];
+  }) : assert(columns.isNotEmpty),
+       _previousFilterRows = <PlutoRow?>[...filterRows];
 
   PlutoGridStateManager? _stateManager;
   List<PlutoRow?> _previousFilterRows;
@@ -543,8 +631,8 @@ class FilterPopupState {
     columns
         .where((PlutoColumn element) => element.enableFilterMenuItem)
         .forEach((PlutoColumn element) {
-      columnMap[element.field] = element.titleWithGroup;
-    });
+          columnMap[element.field] = element.titleWithGroup;
+        });
 
     return columnMap;
   }
@@ -633,38 +721,38 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
               icon: Icon(
                 Icons.add,
                 size: configuration!.style.iconSize,
-                color: configuration?.style.addIconColor ??
+                color:
+                    configuration?.style.addIconColor ??
                     theme.colorScheme.primary,
               ),
               tooltip: configuration?.localeText.addFilter,
               iconSize: configuration!.style.iconSize,
               onPressed: handleAddButton,
             ),
-            SizedBox(
-              width: configuration!.style.iconSize,
-            ),
+            SizedBox(width: configuration!.style.iconSize),
             IconButton(
               icon: Icon(
                 Icons.remove,
                 size: configuration!.style.iconSize,
-                color: configuration!.style.removeIconColor ??
+                color:
+                    configuration!.style.removeIconColor ??
                     theme.colorScheme.error,
               ),
               tooltip: configuration?.localeText.deleteSelectedFilter,
               iconSize: configuration!.style.iconSize,
               onPressed: handleRemoveButton,
             ),
-            SizedBox(
-              width: configuration!.style.iconSize,
-            ),
+            SizedBox(width: configuration!.style.iconSize),
             IconButton(
               icon: Icon(
                 Icons.delete_forever,
                 size: configuration!.style.iconSize,
-                color: configuration!.style.removeIconColor ??
+                color:
+                    configuration!.style.removeIconColor ??
                     theme.colorScheme.error,
               ),
-              color: configuration!.style.removeIconColor ??
+              color:
+                  configuration!.style.removeIconColor ??
                   theme.colorScheme.error,
               iconSize: configuration!.style.iconSize,
               onPressed: handleClearButton,
@@ -688,14 +776,15 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
 
 /// [base] is the cell values of the column on which the search is based.
 /// [search] is the value entered by the user to search.
-typedef PlutoCompareFunction = bool Function({
-  required dynamic baseObject,
-  required String? base,
-  required dynamic searchObject,
-  required String? search,
-  // required dynamic? searchObject,
-  required PlutoColumn column,
-});
+typedef PlutoCompareFunction =
+    bool Function({
+      required dynamic baseObject,
+      required String? base,
+      required dynamic searchObject,
+      required String? search,
+      // required dynamic? searchObject,
+      required PlutoColumn column,
+    });
 
 abstract class PlutoFilterType {
   String get title => throw UnimplementedError();
@@ -715,6 +804,18 @@ class PlutoFilterTypeContains implements PlutoFilterType {
   const PlutoFilterTypeContains();
 }
 
+class PlutoFilterTypeNotContains implements PlutoFilterType {
+  static String name = 'Not contains';
+
+  @override
+  String get title => PlutoFilterTypeNotContains.name;
+
+  @override
+  PlutoCompareFunction get compare => FilterHelper.compareNotContainsSet;
+
+  const PlutoFilterTypeNotContains();
+}
+
 class PlutoFilterTypeContainsSet implements PlutoFilterType {
   static String name = 'Contains';
 
@@ -725,6 +826,18 @@ class PlutoFilterTypeContainsSet implements PlutoFilterType {
   PlutoCompareFunction get compare => FilterHelper.compareContainsSet;
 
   const PlutoFilterTypeContainsSet();
+}
+
+class PlutoFilterTypeNotContainsSet implements PlutoFilterType {
+  static String name = 'Not contains';
+
+  @override
+  String get title => PlutoFilterTypeNotContainsSet.name;
+
+  @override
+  PlutoCompareFunction get compare => FilterHelper.compareNotContainsSet;
+
+  const PlutoFilterTypeNotContainsSet();
 }
 
 class PlutoFilterTypeEquals implements PlutoFilterType {
@@ -809,4 +922,52 @@ class PlutoFilterTypeLessThanOrEqualTo implements PlutoFilterType {
   PlutoCompareFunction get compare => FilterHelper.compareLessThanOrEqualTo;
 
   const PlutoFilterTypeLessThanOrEqualTo();
+}
+
+class PlutoFilterTypeIsEmpty implements PlutoFilterType {
+  static String name = 'Is empty';
+
+  @override
+  String get title => PlutoFilterTypeIsEmpty.name;
+
+  @override
+  PlutoCompareFunction get compare => FilterHelper.compareIsEmpty;
+
+  const PlutoFilterTypeIsEmpty();
+}
+
+class PlutoFilterTypeIsEmptySet implements PlutoFilterType {
+  static String name = 'Is empty';
+
+  @override
+  String get title => PlutoFilterTypeIsEmptySet.name;
+
+  @override
+  PlutoCompareFunction get compare => FilterHelper.compareIsEmptySet;
+
+  const PlutoFilterTypeIsEmptySet();
+}
+
+class PlutoFilterTypeIsNotEmpty implements PlutoFilterType {
+  static String name = 'Is not empty';
+
+  @override
+  String get title => PlutoFilterTypeIsNotEmpty.name;
+
+  @override
+  PlutoCompareFunction get compare => FilterHelper.compareIsNotEmpty;
+
+  const PlutoFilterTypeIsNotEmpty();
+}
+
+class PlutoFilterTypeIsNotEmptySet implements PlutoFilterType {
+  static String name = 'Is not empty';
+
+  @override
+  String get title => PlutoFilterTypeIsNotEmptySet.name;
+
+  @override
+  PlutoCompareFunction get compare => FilterHelper.compareIsNotEmptySet;
+
+  const PlutoFilterTypeIsNotEmptySet();
 }

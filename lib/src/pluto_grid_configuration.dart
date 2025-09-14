@@ -123,6 +123,9 @@ class PlutoGridConfiguration {
 
   void updateLocale() {
     PlutoFilterTypeContains.name = localeText.filterContains;
+    PlutoFilterTypeContainsSet.name = localeText.filterContains;
+    PlutoFilterTypeNotContains.name = localeText.filterNotContains;
+    PlutoFilterTypeNotContainsSet.name = localeText.filterNotContains;
     PlutoFilterTypeEquals.name = localeText.filterEquals;
     PlutoFilterTypeStartsWith.name = localeText.filterStartsWith;
     PlutoFilterTypeEndsWith.name = localeText.filterEndsWith;
@@ -131,6 +134,10 @@ class PlutoGridConfiguration {
         localeText.filterGreaterThanOrEqualTo;
     PlutoFilterTypeLessThan.name = localeText.filterLessThan;
     PlutoFilterTypeLessThanOrEqualTo.name = localeText.filterLessThanOrEqualTo;
+    PlutoFilterTypeIsEmpty.name = localeText.filterIsEmpty;
+    PlutoFilterTypeIsEmptySet.name = localeText.filterIsEmpty;
+    PlutoFilterTypeIsNotEmpty.name = localeText.filterIsNotEmpty;
+    PlutoFilterTypeIsNotEmptySet.name = localeText.filterIsNotEmpty;
   }
 
   /// Fired when setConfiguration is called in [PlutoGridStateManager]'s constructor.
@@ -146,9 +153,7 @@ class PlutoGridConfiguration {
       if (column.defaultFilterNullable != null) {
         continue;
       }
-      column.setDefaultFilter(
-        columnFilter.getDefaultColumnFilter(column),
-      );
+      column.setDefaultFilter(columnFilter.getDefaultColumnFilter(column));
     }
   }
 
@@ -201,17 +206,17 @@ class PlutoGridConfiguration {
 
   @override
   int get hashCode => Object.hash(
-        enableMoveDownAfterSelecting,
-        enableMoveHorizontalInEditing,
-        enterKeyAction,
-        tabKeyAction,
-        shortcut,
-        style,
-        scrollbar,
-        columnFilter,
-        columnSize,
-        localeText,
-      );
+    enableMoveDownAfterSelecting,
+    enableMoveHorizontalInEditing,
+    enterKeyAction,
+    tabKeyAction,
+    shortcut,
+    style,
+    scrollbar,
+    columnFilter,
+    columnSize,
+    localeText,
+  );
 }
 
 class PlutoGridStyleConfig {
@@ -260,14 +265,8 @@ class PlutoGridStyleConfig {
     Color? columnActiveColor,
     Color? cellUnselectedColor,
     Color? cellActiveColor,
-    this.cellTextStyle = const TextStyle(
-      color: Colors.black,
-      fontSize: 14,
-    ),
-    this.tooltipTextStyle = const TextStyle(
-      color: Colors.black,
-      fontSize: 14,
-    ),
+    this.cellTextStyle = const TextStyle(color: Colors.black, fontSize: 14),
+    this.tooltipTextStyle = const TextStyle(color: Colors.black, fontSize: 14),
     this.columnContextIcon = Icons.dehaze,
     this.columnResizeIcon = Icons.code_sharp,
     this.columnAscendingIcon,
@@ -292,12 +291,12 @@ class PlutoGridStyleConfig {
     this.filterTextStyle,
     this.filterHintTextStyle,
     //
-  })  : columnCheckedColor = (columnCheckedColor ?? activatedColor),
-        cellCheckedColor = (cellCheckedColor ?? activatedColor),
-        columnUnselectedColor = (columnUnselectedColor ?? iconColor),
-        columnActiveColor = (columnActiveColor ?? activatedBorderColor),
-        cellUnselectedColor = (cellUnselectedColor ?? iconColor),
-        cellActiveColor = (cellActiveColor ?? activatedBorderColor);
+  }) : columnCheckedColor = (columnCheckedColor ?? activatedColor),
+       cellCheckedColor = (cellCheckedColor ?? activatedColor),
+       columnUnselectedColor = (columnUnselectedColor ?? iconColor),
+       columnActiveColor = (columnActiveColor ?? activatedBorderColor),
+       cellUnselectedColor = (cellUnselectedColor ?? iconColor),
+       cellActiveColor = (cellActiveColor ?? activatedBorderColor);
 
   const PlutoGridStyleConfig.dark({
     this.enableGridBorderShadow = false,
@@ -344,14 +343,8 @@ class PlutoGridStyleConfig {
     Color? columnActiveColor,
     Color? cellUnselectedColor,
     Color? cellActiveColor,
-    this.cellTextStyle = const TextStyle(
-      color: Colors.white,
-      fontSize: 14,
-    ),
-    this.tooltipTextStyle = const TextStyle(
-      color: Colors.white,
-      fontSize: 14,
-    ),
+    this.cellTextStyle = const TextStyle(color: Colors.white, fontSize: 14),
+    this.tooltipTextStyle = const TextStyle(color: Colors.white, fontSize: 14),
     this.columnContextIcon = Icons.dehaze,
     this.columnResizeIcon = Icons.code_sharp,
     this.columnAscendingIcon,
@@ -373,15 +366,15 @@ class PlutoGridStyleConfig {
     this.columnHeaderTextStyle,
     this.filterTextStyle,
     this.filterHintTextStyle,
-//
+    //
     this.gridPadding = PlutoGridSettings.gridPadding,
     this.gridBorderWidth = PlutoGridSettings.gridBorderWidth,
-  })  : columnCheckedColor = (columnCheckedColor ?? activatedColor),
-        cellCheckedColor = (cellCheckedColor ?? activatedColor),
-        columnUnselectedColor = (columnUnselectedColor ?? iconColor),
-        columnActiveColor = (columnActiveColor ?? activatedBorderColor),
-        cellUnselectedColor = (cellUnselectedColor ?? iconColor),
-        cellActiveColor = (cellActiveColor ?? activatedBorderColor);
+  }) : columnCheckedColor = (columnCheckedColor ?? activatedColor),
+       cellCheckedColor = (cellCheckedColor ?? activatedColor),
+       columnUnselectedColor = (columnUnselectedColor ?? iconColor),
+       columnActiveColor = (columnActiveColor ?? activatedBorderColor),
+       cellUnselectedColor = (cellUnselectedColor ?? iconColor),
+       cellActiveColor = (cellActiveColor ?? activatedBorderColor);
 
   /// Enable borderShadow in [PlutoGrid].
   final bool enableGridBorderShadow;
@@ -645,8 +638,9 @@ class PlutoGridStyleConfig {
       gridBackgroundColor: gridBackgroundColor ?? this.gridBackgroundColor,
       rowColor: rowColor ?? this.rowColor,
       oddRowColor: oddRowColor == null ? this.oddRowColor : oddRowColor.value,
-      evenRowColor:
-          evenRowColor == null ? this.evenRowColor : evenRowColor.value,
+      evenRowColor: evenRowColor == null
+          ? this.evenRowColor
+          : evenRowColor.value,
       activatedColor: activatedColor ?? this.activatedColor,
       columnCheckedColor: columnCheckedColor ?? this.columnCheckedColor,
       cellCheckedColor: cellCheckedColor ?? this.cellCheckedColor,
@@ -764,56 +758,56 @@ class PlutoGridStyleConfig {
 
   @override
   int get hashCode => Object.hashAll([
-        enableGridBorderShadow,
-        enableColumnBorderVertical,
-        enableColumnBorderHorizontal,
-        enableCellBorderVertical,
-        enableCellBorderHorizontal,
-        enableRowColorAnimation,
-        gridBackgroundColor,
-        rowColor,
-        oddRowColor,
-        evenRowColor,
-        activatedColor,
-        columnCheckedColor,
-        cellCheckedColor,
-        cellColorInEditState,
-        cellColorInReadOnlyState,
-        cellColorGroupedRow,
-        dragTargetColumnColor,
-        iconColor,
-        disabledIconColor,
-        menuBackgroundColor,
-        gridBorderColor,
-        borderColor,
-        activatedBorderColor,
-        inactivatedBorderColor,
-        iconSize,
-        rowHeight,
-        columnHeight,
-        columnFilterHeight,
-        defaultColumnTitlePadding,
-        defaultColumnFilterPadding,
-        defaultCellPadding,
-        columnTextStyle,
-        columnUnselectedColor,
-        columnActiveColor,
-        cellUnselectedColor,
-        cellActiveColor,
-        cellTextStyle,
-        tooltipTextStyle,
-        columnContextIcon,
-        columnResizeIcon,
-        columnAscendingIcon,
-        columnDescendingIcon,
-        rowGroupExpandedIcon,
-        rowGroupCollapsedIcon,
-        rowGroupEmptyIcon,
-        gridBorderRadius,
-        gridPopupBorderRadius,
-        gridPadding,
-        gridBorderWidth,
-      ]);
+    enableGridBorderShadow,
+    enableColumnBorderVertical,
+    enableColumnBorderHorizontal,
+    enableCellBorderVertical,
+    enableCellBorderHorizontal,
+    enableRowColorAnimation,
+    gridBackgroundColor,
+    rowColor,
+    oddRowColor,
+    evenRowColor,
+    activatedColor,
+    columnCheckedColor,
+    cellCheckedColor,
+    cellColorInEditState,
+    cellColorInReadOnlyState,
+    cellColorGroupedRow,
+    dragTargetColumnColor,
+    iconColor,
+    disabledIconColor,
+    menuBackgroundColor,
+    gridBorderColor,
+    borderColor,
+    activatedBorderColor,
+    inactivatedBorderColor,
+    iconSize,
+    rowHeight,
+    columnHeight,
+    columnFilterHeight,
+    defaultColumnTitlePadding,
+    defaultColumnFilterPadding,
+    defaultCellPadding,
+    columnTextStyle,
+    columnUnselectedColor,
+    columnActiveColor,
+    cellUnselectedColor,
+    cellActiveColor,
+    cellTextStyle,
+    tooltipTextStyle,
+    columnContextIcon,
+    columnResizeIcon,
+    columnAscendingIcon,
+    columnDescendingIcon,
+    rowGroupExpandedIcon,
+    rowGroupCollapsedIcon,
+    rowGroupEmptyIcon,
+    gridBorderRadius,
+    gridPopupBorderRadius,
+    gridPadding,
+    gridBorderWidth,
+  ]);
 }
 
 /// Allows to customise scrollbars "look and feel"
@@ -906,30 +900,31 @@ class PlutoGridScrollbarConfig {
 
   @override
   int get hashCode => Object.hash(
-        draggableScrollbar,
-        isAlwaysShown,
-        onlyDraggingThumb,
-        enableScrollAfterDragEnd,
-        scrollbarThickness,
-        scrollbarThicknessWhileDragging,
-        hoverWidth,
-        mainAxisMargin,
-        crossAxisMargin,
-        scrollBarColor,
-        scrollBarTrackColor,
-        scrollbarRadius,
-        scrollbarRadiusWhileDragging,
-        longPressDuration,
-        dragDevices,
-      );
+    draggableScrollbar,
+    isAlwaysShown,
+    onlyDraggingThumb,
+    enableScrollAfterDragEnd,
+    scrollbarThickness,
+    scrollbarThicknessWhileDragging,
+    hoverWidth,
+    mainAxisMargin,
+    crossAxisMargin,
+    scrollBarColor,
+    scrollBarTrackColor,
+    scrollbarRadius,
+    scrollbarRadiusWhileDragging,
+    longPressDuration,
+    dragDevices,
+  );
 }
 
 typedef PlutoGridColumnFilterResolver = Function<T>();
 
-typedef PlutoGridResolveDefaultColumnFilter = PlutoFilterType Function(
-  PlutoColumn column,
-  PlutoGridColumnFilterResolver resolver,
-);
+typedef PlutoGridResolveDefaultColumnFilter =
+    PlutoFilterType Function(
+      PlutoColumn column,
+      PlutoGridColumnFilterResolver resolver,
+    );
 
 class PlutoGridColumnFilterConfig {
   /// # Set the filter information of the column.
@@ -984,13 +979,13 @@ class PlutoGridColumnFilterConfig {
     List<PlutoFilterType>? filters,
     PlutoGridResolveDefaultColumnFilter? resolveDefaultColumnFilter,
     int? debounceMilliseconds,
-  })  : _userFilters = filters,
-        _userResolveDefaultColumnFilter = resolveDefaultColumnFilter,
-        _debounceMilliseconds = debounceMilliseconds == null
-            ? PlutoGridSettings.debounceMillisecondsForColumnFilter
-            : debounceMilliseconds < 0
-                ? 0
-                : debounceMilliseconds;
+  }) : _userFilters = filters,
+       _userResolveDefaultColumnFilter = resolveDefaultColumnFilter,
+       _debounceMilliseconds = debounceMilliseconds == null
+           ? PlutoGridSettings.debounceMillisecondsForColumnFilter
+           : debounceMilliseconds < 0
+           ? 0
+           : debounceMilliseconds;
 
   final List<PlutoFilterType>? _userFilters;
 
@@ -998,7 +993,7 @@ class PlutoGridColumnFilterConfig {
 
   final int _debounceMilliseconds;
 
-  bool get hasUserFilter => _userFilters != null && _userFilters!.isNotEmpty;
+  bool get hasUserFilter => _userFilters != null && _userFilters.isNotEmpty;
 
   List<PlutoFilterType> get filters =>
       hasUserFilter ? _userFilters! : FilterHelper.defaultFilters;
@@ -1006,9 +1001,7 @@ class PlutoGridColumnFilterConfig {
   int get debounceMilliseconds => _debounceMilliseconds;
 
   PlutoFilterType resolver<T>() {
-    return filters.firstWhereOrNull(
-          (element) => element.runtimeType == T,
-        ) ??
+    return filters.firstWhereOrNull((element) => element.runtimeType == T) ??
         filters.first;
   }
 
@@ -1017,7 +1010,7 @@ class PlutoGridColumnFilterConfig {
       return filters.first;
     }
 
-    var resolvedFilter = _userResolveDefaultColumnFilter!(column, resolver);
+    var resolvedFilter = _userResolveDefaultColumnFilter(column, resolver);
 
     assert(filters.contains(resolvedFilter));
 
@@ -1037,10 +1030,10 @@ class PlutoGridColumnFilterConfig {
 
   @override
   int get hashCode => Object.hash(
-        _userFilters,
-        _userResolveDefaultColumnFilter,
-        _debounceMilliseconds,
-      );
+    _userFilters,
+    _userResolveDefaultColumnFilter,
+    _debounceMilliseconds,
+  );
 }
 
 /// Automatically change the column width or set the mode when changing the width.
@@ -1100,13 +1093,16 @@ class PlutoGridColumnSizeConfig {
       resizeMode: resizeMode ?? this.resizeMode,
       restoreAutoSizeAfterHideColumn:
           restoreAutoSizeAfterHideColumn ?? this.restoreAutoSizeAfterHideColumn,
-      restoreAutoSizeAfterFrozenColumn: restoreAutoSizeAfterFrozenColumn ??
+      restoreAutoSizeAfterFrozenColumn:
+          restoreAutoSizeAfterFrozenColumn ??
           this.restoreAutoSizeAfterFrozenColumn,
       restoreAutoSizeAfterMoveColumn:
           restoreAutoSizeAfterMoveColumn ?? this.restoreAutoSizeAfterMoveColumn,
-      restoreAutoSizeAfterInsertColumn: restoreAutoSizeAfterInsertColumn ??
+      restoreAutoSizeAfterInsertColumn:
+          restoreAutoSizeAfterInsertColumn ??
           this.restoreAutoSizeAfterInsertColumn,
-      restoreAutoSizeAfterRemoveColumn: restoreAutoSizeAfterRemoveColumn ??
+      restoreAutoSizeAfterRemoveColumn:
+          restoreAutoSizeAfterRemoveColumn ??
           this.restoreAutoSizeAfterRemoveColumn,
     );
   }
@@ -1132,14 +1128,14 @@ class PlutoGridColumnSizeConfig {
 
   @override
   int get hashCode => Object.hash(
-        autoSizeMode,
-        resizeMode,
-        restoreAutoSizeAfterHideColumn,
-        restoreAutoSizeAfterFrozenColumn,
-        restoreAutoSizeAfterMoveColumn,
-        restoreAutoSizeAfterInsertColumn,
-        restoreAutoSizeAfterRemoveColumn,
-      );
+    autoSizeMode,
+    resizeMode,
+    restoreAutoSizeAfterHideColumn,
+    restoreAutoSizeAfterFrozenColumn,
+    restoreAutoSizeAfterMoveColumn,
+    restoreAutoSizeAfterInsertColumn,
+    restoreAutoSizeAfterRemoveColumn,
+  );
 }
 
 class PlutoGridLocaleText {
@@ -1166,6 +1162,7 @@ class PlutoGridLocaleText {
   final String filterValue;
   final String filterAllColumns;
   final String filterContains;
+  final String filterNotContains;
   final String filterEquals;
   final String filterStartsWith;
   final String filterEndsWith;
@@ -1173,6 +1170,8 @@ class PlutoGridLocaleText {
   final String filterGreaterThanOrEqualTo;
   final String filterLessThan;
   final String filterLessThanOrEqualTo;
+  final String filterIsEmpty;
+  final String filterIsNotEmpty;
 
   // Date column popup
   final String sunday;
@@ -1212,6 +1211,7 @@ class PlutoGridLocaleText {
     this.filterValue = 'Value',
     this.filterAllColumns = 'All columns',
     this.filterContains = 'Contains',
+    this.filterNotContains = 'Does not contain',
     this.filterEquals = 'Equals',
     this.filterStartsWith = 'Starts with',
     this.filterEndsWith = 'Ends with',
@@ -1219,6 +1219,8 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'Greater than or equal to',
     this.filterLessThan = 'Less than',
     this.filterLessThanOrEqualTo = 'Less than or equal to',
+    this.filterIsNotEmpty = 'Not empty',
+    this.filterIsEmpty = 'Empty',
     // Date popup
     this.sunday = 'Su',
     this.monday = 'Mo',
@@ -1256,6 +1258,7 @@ class PlutoGridLocaleText {
     this.filterValue = 'Valeur',
     this.filterAllColumns = 'Toutes colonnes',
     this.filterContains = 'Contient',
+    this.filterNotContains = 'Ne contient pas',
     this.filterEquals = 'Egal',
     this.filterStartsWith = 'Commence par',
     this.filterEndsWith = 'Termine par',
@@ -1263,6 +1266,8 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'Supérieur ou égal à',
     this.filterLessThan = 'Inférieur à',
     this.filterLessThanOrEqualTo = 'Inférieur ou égal à',
+    this.filterIsNotEmpty = 'Non vide',
+    this.filterIsEmpty = 'Vide',
     // Date popup
     this.sunday = 'Di',
     this.monday = 'Lu',
@@ -1300,6 +1305,7 @@ class PlutoGridLocaleText {
     this.filterValue = '值',
     this.filterAllColumns = '全部列',
     this.filterContains = '包含',
+    this.filterNotContains = '不包含',
     this.filterEquals = '等于',
     this.filterStartsWith = '开始于',
     this.filterEndsWith = '结束于',
@@ -1307,6 +1313,8 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = '大于等于',
     this.filterLessThan = '小于',
     this.filterLessThanOrEqualTo = '小于等于',
+    this.filterIsNotEmpty = '非空',
+    this.filterIsEmpty = '空',
     // Date popup
     this.sunday = '日',
     this.monday = '一',
@@ -1344,6 +1352,7 @@ class PlutoGridLocaleText {
     this.filterValue = '값',
     this.filterAllColumns = '전체 컬럼',
     this.filterContains = '포함',
+    this.filterNotContains = '포함하지 않음',
     this.filterEquals = '일치',
     this.filterStartsWith = '~로 시작',
     this.filterEndsWith = '~로 끝',
@@ -1351,6 +1360,8 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = '~보다 크거나 같은',
     this.filterLessThan = '~보다 작은',
     this.filterLessThanOrEqualTo = '~보다 작거나 같은',
+    this.filterIsNotEmpty = '비어있지 않음',
+    this.filterIsEmpty = '비어있음',
     // Date popup
     this.sunday = '일',
     this.monday = '월',
@@ -1388,6 +1399,7 @@ class PlutoGridLocaleText {
     this.filterValue = 'Значение',
     this.filterAllColumns = 'Все колонки',
     this.filterContains = 'Содержит',
+    this.filterNotContains = 'Не содержит',
     this.filterEquals = 'Равно',
     this.filterStartsWith = 'Начинается с',
     this.filterEndsWith = 'Заканчивается на',
@@ -1395,6 +1407,8 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'Больше или равно',
     this.filterLessThan = 'Меньше чем',
     this.filterLessThanOrEqualTo = 'Меньше или равно',
+    this.filterIsEmpty = 'Пусто',
+    this.filterIsNotEmpty = 'Не пусто',
     // Date popup
     this.sunday = 'Вс',
     this.monday = 'Пн',
@@ -1432,6 +1446,7 @@ class PlutoGridLocaleText {
     this.filterValue = 'Hodnota',
     this.filterAllColumns = 'Všechny sloupce',
     this.filterContains = 'Obsahuje',
+    this.filterNotContains = 'Neobsahuje',
     this.filterEquals = 'Rovná se',
     this.filterStartsWith = 'Začíná na',
     this.filterEndsWith = 'Končí na',
@@ -1439,6 +1454,8 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'Větší než nebo rovno',
     this.filterLessThan = 'Menší než',
     this.filterLessThanOrEqualTo = 'Menší než nebo rovno',
+    this.filterIsNotEmpty = 'Není prázdné',
+    this.filterIsEmpty = 'Je prázdné',
     // Date popup
     this.sunday = 'Ne',
     this.monday = 'Po',
@@ -1476,6 +1493,7 @@ class PlutoGridLocaleText {
     this.filterValue = 'Valor',
     this.filterAllColumns = 'Todas as colunas',
     this.filterContains = 'Contenha',
+    this.filterNotContains = 'Não contém',
     this.filterEquals = 'Igual',
     this.filterStartsWith = 'Inicia com',
     this.filterEndsWith = 'Termina com',
@@ -1483,6 +1501,8 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'Maior ou igual que',
     this.filterLessThan = 'Menor que',
     this.filterLessThanOrEqualTo = 'Menor ou igual que',
+    this.filterIsNotEmpty = 'Não vazio',
+    this.filterIsEmpty = 'Vazio',
     // Date popup
     this.sunday = 'Dom',
     this.monday = 'Seg',
@@ -1520,6 +1540,7 @@ class PlutoGridLocaleText {
     this.filterValue = 'Valor',
     this.filterAllColumns = 'Todas las columnas',
     this.filterContains = 'Contenga',
+    this.filterNotContains = 'No contiene',
     this.filterEquals = 'Igual',
     this.filterStartsWith = 'Empieza con',
     this.filterEndsWith = 'Termina con',
@@ -1527,6 +1548,8 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'Más grande o igual que',
     this.filterLessThan = 'Más pequeño que',
     this.filterLessThanOrEqualTo = 'Más pequeño o igual que',
+    this.filterIsNotEmpty = 'No vacío',
+    this.filterIsEmpty = 'Vacío',
     // Date popup
     this.sunday = 'Dom',
     this.monday = 'Lu',
@@ -1564,6 +1587,7 @@ class PlutoGridLocaleText {
     this.filterValue = 'مقدار',
     this.filterAllColumns = 'تمام ستون ها',
     this.filterContains = 'شامل',
+    this.filterNotContains = 'شامل نمی شود',
     this.filterEquals = 'برابر',
     this.filterStartsWith = 'شروع با',
     this.filterEndsWith = 'خاتمه با',
@@ -1571,6 +1595,8 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'بزرگتر مساوی از',
     this.filterLessThan = 'کمتر از',
     this.filterLessThanOrEqualTo = 'کمتر مساوی از',
+    this.filterIsNotEmpty = 'پر',
+    this.filterIsEmpty = 'خالی',
     // Date popup
     this.sunday = 'ی',
     this.monday = 'د',
@@ -1608,6 +1634,7 @@ class PlutoGridLocaleText {
     this.filterValue = 'القيمة',
     this.filterAllColumns = 'كل الأعمدة',
     this.filterContains = 'يحتوي',
+    this.filterNotContains = 'لا يحتوي',
     this.filterEquals = 'يساوي',
     this.filterStartsWith = 'يبدأ بـ',
     this.filterEndsWith = 'ينتهي بـ',
@@ -1615,6 +1642,8 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'أكبر من أو يساوي',
     this.filterLessThan = 'اصغر من',
     this.filterLessThanOrEqualTo = 'أصغر من أو يساوي',
+    this.filterIsNotEmpty = 'غير فارغ',
+    this.filterIsEmpty = 'فارغ',
     // Date popup
     this.sunday = 'أح',
     this.monday = 'إث',
@@ -1652,6 +1681,7 @@ class PlutoGridLocaleText {
     this.filterValue = 'Verdi',
     this.filterAllColumns = 'Alle kolonner',
     this.filterContains = 'Inneholder',
+    this.filterNotContains = 'Inneholder ikke',
     this.filterEquals = 'Er lik',
     this.filterStartsWith = 'Starter men',
     this.filterEndsWith = 'Ender med',
@@ -1659,6 +1689,8 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'Større enn eller lik',
     this.filterLessThan = 'Mindre enn',
     this.filterLessThanOrEqualTo = 'Mindre enn eller lik',
+    this.filterIsNotEmpty = 'Ikke tom',
+    this.filterIsEmpty = 'Tom',
     // Date popup
     this.sunday = 'Søn',
     this.monday = 'Man',
@@ -1696,6 +1728,7 @@ class PlutoGridLocaleText {
     this.filterValue = 'Wert',
     this.filterAllColumns = 'Alle Spalten',
     this.filterContains = 'Beinhaltet',
+    this.filterNotContains = 'Beinhaltet nicht',
     this.filterEquals = 'Ist gleich',
     this.filterStartsWith = 'Started mit',
     this.filterEndsWith = 'Endet mit',
@@ -1703,6 +1736,8 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'Größer als oder gleich',
     this.filterLessThan = 'Kleiner als',
     this.filterLessThanOrEqualTo = 'Kleiner als oder gleich',
+    this.filterIsNotEmpty = 'Nicht leer',
+    this.filterIsEmpty = 'Leer',
     // Date popup
     this.sunday = 'So',
     this.monday = 'Mo',
@@ -1740,6 +1775,7 @@ class PlutoGridLocaleText {
     this.filterValue = 'Değer',
     this.filterAllColumns = 'Tüm sütunlar',
     this.filterContains = 'İçerir',
+    this.filterNotContains = 'İçermez',
     this.filterEquals = 'Eşittir',
     this.filterStartsWith = 'Başlar',
     this.filterEndsWith = 'Biter',
@@ -1747,6 +1783,8 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'Büyük veya eşittir',
     this.filterLessThan = 'Küçüktür',
     this.filterLessThanOrEqualTo = 'Küçük veya eşittir',
+    this.filterIsNotEmpty = 'Boş değil',
+    this.filterIsEmpty = 'Boş',
     // Date popup
     this.sunday = 'Paz',
     this.monday = 'Pzt',
@@ -1784,6 +1822,7 @@ class PlutoGridLocaleText {
     this.filterValue = '値',
     this.filterAllColumns = '全列',
     this.filterContains = '含む',
+    this.filterNotContains = '含まない',
     this.filterEquals = '等しい',
     this.filterStartsWith = '指定の値で始まる',
     this.filterEndsWith = '指定の値で終わる',
@@ -1791,6 +1830,8 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = '以上',
     this.filterLessThan = '未満',
     this.filterLessThanOrEqualTo = '以下',
+    this.filterIsNotEmpty = '空でない',
+    this.filterIsEmpty = '空',
     // Date popup
     this.sunday = '日',
     this.monday = '月',
@@ -1850,42 +1891,42 @@ class PlutoGridLocaleText {
 
   @override
   int get hashCode => Object.hashAll([
-        unfreezeColumn,
-        freezeColumnToStart,
-        freezeColumnToEnd,
-        autoFitColumn,
-        hideColumn,
-        setColumns,
-        setFilter,
-        resetFilter,
-        addFilter,
-        deleteSelectedFilter,
-        close,
-        filter,
-        setColumnsTitle,
-        filterColumn,
-        filterType,
-        filterValue,
-        filterAllColumns,
-        filterContains,
-        filterEquals,
-        filterStartsWith,
-        filterEndsWith,
-        filterGreaterThan,
-        filterGreaterThanOrEqualTo,
-        filterLessThan,
-        filterLessThanOrEqualTo,
-        sunday,
-        monday,
-        tuesday,
-        wednesday,
-        thursday,
-        friday,
-        saturday,
-        hour,
-        minute,
-        loadingText,
-      ]);
+    unfreezeColumn,
+    freezeColumnToStart,
+    freezeColumnToEnd,
+    autoFitColumn,
+    hideColumn,
+    setColumns,
+    setFilter,
+    resetFilter,
+    addFilter,
+    deleteSelectedFilter,
+    close,
+    filter,
+    setColumnsTitle,
+    filterColumn,
+    filterType,
+    filterValue,
+    filterAllColumns,
+    filterContains,
+    filterEquals,
+    filterStartsWith,
+    filterEndsWith,
+    filterGreaterThan,
+    filterGreaterThanOrEqualTo,
+    filterLessThan,
+    filterLessThanOrEqualTo,
+    sunday,
+    monday,
+    tuesday,
+    wednesday,
+    thursday,
+    friday,
+    saturday,
+    hour,
+    minute,
+    loadingText,
+  ]);
 }
 
 enum PlutoGridRowSelectionCheckBoxBehavior {

@@ -47,9 +47,7 @@ class _ExportScreenState extends State<ExportScreen> {
           return Row(
             children: [
               IconButton(
-                icon: const Icon(
-                  Icons.add_circle,
-                ),
+                icon: const Icon(Icons.add_circle),
                 onPressed: () {
                   rendererContext.stateManager.insertRows(
                     rendererContext.rowIdx,
@@ -61,12 +59,11 @@ class _ExportScreenState extends State<ExportScreen> {
                 padding: const EdgeInsets.all(0),
               ),
               IconButton(
-                icon: const Icon(
-                  Icons.remove_circle_outlined,
-                ),
+                icon: const Icon(Icons.remove_circle_outlined),
                 onPressed: () {
-                  rendererContext.stateManager
-                      .removeRows([rendererContext.row]);
+                  rendererContext.stateManager.removeRows([
+                    rendererContext.row,
+                  ]);
                 },
                 iconSize: 18,
                 color: Colors.red,
@@ -101,10 +98,7 @@ class _ExportScreenState extends State<ExportScreen> {
 
           return Text(
             rendererContext.cell.value.toString(),
-            style: TextStyle(
-              color: textColor,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
           );
         },
       ),
@@ -139,10 +133,12 @@ class _ExportScreenState extends State<ExportScreen> {
       topTitle: 'Export / download as PDF or CSV',
       topContents: const [
         Text(
-            'You can export grid contents as PDF or CSV with pluto_grid_export package from pub.dev.'),
+          'You can export grid contents as PDF or CSV with pluto_grid_export package from pub.dev.',
+        ),
         Text("The example doesn't actually download the file."),
         Text(
-            'The file download part is implemented directly for each platform or is possible through a package such as FileSaver.'),
+          'The file download part is implemented directly for each platform or is possible through a package such as FileSaver.',
+        ),
       ],
       topButtons: [
         PlutoExampleButton(
@@ -169,9 +165,7 @@ class _ExportScreenState extends State<ExportScreen> {
 }
 
 class _Header extends StatefulWidget {
-  const _Header({
-    required this.stateManager,
-  });
+  const _Header({required this.stateManager});
 
   final PlutoGridStateManager stateManager;
 
@@ -198,8 +192,9 @@ class _HeaderState extends State<_Header> {
     );
 
     await pluto_grid_export.Printing.sharePdf(
-        bytes: await plutoGridPdfExport.export(widget.stateManager),
-        filename: plutoGridPdfExport.getFilename());
+      bytes: await plutoGridPdfExport.export(widget.stateManager),
+      filename: plutoGridPdfExport.getFilename(),
+    );
   }
 
   // This doesn't works properly in systems different from Windows.
@@ -225,9 +220,13 @@ class _HeaderState extends State<_Header> {
   void _defaultExportGridAsCSV() async {
     String title = "pluto_grid_export";
     var exported = const Utf8Encoder().convert(
-        pluto_grid_export.PlutoGridExport.exportCSV(widget.stateManager));
-    String savedFile = await FileSaver.instance
-        .saveFile(name: title, bytes: exported, ext: ".csv");
+      pluto_grid_export.PlutoGridExport.exportCSV(widget.stateManager),
+    );
+    String savedFile = await FileSaver.instance.saveFile(
+      name: title,
+      bytes: exported,
+      fileExtension: ".csv",
+    );
     if (!mounted) return;
     String msg = 'Exported successfully';
 
@@ -235,18 +234,20 @@ class _HeaderState extends State<_Header> {
         'Exported successfully. Please open the file in Excel. Path: $savedFile';
     if (!mounted) return;
     showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-                title: const Text('Success'),
-                content: Text(msg),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('OK'),
-                  )
-                ]));
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Success'),
+        content: Text(msg),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _defaultExportGridAsCSVCompatibleWithExcel() async {
@@ -304,28 +305,33 @@ class _HeaderState extends State<_Header> {
             spacing: 10,
             children: [
               ElevatedButton(
-                  onPressed: _printToPdfAndShareOrSave,
-                  child: const Text("Print to PDF and Share")),
+                onPressed: _printToPdfAndShareOrSave,
+                child: const Text("Print to PDF and Share"),
+              ),
 
               // TODO: This works only under Windows, disabled for now
               // ElevatedButton(
               //     onPressed: _printToPdfWithDialog,
               //     child: const Text("Print PDF with dialog (Windows only)")),
               ElevatedButton(
-                  onPressed: _defaultExportGridAsCSV,
-                  child: const Text("Export to CSV")),
+                onPressed: _defaultExportGridAsCSV,
+                child: const Text("Export to CSV"),
+              ),
               ElevatedButton(
-                  onPressed: _defaultExportGridAsCSVWithSemicolon,
-                  child: const Text("Export to CSV with Semicolon ';'")),
+                onPressed: _defaultExportGridAsCSVWithSemicolon,
+                child: const Text("Export to CSV with Semicolon ';'"),
+              ),
               // ElevatedButton(
               //     onPressed: _exportGridAsTSV,
               //     child: const Text("Export to TSV (tab separated)")),
               ElevatedButton(
-                  onPressed: _defaultExportGridAsCSVCompatibleWithExcel,
-                  child: const Text("UTF-8 CSV compatible with MS Excel")),
+                onPressed: _defaultExportGridAsCSVCompatibleWithExcel,
+                child: const Text("UTF-8 CSV compatible with MS Excel"),
+              ),
               ElevatedButton(
-                  onPressed: _defaultExportGridAsCSVFakeExcel,
-                  child: const Text("Fake MS Excel .xls export")),
+                onPressed: _defaultExportGridAsCSVFakeExcel,
+                child: const Text("Fake MS Excel .xls export"),
+              ),
             ],
           ),
         ),
