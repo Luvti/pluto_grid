@@ -24,17 +24,39 @@ class FilterHelper {
   /// when searching for a filter.
   static const String filterFieldValue = 'value';
 
-  static const List<PlutoFilterType> defaultFilters = <PlutoFilterType>[
+  static const List<PlutoFilterType> defaultStringFilters = <PlutoFilterType>[
     PlutoFilterTypeContains(),
+    PlutoFilterTypeNotContains(),
     PlutoFilterTypeEquals(),
     PlutoFilterTypeStartsWith(),
     PlutoFilterTypeEndsWith(),
+    PlutoFilterTypeIsEmpty(),
+    PlutoFilterTypeIsNotEmpty(),
+  ];
+
+  static const List<PlutoFilterType> defaultNumbersFilters = <PlutoFilterType>[
     PlutoFilterTypeGreaterThan(),
     PlutoFilterTypeGreaterThanOrEqualTo(),
     PlutoFilterTypeLessThan(),
     PlutoFilterTypeLessThanOrEqualTo(),
     PlutoFilterTypeIsEmpty(),
     PlutoFilterTypeIsNotEmpty(),
+  ];
+
+  static const List<PlutoFilterType> defaultDatesFilters = <PlutoFilterType>[
+    PlutoFilterTypeGreaterThan(),
+    PlutoFilterTypeGreaterThanOrEqualTo(),
+    PlutoFilterTypeLessThan(),
+    PlutoFilterTypeLessThanOrEqualTo(),
+    PlutoFilterTypeIsEmpty(),
+    PlutoFilterTypeIsNotEmpty(),
+  ];
+
+  static const List<PlutoFilterType> defaultSetFilters = <PlutoFilterType>[
+    PlutoFilterTypeContainsSet(),
+    PlutoFilterTypeNotContainsSet(),
+    PlutoFilterTypeIsEmptySet(),
+    PlutoFilterTypeIsNotEmptySet(),
   ];
 
   /// Create a row to contain filter information.

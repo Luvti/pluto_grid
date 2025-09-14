@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+
+import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,9 +23,7 @@ class MyApp extends StatelessWidget {
       ],
       supportedLocales: const <Locale>[Locale('ru', 'RU')],
       title: 'PlutoGrid Example',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: const PlutoGridExamplePage(),
     );
   }
@@ -42,11 +41,7 @@ class PlutoGridExamplePage extends StatefulWidget {
 
 class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
   final List<PlutoColumn> columns = <PlutoColumn>[
-    PlutoColumn(
-      title: 'Id',
-      field: 'id',
-      type: PlutoColumnType.text(),
-    ),
+    PlutoColumn(title: 'Id', field: 'id', type: PlutoColumnType.text()),
     PlutoColumn(
       title: 'Name test long name in header',
       field: 'name',
@@ -68,9 +63,7 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       title: 'Age double',
       field: 'age_double',
       defaultFilter: const PlutoFilterTypeGreaterThan(),
-      type: PlutoColumnType.double(
-        defaultValue: 12.23,
-      ),
+      type: PlutoColumnType.double(defaultValue: 12.23),
       formatter: (value) => value.toString(),
       footerRenderer: (context) {
         return PlutoAggregateColumnFooter(
@@ -91,43 +84,29 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
         );
       },
     ),
-    PlutoColumn(
-      title: 'Buy',
-      field: 'buy',
-      type: PlutoColumnType.bool(),
-    ),
+    PlutoColumn(title: 'Buy', field: 'buy', type: PlutoColumnType.bool()),
     PlutoColumn(
       title: 'Role',
       field: 'role',
-      type: PlutoColumnType.select(<String>[
-        'Programmer',
-        'Designer',
-        'Owner',
-      ]),
+      type: PlutoColumnType.select(<String>['Programmer', 'Designer', 'Owner']),
     ),
     PlutoColumn(
       title: 'Role 2',
       field: 'role2',
       type: PlutoColumnType.select(
-        <String>[
-          'Programmer',
-          'Designer',
-          'Owner',
-        ],
+        <String>['Programmer', 'Designer', 'Owner'],
         builder: (item) {
-          return Row(children: [
-            Icon(item == 'Programmer' ? Icons.code : Icons.design_services),
-            const SizedBox(width: 8),
-            Text(item),
-          ]);
+          return Row(
+            children: [
+              Icon(item == 'Programmer' ? Icons.code : Icons.design_services),
+              const SizedBox(width: 8),
+              Text(item),
+            ],
+          );
         },
       ),
     ),
-    PlutoColumn(
-      title: 'Joined',
-      field: 'joined',
-      type: PlutoColumnType.date(),
-    ),
+    PlutoColumn(title: 'Joined', field: 'joined', type: PlutoColumnType.date()),
     PlutoColumn(
       title: 'Working time',
       field: 'working_time',
@@ -211,11 +190,16 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
   final List<PlutoColumnGroup> columnGroups = [
     PlutoColumnGroup(title: 'Id', fields: ['id'], expandedColumn: true),
     PlutoColumnGroup(title: 'User information', fields: ['name', 'age']),
-    PlutoColumnGroup(title: 'Status', children: [
-      PlutoColumnGroup(title: 'A', fields: ['role'], expandedColumn: true),
-      PlutoColumnGroup(
-          title: 'Etc.', fields: ['joined', 'working_time', 'role2']),
-    ]),
+    PlutoColumnGroup(
+      title: 'Status',
+      children: [
+        PlutoColumnGroup(title: 'A', fields: ['role'], expandedColumn: true),
+        PlutoColumnGroup(
+          title: 'Etc.',
+          fields: ['joined', 'working_time', 'role2'],
+        ),
+      ],
+    ),
   ];
 
   /// [PlutoGridStateManager] has many methods and properties to dynamically manipulate the grid.
@@ -261,13 +245,13 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
                     final filterRows = stateManager!.filterRows;
                     stateManager = event.stateManager;
                     stateManager?.setShowColumnFilter(true);
-                    stateManager!
-                        .setFilter(filters, filterRowsApply: filterRows);
+                    stateManager!.setFilter(
+                      filters,
+                      filterRowsApply: filterRows,
+                    );
                     if (onSorted != null) {
                       if (onSorted!.column.sort == PlutoColumnSort.ascending) {
-                        stateManager!.sortAscending(
-                          onSorted!.column,
-                        );
+                        stateManager!.sortAscending(onSorted!.column);
                       }
                       if (onSorted!.column.sort == PlutoColumnSort.descending) {
                         stateManager!.sortDescending(onSorted!.column);
@@ -280,25 +264,24 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
                 },
                 configuration: PlutoGridConfiguration(
                   style: PlutoGridStyleConfig(
-                    columnHeaderTextStyle: Theme.of(context)
-                        .textTheme
-                        .bodyMedium!
-                        .copyWith(color: Colors.blue),
-                    filterHintTextStyle: Theme.of(context)
-                        .textTheme
-                        .bodySmall!
-                        .copyWith(color: Colors.red),
-                    filterTextStyle: Theme.of(context)
-                        .textTheme
-                        .bodySmall!
-                        .copyWith(color: Colors.green),
+                    columnHeaderTextStyle: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium!.copyWith(color: Colors.blue),
+                    filterHintTextStyle: Theme.of(
+                      context,
+                    ).textTheme.bodySmall!.copyWith(color: Colors.red),
+                    filterTextStyle: Theme.of(
+                      context,
+                    ).textTheme.bodySmall!.copyWith(color: Colors.green),
                   ),
                   columnFilter: PlutoGridColumnFilterConfig(
-                    filters: [
-                      PlutoFilterTypeContains(),
-                      PlutoFilterTypeGreaterThanOrEqualTo(),
-                      PlutoFilterTypeLessThanOrEqualTo(),
-                    ],
+                    filters: (PlutoColumn col) {
+                      return [
+                        PlutoFilterTypeContains(),
+                        PlutoFilterTypeGreaterThanOrEqualTo(),
+                        PlutoFilterTypeLessThanOrEqualTo(),
+                      ];
+                    },
                   ),
                 ),
               ),

@@ -95,10 +95,19 @@ class _DevelopmentScreenState extends State<DevelopmentScreen> {
     ),
     // localeText: const PlutoGridLocaleText.korean(),
     columnFilter: PlutoGridColumnFilterConfig(
-      filters: const [
-        ...FilterHelper.defaultFilters,
-        ClassYouImplemented(),
-      ],
+      filters: (column) {
+        return [
+          if (column.type.isNumber)
+            ...FilterHelper.defaultNumbersFilters
+          else if ((column.type.isDate) || (column.type.isTime))
+            ...FilterHelper.defaultDatesFilters
+          else if (column.type.isSelect)
+            ...FilterHelper.defaultSetFilters
+          else
+            ...FilterHelper.defaultStringFilters,
+          ClassYouImplemented(),
+        ];
+      },
       resolveDefaultColumnFilter: (column, resolver) {
         if (column.field == 'column3') {
           return resolver<PlutoFilterTypeGreaterThan>() as PlutoFilterType;
@@ -139,25 +148,20 @@ class _DevelopmentScreenState extends State<DevelopmentScreen> {
     if (test.isB) {
       columns.addAll(DummyData(10, 0).columns);
       columnGroups.addAll(testColumnGroupsB);
-      DummyData.fetchRows(
-        columns,
-        chunkSize: 100,
-        chunkCount: 10,
-      ).then((fetchedRows) {
-        PlutoGridStateManager.initializeRowsAsync(columns, fetchedRows)
-            .then((initializedRows) {
+      DummyData.fetchRows(columns, chunkSize: 100, chunkCount: 10).then((
+        fetchedRows,
+      ) {
+        PlutoGridStateManager.initializeRowsAsync(columns, fetchedRows).then((
+          initializedRows,
+        ) {
           stateManager.refRows.addAll(initializedRows);
-          stateManager.setRowGroup(PlutoRowGroupByColumnDelegate(
-            columns: [
-              stateManager.columns[3],
-              stateManager.columns[4],
-            ],
-            showFirstExpandableIcon: false,
-          ));
-          stateManager.moveColumn(
-            column: columns[5],
-            targetColumn: columns[0],
+          stateManager.setRowGroup(
+            PlutoRowGroupByColumnDelegate(
+              columns: [stateManager.columns[3], stateManager.columns[4]],
+              showFirstExpandableIcon: false,
+            ),
           );
+          stateManager.moveColumn(column: columns[5], targetColumn: columns[0]);
           stateManager.setPage(1);
         });
       });
@@ -225,12 +229,14 @@ class _DevelopmentScreenState extends State<DevelopmentScreen> {
           },
         );
       };
-      rows.addAll(DummyData.treeRowsByColumn(
-        columns: columns,
-        count: 100,
-        // depth: 3,
-        // childCount: [1, 1, 1],
-      ));
+      rows.addAll(
+        DummyData.treeRowsByColumn(
+          columns: columns,
+          count: 100,
+          // depth: 3,
+          // childCount: [1, 1, 1],
+        ),
+      );
       rowGroupDelegate = PlutoRowGroupTreeDelegate(
         resolveColumnDepth: (column) => stateManager.columnIndex(column),
         showText: (cell) => true,
@@ -351,7 +357,8 @@ class ClassYouImplemented implements PlutoFilterType {
   String get title => 'Custom contains';
 
   @override
-  get compare => ({
+  get compare =>
+      ({
         required dynamic baseObject,
         required String? base,
         required dynamic searchObject,
@@ -444,17 +451,14 @@ class _HeaderState extends State<_Header> {
   _Locale currentLocale = _Locale.english;
 
   void handleAddColumnButton(PlutoColumnFrozen frozen) {
-    widget.stateManager.insertColumns(
-      0,
-      [
-        PlutoColumn(
-          title: faker_package.faker.food.cuisine(),
-          field: 'new_${DateTime.now()}',
-          type: PlutoColumnType.text(),
-          frozen: frozen,
-        ),
-      ],
-    );
+    widget.stateManager.insertColumns(0, [
+      PlutoColumn(
+        title: faker_package.faker.food.cuisine(),
+        field: 'new_${DateTime.now()}',
+        type: PlutoColumnType.text(),
+        frozen: frozen,
+      ),
+    ]);
   }
 
   void handleAddRowButton({int? count}) {
@@ -496,18 +500,21 @@ class _HeaderState extends State<_Header> {
   }
 
   void handleToggleColumnTitle() {
-    widget.stateManager
-        .setShowColumnTitle(!widget.stateManager.showColumnTitle);
+    widget.stateManager.setShowColumnTitle(
+      !widget.stateManager.showColumnTitle,
+    );
   }
 
   void handleToggleColumnFilter() {
-    widget.stateManager
-        .setShowColumnFilter(!widget.stateManager.showColumnFilter);
+    widget.stateManager.setShowColumnFilter(
+      !widget.stateManager.showColumnFilter,
+    );
   }
 
   void handleToggleColumnFooter() {
-    widget.stateManager
-        .setShowColumnFooter(!widget.stateManager.showColumnFooter);
+    widget.stateManager.setShowColumnFooter(
+      !widget.stateManager.showColumnFooter,
+    );
   }
 
   void handleSelectingMode(Object? mode) {
@@ -630,9 +637,9 @@ class _HeaderState extends State<_Header> {
           break;
       }
 
-      widget.setConfiguration(widget.stateManager.configuration.copyWith(
-        localeText: localeText,
-      ));
+      widget.setConfiguration(
+        widget.stateManager.configuration.copyWith(localeText: localeText),
+      );
     });
   }
 
@@ -667,10 +674,7 @@ class _HeaderState extends State<_Header> {
       borderColor: Colors.transparent,
       mode: _isMobile ? PlutoMenuBarMode.tap : PlutoMenuBarMode.hover,
       itemStyle: const PlutoMenuItemStyle(
-        textStyle: TextStyle(
-          color: Colors.black,
-          fontSize: 14,
-        ),
+        textStyle: TextStyle(color: Colors.black, fontSize: 14),
       ),
       menus: [
         PlutoMenuItem(
@@ -790,10 +794,7 @@ class _HeaderState extends State<_Header> {
         PlutoMenuItem(
           title: 'Size',
           children: [
-            PlutoMenuItem(
-              title: 'AutoSizeMode',
-              enable: false,
-            ),
+            PlutoMenuItem(title: 'AutoSizeMode', enable: false),
             PlutoMenuItem.radio(
               title: 'AutoSize',
               initialRadioValue:
@@ -807,7 +808,9 @@ class _HeaderState extends State<_Header> {
               children: [
                 PlutoMenuItem.checkbox(
                   title: 'Restore after hide column',
-                  initialCheckValue: widget.stateManager.columnSizeConfig
+                  initialCheckValue: widget
+                      .stateManager
+                      .columnSizeConfig
                       .restoreAutoSizeAfterHideColumn,
                   onChanged: (flag) => handleRestoreAutoSize(
                     _RestoreAutoSizeOptions.restoreAutoSizeAfterHideColumn,
@@ -816,7 +819,9 @@ class _HeaderState extends State<_Header> {
                 ),
                 PlutoMenuItem.checkbox(
                   title: 'Restore after frozen column',
-                  initialCheckValue: widget.stateManager.columnSizeConfig
+                  initialCheckValue: widget
+                      .stateManager
+                      .columnSizeConfig
                       .restoreAutoSizeAfterFrozenColumn,
                   onChanged: (flag) => handleRestoreAutoSize(
                     _RestoreAutoSizeOptions.restoreAutoSizeAfterFrozenColumn,
@@ -825,7 +830,9 @@ class _HeaderState extends State<_Header> {
                 ),
                 PlutoMenuItem.checkbox(
                   title: 'Restore after move column',
-                  initialCheckValue: widget.stateManager.columnSizeConfig
+                  initialCheckValue: widget
+                      .stateManager
+                      .columnSizeConfig
                       .restoreAutoSizeAfterMoveColumn,
                   onChanged: (flag) => handleRestoreAutoSize(
                     _RestoreAutoSizeOptions.restoreAutoSizeAfterMoveColumn,
@@ -834,7 +841,9 @@ class _HeaderState extends State<_Header> {
                 ),
                 PlutoMenuItem.checkbox(
                   title: 'Restore after insert column',
-                  initialCheckValue: widget.stateManager.columnSizeConfig
+                  initialCheckValue: widget
+                      .stateManager
+                      .columnSizeConfig
                       .restoreAutoSizeAfterInsertColumn,
                   onChanged: (flag) => handleRestoreAutoSize(
                     _RestoreAutoSizeOptions.restoreAutoSizeAfterInsertColumn,
@@ -843,7 +852,9 @@ class _HeaderState extends State<_Header> {
                 ),
                 PlutoMenuItem.checkbox(
                   title: 'Restore after remove column',
-                  initialCheckValue: widget.stateManager.columnSizeConfig
+                  initialCheckValue: widget
+                      .stateManager
+                      .columnSizeConfig
                       .restoreAutoSizeAfterRemoveColumn,
                   onChanged: (flag) => handleRestoreAutoSize(
                     _RestoreAutoSizeOptions.restoreAutoSizeAfterRemoveColumn,
@@ -853,10 +864,7 @@ class _HeaderState extends State<_Header> {
               ],
             ),
             PlutoMenuItem.divider(),
-            PlutoMenuItem(
-              title: 'ReSizeMode',
-              enable: false,
-            ),
+            PlutoMenuItem(title: 'ReSizeMode', enable: false),
             PlutoMenuItem.radio(
               title: 'Resize',
               initialRadioValue:
@@ -903,8 +911,9 @@ class _HeaderState extends State<_Header> {
             PlutoMenuItem.radio(
               title: 'GridMode',
               initialRadioValue: gridMode,
-              radioItems:
-                  PlutoGridMode.values.where((e) => !e.isPopup).toList(),
+              radioItems: PlutoGridMode.values
+                  .where((e) => !e.isPopup)
+                  .toList(),
               onChanged: handleGridMode,
               getTitle: (option) => (option as PlutoGridMode).name,
             ),
@@ -972,10 +981,7 @@ final testColumnsA = [
     titleSpan: const TextSpan(
       children: [
         WidgetSpan(
-          child: Text(
-            '* ',
-            style: TextStyle(color: Colors.red),
-          ),
+          child: Text('* ', style: TextStyle(color: Colors.red)),
           alignment: PlaceholderAlignment.bottom,
         ),
         TextSpan(text: 'column1'),
@@ -987,9 +993,7 @@ final testColumnsA = [
       return Row(
         children: [
           IconButton(
-            icon: const Icon(
-              Icons.add_circle,
-            ),
+            icon: const Icon(Icons.add_circle),
             onPressed: () {
               rendererContext.stateManager.insertRows(
                 rendererContext.rowIdx,
@@ -1001,9 +1005,7 @@ final testColumnsA = [
             padding: const EdgeInsets.all(0),
           ),
           IconButton(
-            icon: const Icon(
-              Icons.remove_circle_outlined,
-            ),
+            icon: const Icon(Icons.remove_circle_outlined),
             onPressed: () {
               rendererContext.stateManager.removeRows([rendererContext.row]);
             },
@@ -1029,10 +1031,11 @@ final testColumnsA = [
     textAlign: PlutoColumnTextAlign.right,
     titleTextAlign: PlutoColumnTextAlign.right,
     frozen: PlutoColumnFrozen.end,
-    type: PlutoColumnType.select(
-      <String>['red', 'blue', 'green'],
-      enableColumnFilter: true,
-    ),
+    type: PlutoColumnType.select(<String>[
+      'red',
+      'blue',
+      'green',
+    ], enableColumnFilter: true),
     renderer: (rendererContext) {
       Color textColor = Colors.black;
 
@@ -1046,10 +1049,7 @@ final testColumnsA = [
 
       return Text(
         rendererContext.cell.value.toString(),
-        style: TextStyle(
-          color: textColor,
-          fontWeight: FontWeight.bold,
-        ),
+        style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
         textAlign: rendererContext.column.textAlign.value,
       );
     },
@@ -1061,10 +1061,10 @@ final testColumnsA = [
     titleTextAlign: PlutoColumnTextAlign.center,
     enableAutoEditing: true,
     type: PlutoColumnType.date(
-        // headerFormat: 'yyyy 년 MM 월',
-        // startDate: DateTime(2022, 01, 09),
-        // endDate: DateTime(2022, 08, 10),
-        ),
+      // headerFormat: 'yyyy 년 MM 월',
+      // startDate: DateTime(2022, 01, 09),
+      // endDate: DateTime(2022, 08, 10),
+    ),
   ),
   PlutoColumn(
     title: 'column4',
@@ -1091,10 +1091,7 @@ final testColumnsA = [
     enableFilterMenuItem: false,
     enableEditingMode: false,
     renderer: (rendererContext) {
-      return Image.asset(
-        'assets/images/cat.jpg',
-        fit: BoxFit.fitWidth,
-      );
+      return Image.asset('assets/images/cat.jpg', fit: BoxFit.fitWidth);
     },
   ),
   PlutoColumn(
@@ -1108,8 +1105,9 @@ final testColumnsA = [
     width: 80,
     renderer: (rendererContext) {
       return Container(
-        color:
-            rendererContext.cell.value % 2 == 0 ? Colors.yellow : Colors.teal,
+        color: rendererContext.cell.value % 2 == 0
+            ? Colors.yellow
+            : Colors.teal,
       );
     },
   ),
@@ -1132,14 +1130,8 @@ final testColumnGroupsA = [
       ),
     ],
   ),
-  PlutoColumnGroup(
-    title: 'Group B',
-    fields: ['column4', 'column5', 'column6'],
-  ),
-  PlutoColumnGroup(
-    title: 'Group C',
-    fields: ['column7'],
-  ),
+  PlutoColumnGroup(title: 'Group B', fields: ['column4', 'column5', 'column6']),
+  PlutoColumnGroup(title: 'Group C', fields: ['column7']),
 ];
 
 final testColumnGroupsB = [
@@ -1152,21 +1144,11 @@ final testColumnGroupsB = [
     title: 'Group A',
     children: [
       PlutoColumnGroup(title: 'SubA', fields: ['1']),
-      PlutoColumnGroup(
-        title: 'SubB',
-        fields: ['2'],
-        expandedColumn: true,
-      ),
+      PlutoColumnGroup(title: 'SubB', fields: ['2'], expandedColumn: true),
     ],
   ),
-  PlutoColumnGroup(
-    title: 'Group B',
-    fields: ['3', '4', '5'],
-  ),
-  PlutoColumnGroup(
-    title: 'Group C',
-    fields: ['6'],
-  ),
+  PlutoColumnGroup(title: 'Group B', fields: ['3', '4', '5']),
+  PlutoColumnGroup(title: 'Group C', fields: ['6']),
 ];
 
 enum _RestoreAutoSizeOptions {

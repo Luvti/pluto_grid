@@ -3,24 +3,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 void main() {
-  testWidgets(
-    'dark 생성자를 호출 할 수 있어야 한다.',
-    (WidgetTester tester) async {
-      const PlutoGridConfiguration configuration = PlutoGridConfiguration.dark(
-        style: PlutoGridStyleConfig(
-          enableColumnBorderVertical: false,
-        ),
-      );
+  testWidgets('dark 생성자를 호출 할 수 있어야 한다.', (WidgetTester tester) async {
+    const PlutoGridConfiguration configuration = PlutoGridConfiguration.dark(
+      style: PlutoGridStyleConfig(enableColumnBorderVertical: false),
+    );
 
-      expect(configuration.style.enableColumnBorderVertical, false);
-    },
-  );
+    expect(configuration.style.enableColumnBorderVertical, false);
+  });
 
   group('PlutoGridStyleConfig.copyWith', () {
     test('oddRowColor 를 null 로 설정하면 값이 변경 되어야 한다.', () {
-      const style = PlutoGridStyleConfig(
-        oddRowColor: Colors.cyan,
-      );
+      const style = PlutoGridStyleConfig(oddRowColor: Colors.cyan);
 
       final copiedStyle = style.copyWith(
         oddRowColor: const PlutoOptional<Color?>(null),
@@ -30,9 +23,7 @@ void main() {
     });
 
     test('evenRowColor 를 null 로 설정하면 값이 변경 되어야 한다.', () {
-      const style = PlutoGridStyleConfig(
-        evenRowColor: Colors.cyan,
-      );
+      const style = PlutoGridStyleConfig(evenRowColor: Colors.cyan);
 
       final copiedStyle = style.copyWith(
         evenRowColor: const PlutoOptional<Color?>(null),
@@ -69,29 +60,17 @@ void main() {
       const configurationA = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: true,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
-        style: PlutoGridStyleConfig(
-          columnResizeIcon: IconData(0),
-        ),
-        scrollbar: PlutoGridScrollbarConfig(
-          isAlwaysShown: true,
-        ),
-        localeText: PlutoGridLocaleText(
-          setColumnsTitle: 'test',
-        ),
+        style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
+        scrollbar: PlutoGridScrollbarConfig(isAlwaysShown: true),
+        localeText: PlutoGridLocaleText(setColumnsTitle: 'test'),
       );
 
       const configurationB = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: true,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
-        style: PlutoGridStyleConfig(
-          columnResizeIcon: IconData(0),
-        ),
-        scrollbar: PlutoGridScrollbarConfig(
-          isAlwaysShown: true,
-        ),
-        localeText: PlutoGridLocaleText(
-          setColumnsTitle: 'test',
-        ),
+        style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
+        scrollbar: PlutoGridScrollbarConfig(isAlwaysShown: true),
+        localeText: PlutoGridLocaleText(setColumnsTitle: 'test'),
       );
 
       expect(configurationA == configurationB, true);
@@ -101,29 +80,17 @@ void main() {
       const configurationA = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: true,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
-        style: PlutoGridStyleConfig(
-          columnResizeIcon: IconData(0),
-        ),
-        scrollbar: PlutoGridScrollbarConfig(
-          isAlwaysShown: true,
-        ),
-        localeText: PlutoGridLocaleText(
-          setColumnsTitle: 'test',
-        ),
+        style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
+        scrollbar: PlutoGridScrollbarConfig(isAlwaysShown: true),
+        localeText: PlutoGridLocaleText(setColumnsTitle: 'test'),
       );
 
       const configurationB = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: true,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
-        style: PlutoGridStyleConfig(
-          columnResizeIcon: IconData(0),
-        ),
-        scrollbar: PlutoGridScrollbarConfig(
-          isAlwaysShown: true,
-        ),
-        localeText: PlutoGridLocaleText(
-          setColumnsTitle: 'test',
-        ),
+        style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
+        scrollbar: PlutoGridScrollbarConfig(isAlwaysShown: true),
+        localeText: PlutoGridLocaleText(setColumnsTitle: 'test'),
       );
 
       expect(configurationA.hashCode == configurationB.hashCode, true);
@@ -133,29 +100,17 @@ void main() {
       const configurationA = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: true,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
-        style: PlutoGridStyleConfig(
-          columnResizeIcon: IconData(0),
-        ),
-        scrollbar: PlutoGridScrollbarConfig(
-          isAlwaysShown: true,
-        ),
-        localeText: PlutoGridLocaleText(
-          setColumnsTitle: 'test',
-        ),
+        style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
+        scrollbar: PlutoGridScrollbarConfig(isAlwaysShown: true),
+        localeText: PlutoGridLocaleText(setColumnsTitle: 'test'),
       );
 
       const configurationB = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: false,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
-        style: PlutoGridStyleConfig(
-          columnResizeIcon: IconData(0),
-        ),
-        scrollbar: PlutoGridScrollbarConfig(
-          isAlwaysShown: true,
-        ),
-        localeText: PlutoGridLocaleText(
-          setColumnsTitle: 'test',
-        ),
+        style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
+        scrollbar: PlutoGridScrollbarConfig(isAlwaysShown: true),
+        localeText: PlutoGridLocaleText(setColumnsTitle: 'test'),
       );
 
       expect(configurationA == configurationB, false);
@@ -165,29 +120,17 @@ void main() {
       const configurationA = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: true,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
-        style: PlutoGridStyleConfig(
-          columnResizeIcon: IconData(0),
-        ),
-        scrollbar: PlutoGridScrollbarConfig(
-          isAlwaysShown: true,
-        ),
-        localeText: PlutoGridLocaleText(
-          setColumnsTitle: 'test',
-        ),
+        style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
+        scrollbar: PlutoGridScrollbarConfig(isAlwaysShown: true),
+        localeText: PlutoGridLocaleText(setColumnsTitle: 'test'),
       );
 
       const configurationB = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: true,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
-        style: PlutoGridStyleConfig(
-          columnResizeIcon: IconData(0),
-        ),
-        scrollbar: PlutoGridScrollbarConfig(
-          isAlwaysShown: false,
-        ),
-        localeText: PlutoGridLocaleText(
-          setColumnsTitle: 'test',
-        ),
+        style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
+        scrollbar: PlutoGridScrollbarConfig(isAlwaysShown: false),
+        localeText: PlutoGridLocaleText(setColumnsTitle: 'test'),
       );
 
       expect(configurationA == configurationB, false);
@@ -197,29 +140,17 @@ void main() {
       const configurationA = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: true,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
-        style: PlutoGridStyleConfig(
-          columnResizeIcon: IconData(0),
-        ),
-        scrollbar: PlutoGridScrollbarConfig(
-          isAlwaysShown: true,
-        ),
-        localeText: PlutoGridLocaleText(
-          setColumnsTitle: 'setColumnsTitle',
-        ),
+        style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
+        scrollbar: PlutoGridScrollbarConfig(isAlwaysShown: true),
+        localeText: PlutoGridLocaleText(setColumnsTitle: 'setColumnsTitle'),
       );
 
       const configurationB = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: true,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
-        style: PlutoGridStyleConfig(
-          columnResizeIcon: IconData(0),
-        ),
-        scrollbar: PlutoGridScrollbarConfig(
-          isAlwaysShown: true,
-        ),
-        localeText: PlutoGridLocaleText(
-          setColumnsTitle: '컬럼제목설정',
-        ),
+        style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
+        scrollbar: PlutoGridScrollbarConfig(isAlwaysShown: true),
+        localeText: PlutoGridLocaleText(setColumnsTitle: '컬럼제목설정'),
       );
 
       expect(configurationA == configurationB, false);
@@ -396,73 +327,67 @@ void main() {
 
   group('columnFilter', () {
     test('값이 동일한 경우 동등 비교가 true 여야 한다.', () {
-      const columnFilterA = PlutoGridColumnFilterConfig(
-        filters: [
-          ...FilterHelper.defaultFilters,
-        ],
-        debounceMilliseconds: 300,
-      );
+      const PlutoGridColumnFilterConfig columnFilterA =
+          PlutoGridColumnFilterConfig(
+            filters: <PlutoFilterType>[...FilterHelper.defaultStringFilters],
+            debounceMilliseconds: 300,
+          );
 
-      const columnFilterB = PlutoGridColumnFilterConfig(
-        filters: [
-          ...FilterHelper.defaultFilters,
-        ],
-        debounceMilliseconds: 300,
-      );
+      const PlutoGridColumnFilterConfig columnFilterB =
+          PlutoGridColumnFilterConfig(
+            filters: <PlutoFilterType>[...FilterHelper.defaultStringFilters],
+            debounceMilliseconds: 300,
+          );
 
       expect(columnFilterA == columnFilterB, true);
     });
 
     test('값이 동일한 경우 hashCode 비교가 true 여야 한다.', () {
-      const columnFilterA = PlutoGridColumnFilterConfig(
-        filters: [
-          ...FilterHelper.defaultFilters,
-        ],
-        debounceMilliseconds: 300,
-      );
+      const PlutoGridColumnFilterConfig columnFilterA =
+          PlutoGridColumnFilterConfig(
+            filters: <PlutoFilterType>[...FilterHelper.defaultStringFilters],
+            debounceMilliseconds: 300,
+          );
 
-      const columnFilterB = PlutoGridColumnFilterConfig(
-        filters: [
-          ...FilterHelper.defaultFilters,
-        ],
-        debounceMilliseconds: 300,
-      );
+      const PlutoGridColumnFilterConfig columnFilterB =
+          PlutoGridColumnFilterConfig(
+            filters: <PlutoFilterType>[...FilterHelper.defaultStringFilters],
+            debounceMilliseconds: 300,
+          );
 
       expect(columnFilterA.hashCode == columnFilterB.hashCode, true);
     });
 
     test('filters 값이 다른 경우 동등 비교가 false 여야 한다.', () {
-      final columnFilterA = PlutoGridColumnFilterConfig(
-        filters: [
-          ...FilterHelper.defaultFilters,
-        ].reversed.toList(),
-        debounceMilliseconds: 300,
-      );
+      final PlutoGridColumnFilterConfig columnFilterA =
+          PlutoGridColumnFilterConfig(
+            filters: <PlutoFilterType>[
+              ...FilterHelper.defaultStringFilters,
+            ].reversed.toList(),
+            debounceMilliseconds: 300,
+          );
 
-      const columnFilterB = PlutoGridColumnFilterConfig(
-        filters: [
-          ...FilterHelper.defaultFilters,
-        ],
-        debounceMilliseconds: 300,
-      );
+      const PlutoGridColumnFilterConfig columnFilterB =
+          PlutoGridColumnFilterConfig(
+            filters: <PlutoFilterType>[...FilterHelper.defaultStringFilters],
+            debounceMilliseconds: 300,
+          );
 
       expect(columnFilterA == columnFilterB, false);
     });
 
     test('debounceMilliseconds 값이 다른 경우 동등 비교가 false 여야 한다.', () {
-      const columnFilterA = PlutoGridColumnFilterConfig(
-        filters: [
-          ...FilterHelper.defaultFilters,
-        ],
-        debounceMilliseconds: 300,
-      );
+      const PlutoGridColumnFilterConfig columnFilterA =
+          PlutoGridColumnFilterConfig(
+            filters: <PlutoFilterType>[...FilterHelper.defaultStringFilters],
+            debounceMilliseconds: 300,
+          );
 
-      const columnFilterB = PlutoGridColumnFilterConfig(
-        filters: [
-          ...FilterHelper.defaultFilters,
-        ],
-        debounceMilliseconds: 301,
-      );
+      const PlutoGridColumnFilterConfig columnFilterB =
+          PlutoGridColumnFilterConfig(
+            filters: <PlutoFilterType>[...FilterHelper.defaultStringFilters],
+            debounceMilliseconds: 301,
+          );
 
       expect(columnFilterA == columnFilterB, false);
     });

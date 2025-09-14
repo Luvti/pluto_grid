@@ -996,12 +996,14 @@ class PlutoGridColumnFilterConfig {
   bool get hasUserFilter => _userFilters != null && _userFilters.isNotEmpty;
 
   List<PlutoFilterType> get filters =>
-      hasUserFilter ? _userFilters! : FilterHelper.defaultFilters;
+      hasUserFilter ? _userFilters! : FilterHelper.defaultStringFilters;
 
   int get debounceMilliseconds => _debounceMilliseconds;
 
   PlutoFilterType resolver<T>() {
-    return filters.firstWhereOrNull((element) => element.runtimeType == T) ??
+    return filters.firstWhereOrNull(
+          (PlutoFilterType element) => element.runtimeType == T,
+        ) ??
         filters.first;
   }
 
