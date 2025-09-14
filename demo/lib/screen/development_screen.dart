@@ -95,19 +95,7 @@ class _DevelopmentScreenState extends State<DevelopmentScreen> {
     ),
     // localeText: const PlutoGridLocaleText.korean(),
     columnFilter: PlutoGridColumnFilterConfig(
-      filters: (column) {
-        return [
-          if (column.type.isNumber)
-            ...FilterHelper.defaultNumbersFilters
-          else if ((column.type.isDate) || (column.type.isTime))
-            ...FilterHelper.defaultDatesFilters
-          else if (column.type.isSelect)
-            ...FilterHelper.defaultSetFilters
-          else
-            ...FilterHelper.defaultStringFilters,
-          ClassYouImplemented(),
-        ];
-      },
+      filters: [...FilterHelper.defaultStringFilters, ClassYouImplemented()],
       resolveDefaultColumnFilter: (column, resolver) {
         if (column.field == 'column3') {
           return resolver<PlutoFilterTypeGreaterThan>() as PlutoFilterType;

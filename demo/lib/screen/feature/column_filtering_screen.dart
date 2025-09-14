@@ -91,13 +91,11 @@ class _ColumnFilteringScreenState extends State<ColumnFilteringScreen> {
           /// Return the value returned by resolveDefaultColumnFilter through the resolver function.
           /// Prevents errors returning filters that are not in the filters list.
           columnFilter: PlutoGridColumnFilterConfig(
-            filters: (column) {
-              return const [
-                ...FilterHelper.defaultStringFilters,
-                // custom filter
-                ClassYouImplemented(),
-              ];
-            },
+            filters: const [
+              ...FilterHelper.defaultStringFilters,
+              // custom filter
+              ClassYouImplemented(),
+            ],
             resolveDefaultColumnFilter: (column, resolver) {
               if (column.field == 'text') {
                 return resolver<PlutoFilterTypeContains>() as PlutoFilterType;

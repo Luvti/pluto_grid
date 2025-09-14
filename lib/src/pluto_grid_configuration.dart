@@ -1012,7 +1012,10 @@ class PlutoGridColumnFilterConfig {
       return filters.first;
     }
 
-    var resolvedFilter = _userResolveDefaultColumnFilter(column, resolver);
+    final PlutoFilterType resolvedFilter = _userResolveDefaultColumnFilter(
+      column,
+      resolver,
+    );
 
     assert(filters.contains(resolvedFilter));
 
