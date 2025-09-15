@@ -126,6 +126,7 @@ class PlutoGridConfiguration {
     PlutoFilterTypeNotContains.name = localeText.filterNotContains;
     PlutoFilterTypeNotContainsSet.name = localeText.filterNotContains;
     PlutoFilterTypeEquals.name = localeText.filterEquals;
+    PlutoFilterTypeNotEquals.name = localeText.filterNotEquals;
     PlutoFilterTypeStartsWith.name = localeText.filterStartsWith;
     PlutoFilterTypeEndsWith.name = localeText.filterEndsWith;
     PlutoFilterTypeGreaterThan.name = localeText.filterGreaterThan;
@@ -1195,6 +1196,7 @@ class PlutoGridLocaleText {
   final String filterContains;
   final String filterNotContains;
   final String filterEquals;
+  final String filterNotEquals;
   final String filterStartsWith;
   final String filterEndsWith;
   final String filterGreaterThan;
@@ -1244,6 +1246,7 @@ class PlutoGridLocaleText {
     this.filterContains = 'Contains',
     this.filterNotContains = 'Does not contain',
     this.filterEquals = 'Equals',
+    this.filterNotEquals = 'Does not equal',
     this.filterStartsWith = 'Starts with',
     this.filterEndsWith = 'Ends with',
     this.filterGreaterThan = 'Greater than',
@@ -1291,6 +1294,7 @@ class PlutoGridLocaleText {
     this.filterContains = 'Contient',
     this.filterNotContains = 'Ne contient pas',
     this.filterEquals = 'Egal',
+    this.filterNotEquals = 'Différent de',
     this.filterStartsWith = 'Commence par',
     this.filterEndsWith = 'Termine par',
     this.filterGreaterThan = 'Supérieur à',
@@ -1338,6 +1342,7 @@ class PlutoGridLocaleText {
     this.filterContains = '包含',
     this.filterNotContains = '不包含',
     this.filterEquals = '等于',
+    this.filterNotEquals = '不等于',
     this.filterStartsWith = '开始于',
     this.filterEndsWith = '结束于',
     this.filterGreaterThan = '大于',
@@ -1385,6 +1390,7 @@ class PlutoGridLocaleText {
     this.filterContains = '포함',
     this.filterNotContains = '포함하지 않음',
     this.filterEquals = '일치',
+    this.filterNotEquals = '일치하지 않음',
     this.filterStartsWith = '~로 시작',
     this.filterEndsWith = '~로 끝',
     this.filterGreaterThan = '~보다 큰',
@@ -1432,6 +1438,7 @@ class PlutoGridLocaleText {
     this.filterContains = 'Содержит',
     this.filterNotContains = 'Не содержит',
     this.filterEquals = 'Равно',
+    this.filterNotEquals = 'Не равно',
     this.filterStartsWith = 'Начинается с',
     this.filterEndsWith = 'Заканчивается на',
     this.filterGreaterThan = 'Больше чем',
@@ -1479,6 +1486,7 @@ class PlutoGridLocaleText {
     this.filterContains = 'Obsahuje',
     this.filterNotContains = 'Neobsahuje',
     this.filterEquals = 'Rovná se',
+    this.filterNotEquals = 'Nerovná se',
     this.filterStartsWith = 'Začíná na',
     this.filterEndsWith = 'Končí na',
     this.filterGreaterThan = 'Větší než',
@@ -1526,6 +1534,7 @@ class PlutoGridLocaleText {
     this.filterContains = 'Contenha',
     this.filterNotContains = 'Não contém',
     this.filterEquals = 'Igual',
+    this.filterNotEquals = 'Diferente de',
     this.filterStartsWith = 'Inicia com',
     this.filterEndsWith = 'Termina com',
     this.filterGreaterThan = 'Maior que',
@@ -1573,6 +1582,7 @@ class PlutoGridLocaleText {
     this.filterContains = 'Contenga',
     this.filterNotContains = 'No contiene',
     this.filterEquals = 'Igual',
+    this.filterNotEquals = 'Diferente de',
     this.filterStartsWith = 'Empieza con',
     this.filterEndsWith = 'Termina con',
     this.filterGreaterThan = 'Más grande que',
@@ -1620,6 +1630,7 @@ class PlutoGridLocaleText {
     this.filterContains = 'شامل',
     this.filterNotContains = 'شامل نمی شود',
     this.filterEquals = 'برابر',
+    this.filterNotEquals = 'مساوی نیست',
     this.filterStartsWith = 'شروع با',
     this.filterEndsWith = 'خاتمه با',
     this.filterGreaterThan = 'بزرگتر از',
@@ -1667,6 +1678,7 @@ class PlutoGridLocaleText {
     this.filterContains = 'يحتوي',
     this.filterNotContains = 'لا يحتوي',
     this.filterEquals = 'يساوي',
+    this.filterNotEquals = 'لا يساوي',
     this.filterStartsWith = 'يبدأ بـ',
     this.filterEndsWith = 'ينتهي بـ',
     this.filterGreaterThan = 'أكبر من',
@@ -1714,6 +1726,7 @@ class PlutoGridLocaleText {
     this.filterContains = 'Inneholder',
     this.filterNotContains = 'Inneholder ikke',
     this.filterEquals = 'Er lik',
+    this.filterNotEquals = 'Er ikke lik',
     this.filterStartsWith = 'Starter men',
     this.filterEndsWith = 'Ender med',
     this.filterGreaterThan = 'Større enn',
@@ -1761,6 +1774,7 @@ class PlutoGridLocaleText {
     this.filterContains = 'Beinhaltet',
     this.filterNotContains = 'Beinhaltet nicht',
     this.filterEquals = 'Ist gleich',
+    this.filterNotEquals = 'Ist nicht gleich',
     this.filterStartsWith = 'Started mit',
     this.filterEndsWith = 'Endet mit',
     this.filterGreaterThan = 'Größer als',
@@ -1808,6 +1822,7 @@ class PlutoGridLocaleText {
     this.filterContains = 'İçerir',
     this.filterNotContains = 'İçermez',
     this.filterEquals = 'Eşittir',
+    this.filterNotEquals = 'Eşit değildir',
     this.filterStartsWith = 'Başlar',
     this.filterEndsWith = 'Biter',
     this.filterGreaterThan = 'Büyüktür',
@@ -1855,6 +1870,7 @@ class PlutoGridLocaleText {
     this.filterContains = '含む',
     this.filterNotContains = '含まない',
     this.filterEquals = '等しい',
+    this.filterNotEquals = '等しくない',
     this.filterStartsWith = '指定の値で始まる',
     this.filterEndsWith = '指定の値で終わる',
     this.filterGreaterThan = 'より大きい',

@@ -28,6 +28,7 @@ class FilterHelper {
     PlutoFilterTypeContains(),
     PlutoFilterTypeNotContains(),
     PlutoFilterTypeEquals(),
+    PlutoFilterTypeNotEquals(),
     PlutoFilterTypeStartsWith(),
     PlutoFilterTypeEndsWith(),
     PlutoFilterTypeIsEmpty(),
@@ -57,6 +58,13 @@ class FilterHelper {
     PlutoFilterTypeNotContainsSet(),
     PlutoFilterTypeIsEmptySet(),
     PlutoFilterTypeIsNotEmptySet(),
+  ];
+
+  static const List<PlutoFilterType> defaultBoolFilters = <PlutoFilterType>[
+    PlutoFilterTypeEquals(),
+    PlutoFilterTypeNotEquals(),
+    PlutoFilterTypeIsEmpty(),
+    PlutoFilterTypeIsNotEmpty(),
   ];
 
   /// Create a row to contain filter information.
@@ -435,6 +443,21 @@ class FilterHelper {
     );
   }
 
+  /// Whether [search] is not equals to [base].
+  static bool compareNotEquals({
+    required dynamic baseObject,
+    required String? base,
+    required dynamic searchObject,
+    required String? search,
+    required PlutoColumn column,
+  }) {
+    return !_compareWithRegExp(
+      // ignore: prefer_interpolation_to_compose_strings
+      r'^' + RegExp.escape(search!) + r'$',
+      base!,
+    );
+  }
+
   /// Whether [base] starts with [search].
   static bool compareStartsWith({
     required dynamic baseObject,
@@ -538,9 +561,10 @@ class FilterHelper {
   }) {
     switch (type) {
       case PlutoColumnTypeEnum.text:
+        return defaultStringFilters;
       case PlutoColumnTypeEnum.time:
       case PlutoColumnTypeEnum.date:
-        return defaultStringFilters;
+        return defaultDatesFilters;
       case PlutoColumnTypeEnum.currency:
       case PlutoColumnTypeEnum.number:
       case PlutoColumnTypeEnum.double:
@@ -548,12 +572,7 @@ class FilterHelper {
       case PlutoColumnTypeEnum.select:
         return defaultStringFilters;
       case PlutoColumnTypeEnum.bool:
-        return <PlutoFilterType>[
-          const PlutoFilterTypeEquals(),
-          const PlutoFilterTypeIsEmpty(),
-          const PlutoFilterTypeIsNotEmpty(),
-        ];
-      // ignore: unreachable_switch_default
+        return defaultBoolFilters;
       default:
         return defaultStringFilters;
     }
@@ -904,6 +923,19 @@ class PlutoFilterTypeEquals implements PlutoFilterType {
   PlutoCompareFunction get compare => FilterHelper.compareEquals;
 
   const PlutoFilterTypeEquals();
+}
+
+//PlutoFilterTypeNotEquals
+class PlutoFilterTypeNotEquals implements PlutoFilterType {
+  static String name = 'Not equals';
+
+  @override
+  String get title => PlutoFilterTypeNotEquals.name;
+
+  @override
+  PlutoCompareFunction get compare => FilterHelper.compareNotEquals;
+
+  const PlutoFilterTypeNotEquals();
 }
 
 class PlutoFilterTypeStartsWith implements PlutoFilterType {
