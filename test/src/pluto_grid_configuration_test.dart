@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_redundant_argument_values
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
@@ -13,9 +15,11 @@ void main() {
 
   group('PlutoGridStyleConfig.copyWith', () {
     test('oddRowColor 를 null 로 설정하면 값이 변경 되어야 한다.', () {
-      const style = PlutoGridStyleConfig(oddRowColor: Colors.cyan);
+      const PlutoGridStyleConfig style = PlutoGridStyleConfig(
+        oddRowColor: Colors.cyan,
+      );
 
-      final copiedStyle = style.copyWith(
+      final PlutoGridStyleConfig copiedStyle = style.copyWith(
         oddRowColor: const PlutoOptional<Color?>(null),
       );
 
@@ -23,9 +27,11 @@ void main() {
     });
 
     test('evenRowColor 를 null 로 설정하면 값이 변경 되어야 한다.', () {
-      const style = PlutoGridStyleConfig(evenRowColor: Colors.cyan);
+      const PlutoGridStyleConfig style = PlutoGridStyleConfig(
+        evenRowColor: Colors.cyan,
+      );
 
-      final copiedStyle = style.copyWith(
+      final PlutoGridStyleConfig copiedStyle = style.copyWith(
         evenRowColor: const PlutoOptional<Color?>(null),
       );
 
@@ -35,21 +41,25 @@ void main() {
 
   group('PlutoGridColumnSizeConfig.copyWith', () {
     test('autoSizeMode 를 scale 설정하면 값이 변경 되어야 한다.', () {
-      const size = PlutoGridColumnSizeConfig(
+      const PlutoGridColumnSizeConfig size = PlutoGridColumnSizeConfig(
         autoSizeMode: PlutoAutoSizeMode.none,
       );
 
-      final copiedSize = size.copyWith(autoSizeMode: PlutoAutoSizeMode.scale);
+      final PlutoGridColumnSizeConfig copiedSize = size.copyWith(
+        autoSizeMode: PlutoAutoSizeMode.scale,
+      );
 
       expect(copiedSize.autoSizeMode, PlutoAutoSizeMode.scale);
     });
 
     test('resizeMode 를 none 으로 설정하면 값이 변경 되어야 한다.', () {
-      const size = PlutoGridColumnSizeConfig(
+      const PlutoGridColumnSizeConfig size = PlutoGridColumnSizeConfig(
         resizeMode: PlutoResizeMode.normal,
       );
 
-      final copiedSize = size.copyWith(resizeMode: PlutoResizeMode.pushAndPull);
+      final PlutoGridColumnSizeConfig copiedSize = size.copyWith(
+        resizeMode: PlutoResizeMode.pushAndPull,
+      );
 
       expect(copiedSize.resizeMode, PlutoResizeMode.pushAndPull);
     });
@@ -57,7 +67,7 @@ void main() {
 
   group('configuration', () {
     test('configuration 의 값이 동일한 경우 동등 비교가 true 여야 한다.', () {
-      const configurationA = PlutoGridConfiguration(
+      const PlutoGridConfiguration configurationA = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: true,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
         style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
@@ -65,7 +75,7 @@ void main() {
         localeText: PlutoGridLocaleText(setColumnsTitle: 'test'),
       );
 
-      const configurationB = PlutoGridConfiguration(
+      const PlutoGridConfiguration configurationB = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: true,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
         style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
@@ -77,7 +87,7 @@ void main() {
     });
 
     test('configuration 의 값이 동일한 경우 hashCode 비교가 true 여야 한다.', () {
-      const configurationA = PlutoGridConfiguration(
+      const PlutoGridConfiguration configurationA = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: true,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
         style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
@@ -85,7 +95,7 @@ void main() {
         localeText: PlutoGridLocaleText(setColumnsTitle: 'test'),
       );
 
-      const configurationB = PlutoGridConfiguration(
+      const PlutoGridConfiguration configurationB = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: true,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
         style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
@@ -97,7 +107,7 @@ void main() {
     });
 
     test('enableMoveDownAfterSelecting 값이 다른 경우 동등 비교가 false 여야 한다.', () {
-      const configurationA = PlutoGridConfiguration(
+      const PlutoGridConfiguration configurationA = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: true,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
         style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
@@ -105,7 +115,7 @@ void main() {
         localeText: PlutoGridLocaleText(setColumnsTitle: 'test'),
       );
 
-      const configurationB = PlutoGridConfiguration(
+      const PlutoGridConfiguration configurationB = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: false,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
         style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
@@ -117,7 +127,7 @@ void main() {
     });
 
     test('isAlwaysShown 값이 다른 경우 동등 비교가 false 여야 한다.', () {
-      const configurationA = PlutoGridConfiguration(
+      const PlutoGridConfiguration configurationA = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: true,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
         style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
@@ -125,7 +135,7 @@ void main() {
         localeText: PlutoGridLocaleText(setColumnsTitle: 'test'),
       );
 
-      const configurationB = PlutoGridConfiguration(
+      const PlutoGridConfiguration configurationB = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: true,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
         style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
@@ -137,7 +147,7 @@ void main() {
     });
 
     test('localeText 값이 다른 경우 동등 비교가 false 여야 한다.', () {
-      const configurationA = PlutoGridConfiguration(
+      const PlutoGridConfiguration configurationA = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: true,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
         style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
@@ -145,7 +155,7 @@ void main() {
         localeText: PlutoGridLocaleText(setColumnsTitle: 'setColumnsTitle'),
       );
 
-      const configurationB = PlutoGridConfiguration(
+      const PlutoGridConfiguration configurationB = PlutoGridConfiguration(
         enableMoveDownAfterSelecting: true,
         enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveRight,
         style: PlutoGridStyleConfig(columnResizeIcon: IconData(0)),
@@ -159,7 +169,7 @@ void main() {
 
   group('style', () {
     test('값이 동일한 경우 동등 비교가 true 여야 한다.', () {
-      const styleA = PlutoGridStyleConfig(
+      const PlutoGridStyleConfig styleA = PlutoGridStyleConfig(
         enableGridBorderShadow: true,
         oddRowColor: Colors.lightGreen,
         columnTextStyle: TextStyle(fontSize: 20),
@@ -167,7 +177,7 @@ void main() {
         gridBorderRadius: BorderRadius.all(Radius.circular(15)),
       );
 
-      const styleB = PlutoGridStyleConfig(
+      const PlutoGridStyleConfig styleB = PlutoGridStyleConfig(
         enableGridBorderShadow: true,
         oddRowColor: Colors.lightGreen,
         columnTextStyle: TextStyle(fontSize: 20),
@@ -179,7 +189,7 @@ void main() {
     });
 
     test('값이 동일한 경우 hashCode 비교가 true 여야 한다.', () {
-      const styleA = PlutoGridStyleConfig(
+      const PlutoGridStyleConfig styleA = PlutoGridStyleConfig(
         enableGridBorderShadow: true,
         oddRowColor: Colors.lightGreen,
         columnTextStyle: TextStyle(fontSize: 20),
@@ -187,7 +197,7 @@ void main() {
         gridBorderRadius: BorderRadius.all(Radius.circular(15)),
       );
 
-      const styleB = PlutoGridStyleConfig(
+      const PlutoGridStyleConfig styleB = PlutoGridStyleConfig(
         enableGridBorderShadow: true,
         oddRowColor: Colors.lightGreen,
         columnTextStyle: TextStyle(fontSize: 20),
@@ -199,7 +209,7 @@ void main() {
     });
 
     test('enableGridBorderShadow 값이 다른 경우 동등 비교가 false 여야 한다.', () {
-      const styleA = PlutoGridStyleConfig(
+      const PlutoGridStyleConfig styleA = PlutoGridStyleConfig(
         enableGridBorderShadow: true,
         oddRowColor: Colors.lightGreen,
         columnTextStyle: TextStyle(fontSize: 20),
@@ -207,7 +217,7 @@ void main() {
         gridBorderRadius: BorderRadius.all(Radius.circular(15)),
       );
 
-      const styleB = PlutoGridStyleConfig(
+      const PlutoGridStyleConfig styleB = PlutoGridStyleConfig(
         enableGridBorderShadow: false,
         oddRowColor: Colors.lightGreen,
         columnTextStyle: TextStyle(fontSize: 20),
@@ -219,7 +229,7 @@ void main() {
     });
 
     test('oddRowColor 값이 다른 경우 동등 비교가 false 여야 한다.', () {
-      const styleA = PlutoGridStyleConfig(
+      const PlutoGridStyleConfig styleA = PlutoGridStyleConfig(
         enableGridBorderShadow: true,
         oddRowColor: Colors.lightGreen,
         columnTextStyle: TextStyle(fontSize: 20),
@@ -227,7 +237,7 @@ void main() {
         gridBorderRadius: BorderRadius.all(Radius.circular(15)),
       );
 
-      const styleB = PlutoGridStyleConfig(
+      const PlutoGridStyleConfig styleB = PlutoGridStyleConfig(
         enableGridBorderShadow: true,
         oddRowColor: Colors.red,
         columnTextStyle: TextStyle(fontSize: 20),
@@ -239,7 +249,7 @@ void main() {
     });
 
     test('gridBorderRadius 값이 다른 경우 동등 비교가 false 여야 한다.', () {
-      const styleA = PlutoGridStyleConfig(
+      const PlutoGridStyleConfig styleA = PlutoGridStyleConfig(
         enableGridBorderShadow: true,
         oddRowColor: Colors.lightGreen,
         columnTextStyle: TextStyle(fontSize: 20),
@@ -247,7 +257,7 @@ void main() {
         gridBorderRadius: BorderRadius.horizontal(left: Radius.circular(10)),
       );
 
-      const styleB = PlutoGridStyleConfig(
+      const PlutoGridStyleConfig styleB = PlutoGridStyleConfig(
         enableGridBorderShadow: true,
         oddRowColor: Colors.lightGreen,
         columnTextStyle: TextStyle(fontSize: 20),
@@ -261,13 +271,13 @@ void main() {
 
   group('scrollbar', () {
     test('값이 동일한 경우 동등 비교가 true 여야 한다.', () {
-      const scrollA = PlutoGridScrollbarConfig(
+      const PlutoGridScrollbarConfig scrollA = PlutoGridScrollbarConfig(
         draggableScrollbar: true,
         isAlwaysShown: true,
         scrollbarThicknessWhileDragging: 10,
       );
 
-      const scrollB = PlutoGridScrollbarConfig(
+      const PlutoGridScrollbarConfig scrollB = PlutoGridScrollbarConfig(
         draggableScrollbar: true,
         isAlwaysShown: true,
         scrollbarThicknessWhileDragging: 10,
@@ -277,13 +287,13 @@ void main() {
     });
 
     test('값이 동일한 경우 hashCode 비교가 true 여야 한다.', () {
-      const scrollA = PlutoGridScrollbarConfig(
+      const PlutoGridScrollbarConfig scrollA = PlutoGridScrollbarConfig(
         draggableScrollbar: true,
         isAlwaysShown: true,
         scrollbarThicknessWhileDragging: 10,
       );
 
-      const scrollB = PlutoGridScrollbarConfig(
+      const PlutoGridScrollbarConfig scrollB = PlutoGridScrollbarConfig(
         draggableScrollbar: true,
         isAlwaysShown: true,
         scrollbarThicknessWhileDragging: 10,
@@ -293,13 +303,13 @@ void main() {
     });
 
     test('isAlwaysShown 값이 다른 경우 동등 비교가 false 여야 한다.', () {
-      const scrollA = PlutoGridScrollbarConfig(
+      const PlutoGridScrollbarConfig scrollA = PlutoGridScrollbarConfig(
         draggableScrollbar: true,
         isAlwaysShown: true,
         scrollbarThicknessWhileDragging: 10,
       );
 
-      const scrollB = PlutoGridScrollbarConfig(
+      const PlutoGridScrollbarConfig scrollB = PlutoGridScrollbarConfig(
         draggableScrollbar: true,
         isAlwaysShown: false,
         scrollbarThicknessWhileDragging: 10,
@@ -309,13 +319,13 @@ void main() {
     });
 
     test('scrollbarRadiusWhileDragging 값이 다른 경우 동등 비교가 false 여야 한다.', () {
-      const scrollA = PlutoGridScrollbarConfig(
+      const PlutoGridScrollbarConfig scrollA = PlutoGridScrollbarConfig(
         draggableScrollbar: true,
         isAlwaysShown: true,
         scrollbarRadiusWhileDragging: Radius.circular(10),
       );
 
-      const scrollB = PlutoGridScrollbarConfig(
+      const PlutoGridScrollbarConfig scrollB = PlutoGridScrollbarConfig(
         draggableScrollbar: true,
         isAlwaysShown: true,
         scrollbarRadiusWhileDragging: Radius.circular(11),
@@ -327,15 +337,17 @@ void main() {
 
   group('columnFilter', () {
     test('값이 동일한 경우 동등 비교가 true 여야 한다.', () {
-      const PlutoGridColumnFilterConfig columnFilterA =
+      final PlutoGridColumnFilterConfig columnFilterA =
           PlutoGridColumnFilterConfig(
-            filters: <PlutoFilterType>[...FilterHelper.defaultStringFilters],
+            filters: ({required PlutoColumnTypeEnum type, String? field}) =>
+                <PlutoFilterType>[...FilterHelper.defaultStringFilters],
             debounceMilliseconds: 300,
           );
 
-      const PlutoGridColumnFilterConfig columnFilterB =
+      final PlutoGridColumnFilterConfig columnFilterB =
           PlutoGridColumnFilterConfig(
-            filters: <PlutoFilterType>[...FilterHelper.defaultStringFilters],
+            filters: ({required PlutoColumnTypeEnum type, String? field}) =>
+                <PlutoFilterType>[...FilterHelper.defaultStringFilters],
             debounceMilliseconds: 300,
           );
 
@@ -343,15 +355,17 @@ void main() {
     });
 
     test('값이 동일한 경우 hashCode 비교가 true 여야 한다.', () {
-      const PlutoGridColumnFilterConfig columnFilterA =
+      final PlutoGridColumnFilterConfig columnFilterA =
           PlutoGridColumnFilterConfig(
-            filters: <PlutoFilterType>[...FilterHelper.defaultStringFilters],
+            filters: ({required PlutoColumnTypeEnum type, String? field}) =>
+                <PlutoFilterType>[...FilterHelper.defaultStringFilters],
             debounceMilliseconds: 300,
           );
 
-      const PlutoGridColumnFilterConfig columnFilterB =
+      final PlutoGridColumnFilterConfig columnFilterB =
           PlutoGridColumnFilterConfig(
-            filters: <PlutoFilterType>[...FilterHelper.defaultStringFilters],
+            filters: ({required PlutoColumnTypeEnum type, String? field}) =>
+                <PlutoFilterType>[...FilterHelper.defaultStringFilters],
             debounceMilliseconds: 300,
           );
 
@@ -361,15 +375,17 @@ void main() {
     test('filters 값이 다른 경우 동등 비교가 false 여야 한다.', () {
       final PlutoGridColumnFilterConfig columnFilterA =
           PlutoGridColumnFilterConfig(
-            filters: <PlutoFilterType>[
-              ...FilterHelper.defaultStringFilters,
-            ].reversed.toList(),
+            filters: ({required PlutoColumnTypeEnum type, String? field}) =>
+                <PlutoFilterType>[
+                  ...FilterHelper.defaultStringFilters,
+                ].reversed.toList(),
             debounceMilliseconds: 300,
           );
 
-      const PlutoGridColumnFilterConfig columnFilterB =
+      final PlutoGridColumnFilterConfig columnFilterB =
           PlutoGridColumnFilterConfig(
-            filters: <PlutoFilterType>[...FilterHelper.defaultStringFilters],
+            filters: ({required PlutoColumnTypeEnum type, String? field}) =>
+                <PlutoFilterType>[...FilterHelper.defaultStringFilters],
             debounceMilliseconds: 300,
           );
 
@@ -377,15 +393,17 @@ void main() {
     });
 
     test('debounceMilliseconds 값이 다른 경우 동등 비교가 false 여야 한다.', () {
-      const PlutoGridColumnFilterConfig columnFilterA =
+      final PlutoGridColumnFilterConfig columnFilterA =
           PlutoGridColumnFilterConfig(
-            filters: <PlutoFilterType>[...FilterHelper.defaultStringFilters],
+            filters: ({required PlutoColumnTypeEnum type, String? field}) =>
+                <PlutoFilterType>[...FilterHelper.defaultStringFilters],
             debounceMilliseconds: 300,
           );
 
-      const PlutoGridColumnFilterConfig columnFilterB =
+      final PlutoGridColumnFilterConfig columnFilterB =
           PlutoGridColumnFilterConfig(
-            filters: <PlutoFilterType>[...FilterHelper.defaultStringFilters],
+            filters: ({required PlutoColumnTypeEnum type, String? field}) =>
+                <PlutoFilterType>[...FilterHelper.defaultStringFilters],
             debounceMilliseconds: 301,
           );
 
@@ -395,7 +413,7 @@ void main() {
 
   group('columnSize', () {
     test('PlutoGridColumnSizeConfig 의 속성이 동일한 경우 동등 비교가 true 여야 한다.', () {
-      const sizeA = PlutoGridColumnSizeConfig(
+      const PlutoGridColumnSizeConfig sizeA = PlutoGridColumnSizeConfig(
         autoSizeMode: PlutoAutoSizeMode.scale,
         resizeMode: PlutoResizeMode.none,
         restoreAutoSizeAfterHideColumn: true,
@@ -405,7 +423,7 @@ void main() {
         restoreAutoSizeAfterRemoveColumn: false,
       );
 
-      const sizeB = PlutoGridColumnSizeConfig(
+      const PlutoGridColumnSizeConfig sizeB = PlutoGridColumnSizeConfig(
         autoSizeMode: PlutoAutoSizeMode.scale,
         resizeMode: PlutoResizeMode.none,
         restoreAutoSizeAfterHideColumn: true,
@@ -419,7 +437,7 @@ void main() {
     });
 
     test('PlutoGridColumnSizeConfig 의 속성이 동일한 경우 hashCode 비교가 true 여야 한다.', () {
-      const sizeA = PlutoGridColumnSizeConfig(
+      const PlutoGridColumnSizeConfig sizeA = PlutoGridColumnSizeConfig(
         autoSizeMode: PlutoAutoSizeMode.scale,
         resizeMode: PlutoResizeMode.none,
         restoreAutoSizeAfterHideColumn: true,
@@ -429,7 +447,7 @@ void main() {
         restoreAutoSizeAfterRemoveColumn: false,
       );
 
-      const sizeB = PlutoGridColumnSizeConfig(
+      const PlutoGridColumnSizeConfig sizeB = PlutoGridColumnSizeConfig(
         autoSizeMode: PlutoAutoSizeMode.scale,
         resizeMode: PlutoResizeMode.none,
         restoreAutoSizeAfterHideColumn: true,
@@ -443,7 +461,7 @@ void main() {
     });
 
     test('PlutoGridColumnSizeConfig 의 속성이 다른 경우 동등 비교가 false 여야 한다.', () {
-      const sizeA = PlutoGridColumnSizeConfig(
+      const PlutoGridColumnSizeConfig sizeA = PlutoGridColumnSizeConfig(
         autoSizeMode: PlutoAutoSizeMode.scale,
         resizeMode: PlutoResizeMode.none,
         restoreAutoSizeAfterHideColumn: true,
@@ -453,7 +471,7 @@ void main() {
         restoreAutoSizeAfterRemoveColumn: false,
       );
 
-      const sizeB = PlutoGridColumnSizeConfig(
+      const PlutoGridColumnSizeConfig sizeB = PlutoGridColumnSizeConfig(
         autoSizeMode: PlutoAutoSizeMode.scale,
         resizeMode: PlutoResizeMode.none,
         restoreAutoSizeAfterHideColumn: true,
@@ -469,13 +487,13 @@ void main() {
 
   group('locale', () {
     test('locale 값이 동일한 경우 동등 비교가 true 여야 한다.', () {
-      const localeA = PlutoGridLocaleText(
+      const PlutoGridLocaleText localeA = PlutoGridLocaleText(
         unfreezeColumn: '고정해제',
         filterContains: '포함',
         loadingText: '로딩중',
       );
 
-      const localeB = PlutoGridLocaleText(
+      const PlutoGridLocaleText localeB = PlutoGridLocaleText(
         unfreezeColumn: '고정해제',
         filterContains: '포함',
         loadingText: '로딩중',
@@ -485,13 +503,13 @@ void main() {
     });
 
     test('locale 값이 동일한 경우 hashCode 비교가 true 여야 한다.', () {
-      const localeA = PlutoGridLocaleText(
+      const PlutoGridLocaleText localeA = PlutoGridLocaleText(
         unfreezeColumn: '고정해제',
         filterContains: '포함',
         loadingText: '로딩중',
       );
 
-      const localeB = PlutoGridLocaleText(
+      const PlutoGridLocaleText localeB = PlutoGridLocaleText(
         unfreezeColumn: '고정해제',
         filterContains: '포함',
         loadingText: '로딩중',
@@ -501,13 +519,13 @@ void main() {
     });
 
     test('locale 값이 다른 경우 동등 비교가 false 여야 한다.', () {
-      const localeA = PlutoGridLocaleText(
+      const PlutoGridLocaleText localeA = PlutoGridLocaleText(
         unfreezeColumn: '고정해제',
         filterContains: '포함',
         loadingText: '로딩중 입니다.',
       );
 
-      const localeB = PlutoGridLocaleText(
+      const PlutoGridLocaleText localeB = PlutoGridLocaleText(
         unfreezeColumn: '고정해제',
         filterContains: '포함',
         loadingText: '로딩중',
@@ -517,73 +535,74 @@ void main() {
     });
 
     test('china 가 호출 되어야 한다.', () {
-      const locale = PlutoGridLocaleText.china();
+      const PlutoGridLocaleText locale = PlutoGridLocaleText.china();
 
       expect(locale.loadingText, '加载中');
     });
 
     test('korean 이 호출 되어야 한다.', () {
-      const locale = PlutoGridLocaleText.korean();
+      const PlutoGridLocaleText locale = PlutoGridLocaleText.korean();
 
       expect(locale.loadingText, '로딩중');
     });
 
     test('russian 이 호출 되어야 한다.', () {
-      const locale = PlutoGridLocaleText.russian();
+      const PlutoGridLocaleText locale = PlutoGridLocaleText.russian();
 
       expect(locale.loadingText, 'Загрузка');
     });
 
     test('czech 이 호출 되어야 한다.', () {
-      const locale = PlutoGridLocaleText.czech();
+      const PlutoGridLocaleText locale = PlutoGridLocaleText.czech();
 
       expect(locale.loadingText, 'Načítání');
     });
 
     test('brazilianPortuguese 이 호출 되어야 한다.', () {
-      const locale = PlutoGridLocaleText.brazilianPortuguese();
+      const PlutoGridLocaleText locale =
+          PlutoGridLocaleText.brazilianPortuguese();
 
       expect(locale.loadingText, 'Carregando');
     });
 
     test('spanish 이 호출 되어야 한다.', () {
-      const locale = PlutoGridLocaleText.spanish();
+      const PlutoGridLocaleText locale = PlutoGridLocaleText.spanish();
 
       expect(locale.loadingText, 'Cargando');
     });
 
     test('persian 이 호출 되어야 한다.', () {
-      const locale = PlutoGridLocaleText.persian();
+      const PlutoGridLocaleText locale = PlutoGridLocaleText.persian();
 
       expect(locale.loadingText, 'در حال بارگیری');
     });
 
     test('arabic 이 호출 되어야 한다.', () {
-      const locale = PlutoGridLocaleText.arabic();
+      const PlutoGridLocaleText locale = PlutoGridLocaleText.arabic();
 
       expect(locale.loadingText, 'جاري التحميل');
     });
 
     test('norway 이 호출 되어야 한다.', () {
-      const locale = PlutoGridLocaleText.norway();
+      const PlutoGridLocaleText locale = PlutoGridLocaleText.norway();
 
       expect(locale.loadingText, 'Laster');
     });
 
     test('german 이 호출 되어야 한다.', () {
-      const locale = PlutoGridLocaleText.german();
+      const PlutoGridLocaleText locale = PlutoGridLocaleText.german();
 
       expect(locale.loadingText, 'Lädt');
     });
 
     test('turkish 이 호출 되어야 한다.', () {
-      const locale = PlutoGridLocaleText.turkish();
+      const PlutoGridLocaleText locale = PlutoGridLocaleText.turkish();
 
       expect(locale.loadingText, 'Yükleniyor');
     });
 
     test('japanese 이 호출 되어야 한다.', () {
-      const locale = PlutoGridLocaleText.japanese();
+      const PlutoGridLocaleText locale = PlutoGridLocaleText.japanese();
 
       expect(locale.loadingText, 'にゃ〜');
     });

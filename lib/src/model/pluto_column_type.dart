@@ -4,16 +4,27 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
+enum PlutoColumnTypeEnum {
+  text,
+  bool,
+  number,
+  currency,
+  select,
+  date,
+  time,
+  double,
+}
+
 abstract class PlutoColumnType {
+  const PlutoColumnType({required this.type});
+
   dynamic get defaultValue;
 
+  final PlutoColumnTypeEnum type;
+
   /// Set as a string column.
-  factory PlutoColumnType.text({
-    dynamic defaultValue = '',
-  }) {
-    return PlutoColumnTypeText(
-      defaultValue: defaultValue,
-    );
+  factory PlutoColumnType.text({dynamic defaultValue = ''}) {
+    return PlutoColumnTypeText(defaultValue: defaultValue);
   }
 
   /// Set as a bool column.
@@ -126,12 +137,13 @@ abstract class PlutoColumnType {
     Widget Function(dynamic item)? builder,
   }) {
     return PlutoColumnTypeSelect(
-        onItemSelected: onItemSelected ?? (event) {},
-        defaultValue: defaultValue,
-        items: items,
-        enableColumnFilter: enableColumnFilter,
-        popupIcon: popupIcon,
-        builder: builder);
+      onItemSelected: onItemSelected ?? (event) {},
+      defaultValue: defaultValue,
+      items: items,
+      enableColumnFilter: enableColumnFilter,
+      popupIcon: popupIcon,
+      builder: builder,
+    );
   }
 
   /// Set as a date column.
@@ -260,12 +272,13 @@ extension PlutoColumnTypeExtension on PlutoColumnType {
       hasFormat ? (this as PlutoColumnTypeHasFormat).applyFormat(value) : value;
 }
 
-class PlutoColumnTypeText implements PlutoColumnType {
+class PlutoColumnTypeText extends PlutoColumnType {
   @override
   final dynamic defaultValue;
 
   const PlutoColumnTypeText({
     this.defaultValue,
+    super.type = PlutoColumnTypeEnum.text,
   });
 
   @override
@@ -284,12 +297,13 @@ class PlutoColumnTypeText implements PlutoColumnType {
   }
 }
 
-class PlutoColumnTypeBool implements PlutoColumnType {
+class PlutoColumnTypeBool extends PlutoColumnType {
   @override
   final dynamic defaultValue;
 
   const PlutoColumnTypeBool({
     this.defaultValue,
+    super.type = PlutoColumnTypeEnum.bool,
   });
 
   @override
@@ -329,6 +343,9 @@ class PlutoColumnTypeNumber
   @override
   final String? locale;
 
+  @override
+  final PlutoColumnTypeEnum type = PlutoColumnTypeEnum.number;
+
   PlutoColumnTypeNumber({
     this.defaultValue,
     required this.negative,
@@ -336,8 +353,8 @@ class PlutoColumnTypeNumber
     required this.applyFormatOnInit,
     required this.allowFirstDot,
     required this.locale,
-  })  : numberFormat = intl.NumberFormat(format, locale),
-        decimalPoint = _getDecimalPoint(format);
+  }) : numberFormat = intl.NumberFormat(format, locale),
+       decimalPoint = _getDecimalPoint(format);
 
   @override
   final intl.NumberFormat numberFormat;
@@ -373,6 +390,9 @@ class PlutoColumnTypeDouble
   @override
   final String? locale;
 
+  @override
+  final PlutoColumnTypeEnum type = PlutoColumnTypeEnum.double;
+
   PlutoColumnTypeDouble({
     required this.negative,
     required this.format,
@@ -380,8 +400,8 @@ class PlutoColumnTypeDouble
     required this.allowFirstDot,
     required this.locale,
     this.defaultValue,
-  })  : numberFormat = intl.NumberFormat(format, locale),
-        decimalPoint = _getDecimalPoint(format);
+  }) : numberFormat = intl.NumberFormat(format, locale),
+       decimalPoint = _getDecimalPoint(format);
 
   @override
   final intl.NumberFormat numberFormat;
@@ -420,7 +440,8 @@ class PlutoColumnTypeCurrency
   final String? name;
 
   final String? symbol;
-
+  @override
+  final PlutoColumnTypeEnum type = PlutoColumnTypeEnum.currency;
   PlutoColumnTypeCurrency({
     this.defaultValue,
     required this.negative,
@@ -432,12 +453,12 @@ class PlutoColumnTypeCurrency
     this.symbol,
     int? decimalDigits,
   }) : numberFormat = intl.NumberFormat.currency(
-          locale: locale,
-          name: name,
-          symbol: symbol,
-          decimalDigits: decimalDigits,
-          customPattern: format,
-        ) {
+         locale: locale,
+         name: name,
+         symbol: symbol,
+         decimalDigits: decimalDigits,
+         customPattern: format,
+       ) {
     decimalPoint = numberFormat.decimalDigits ?? defaultValue;
   }
 
@@ -461,15 +482,19 @@ class PlutoColumnTypeSelect
   final Function(PlutoGridOnSelectedEvent event) onItemSelected;
 
   @override
+  final PlutoColumnTypeEnum type = PlutoColumnTypeEnum.select;
+
+  @override
   final IconData? popupIcon;
 
-  const PlutoColumnTypeSelect(
-      {required this.onItemSelected,
-      this.defaultValue,
-      required this.items,
-      required this.enableColumnFilter,
-      this.popupIcon,
-      this.builder});
+  const PlutoColumnTypeSelect({
+    required this.onItemSelected,
+    this.defaultValue,
+    required this.items,
+    required this.enableColumnFilter,
+    this.popupIcon,
+    this.builder,
+  });
 
   @override
   bool isValid(dynamic value) => items.contains(value) == true;
@@ -512,6 +537,9 @@ class PlutoColumnTypeDate
   @override
   final IconData? popupIcon;
 
+  @override
+  final PlutoColumnTypeEnum type = PlutoColumnTypeEnum.date;
+
   PlutoColumnTypeDate({
     this.defaultValue,
     this.startDate,
@@ -520,8 +548,8 @@ class PlutoColumnTypeDate
     required this.headerFormat,
     required this.applyFormatOnInit,
     this.popupIcon,
-  })  : dateFormat = intl.DateFormat(format),
-        headerDateFormat = intl.DateFormat(headerFormat);
+  }) : dateFormat = intl.DateFormat(format),
+       headerDateFormat = intl.DateFormat(headerFormat);
 
   @override
   final intl.DateFormat dateFormat;
@@ -588,8 +616,9 @@ class PlutoColumnTypeDate
       return '';
     }
 
-    final DateTime? parseValue =
-        value is DateTime ? value : DateTime.tryParse(value.toString());
+    final DateTime? parseValue = value is DateTime
+        ? value
+        : DateTime.tryParse(value.toString());
 
     if (parseValue == null) {
       return '';
@@ -607,12 +636,12 @@ class PlutoColumnTypeTime
   @override
   final IconData? popupIcon;
 
-  const PlutoColumnTypeTime({
-    this.defaultValue,
-    this.popupIcon,
-  });
+  const PlutoColumnTypeTime({this.defaultValue, this.popupIcon});
 
   static final RegExp _timeFormat = RegExp(r'^([0-1]?\d|2[0-3]):[0-5]\d$');
+
+  @override
+  final PlutoColumnTypeEnum type = PlutoColumnTypeEnum.time;
 
   @override
   bool isValid(dynamic value) {
@@ -690,8 +719,9 @@ mixin PlutoColumnTypeWithNumberFormat {
     return _compareWithNull(
       a,
       b,
-      () => (a is num ? a : toNumber(a.toString()))
-          .compareTo(b is num ? b : toNumber(b.toString())),
+      () => (a is num ? a : toNumber(a.toString())).compareTo(
+        b is num ? b : toNumber(b.toString()),
+      ),
     );
   }
 
@@ -702,7 +732,8 @@ mixin PlutoColumnTypeWithNumberFormat {
   }
 
   String applyFormat(dynamic value) {
-    num? number = num.tryParse(
+    num? number =
+        num.tryParse(
           value.toString().replaceAll(numberFormat.symbols.DECIMAL_SEP, '.'),
         ) ??
         defaultValue;
@@ -748,17 +779,13 @@ mixin PlutoColumnTypeWithNumberFormat {
   }
 }
 
-int _compareWithNull(
-  dynamic a,
-  dynamic b,
-  int Function() resolve,
-) {
+int _compareWithNull(dynamic a, dynamic b, int Function() resolve) {
   if (a == null || b == null) {
     return a == b
         ? 0
         : a == null
-            ? -1
-            : 1;
+        ? -1
+        : 1;
   }
 
   return resolve();
@@ -793,8 +820,9 @@ mixin PlutoColumnTypeWithDoubleFormat {
     return _compareWithNull(
       a,
       b,
-      () => (a is double ? a : toDouble(a.toString()))
-          .compareTo(b is double ? b : toDouble(b.toString())),
+      () => (a is double ? a : toDouble(a.toString())).compareTo(
+        b is double ? b : toDouble(b.toString()),
+      ),
     );
   }
 
@@ -805,7 +833,8 @@ mixin PlutoColumnTypeWithDoubleFormat {
   }
 
   String applyFormat(dynamic value) {
-    double number = double.tryParse(
+    double number =
+        double.tryParse(
           value.toString().replaceAll(numberFormat.symbols.DECIMAL_SEP, '.'),
         ) ??
         defaultValue;

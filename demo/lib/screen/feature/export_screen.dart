@@ -225,7 +225,7 @@ class _HeaderState extends State<_Header> {
     String savedFile = await FileSaver.instance.saveFile(
       name: title,
       bytes: exported,
-      fileExtension: ".csv",
+      ext: ".csv",
     );
     if (!mounted) return;
     String msg = 'Exported successfully';

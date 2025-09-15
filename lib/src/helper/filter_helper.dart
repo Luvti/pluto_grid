@@ -532,6 +532,32 @@ class FilterHelper {
   }) {
     return base != null && base.isNotEmpty;
   }
+
+  static List<PlutoFilterType> defaultFilter({
+    required PlutoColumnTypeEnum type,
+  }) {
+    switch (type) {
+      case PlutoColumnTypeEnum.text:
+      case PlutoColumnTypeEnum.time:
+      case PlutoColumnTypeEnum.date:
+        return defaultStringFilters;
+      case PlutoColumnTypeEnum.currency:
+      case PlutoColumnTypeEnum.number:
+      case PlutoColumnTypeEnum.double:
+        return defaultNumbersFilters;
+      case PlutoColumnTypeEnum.select:
+        return defaultStringFilters;
+      case PlutoColumnTypeEnum.bool:
+        return <PlutoFilterType>[
+          const PlutoFilterTypeEquals(),
+          const PlutoFilterTypeIsEmpty(),
+          const PlutoFilterTypeIsNotEmpty(),
+        ];
+      // ignore: unreachable_switch_default
+      default:
+        return defaultStringFilters;
+    }
+  }
 }
 
 /// State for calling filter pop
@@ -682,7 +708,13 @@ class FilterPopupState {
       PlutoColumn(
         title: configuration.localeText.filterType.toUpperCase(),
         field: FilterHelper.filterFieldType,
-        type: PlutoColumnType.select(configuration.columnFilter.filters),
+        type: PlutoColumnType.select(
+          configuration.columnFilter.filters(
+                type: PlutoColumnTypeEnum.select,
+                field: FilterHelper.filterFieldType,
+              ) ??
+              [],
+        ),
         enableFilterMenuItem: false,
         applyFormatterInEditing: true,
         formatter: (dynamic value) {

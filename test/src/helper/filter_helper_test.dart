@@ -12,71 +12,53 @@ import '../../mock/shared_mocks.mocks.dart';
 
 void main() {
   group('createFilterRow', () {
-    test(
-      'When called without arguments,'
-      'Should be returned a row filled with default values.',
-      () {
-        var row = FilterHelper.createFilterRow();
+    test('When called without arguments,'
+        'Should be returned a row filled with default values.', () {
+      var row = FilterHelper.createFilterRow();
 
-        expect(row.cells.length, 3);
+      expect(row.cells.length, 3);
 
-        expect(
-          row.cells[FilterHelper.filterFieldColumn]!.value,
-          FilterHelper.filterFieldAllColumns,
-        );
+      expect(
+        row.cells[FilterHelper.filterFieldColumn]!.value,
+        FilterHelper.filterFieldAllColumns,
+      );
 
-        expect(
-          row.cells[FilterHelper.filterFieldType]!.value,
-          isA<PlutoFilterTypeContains>(),
-        );
+      expect(
+        row.cells[FilterHelper.filterFieldType]!.value,
+        isA<PlutoFilterTypeContains>(),
+      );
 
-        expect(
-          row.cells[FilterHelper.filterFieldValue]!.value,
-          '',
-        );
-      },
-    );
+      expect(row.cells[FilterHelper.filterFieldValue]!.value, '');
+    });
 
-    test(
-      'When called with arguments,'
-      'Should be returned a row filled with arguments.',
-      () {
-        var filter = const PlutoFilterTypeEndsWith();
+    test('When called with arguments,'
+        'Should be returned a row filled with arguments.', () {
+      var filter = const PlutoFilterTypeEndsWith();
 
-        var row = FilterHelper.createFilterRow(
-          columnField: 'filterColumnField',
-          filterType: filter,
-          filterValue: 'abc',
-        );
+      var row = FilterHelper.createFilterRow(
+        columnField: 'filterColumnField',
+        filterType: filter,
+        filterValue: 'abc',
+      );
 
-        expect(row.cells.length, 3);
+      expect(row.cells.length, 3);
 
-        expect(
-          row.cells[FilterHelper.filterFieldColumn]!.value,
-          'filterColumnField',
-        );
+      expect(
+        row.cells[FilterHelper.filterFieldColumn]!.value,
+        'filterColumnField',
+      );
 
-        expect(
-          row.cells[FilterHelper.filterFieldType]!.value,
-          filter,
-        );
+      expect(row.cells[FilterHelper.filterFieldType]!.value, filter);
 
-        expect(
-          row.cells[FilterHelper.filterFieldValue]!.value,
-          'abc',
-        );
-      },
-    );
+      expect(row.cells[FilterHelper.filterFieldValue]!.value, 'abc');
+    });
   });
 
   group('convertRowsToFilter', () {
-    test(
-      'When called with empty rows, '
-      'Should be returned null.',
-      () {
-        expect(FilterHelper.convertRowsToFilter([], []), isNull);
-      },
-    );
+    test('When called with empty rows, '
+        'Should be returned null.', () {
+      expect(FilterHelper.convertRowsToFilter([], []), isNull);
+    });
 
     group('with rows.', () {
       List<PlutoColumn>? columns;
@@ -95,139 +77,113 @@ void main() {
         );
       });
 
-      test(
-        'filterFieldColumn : All, '
-        'filterFieldType : Contains, '
-        'filterFieldValue : column1, '
-        'true',
-        () {
-          var filterRows = [
-            FilterHelper.createFilterRow(
-              filterValue: 'column1',
-            )
-          ];
+      test('filterFieldColumn : All, '
+          'filterFieldType : Contains, '
+          'filterFieldValue : column1, '
+          'true', () {
+        var filterRows = [FilterHelper.createFilterRow(filterValue: 'column1')];
 
-          var enabledFilterColumns = columns;
+        var enabledFilterColumns = columns;
 
-          expect(
-            FilterHelper.convertRowsToFilter(
-              filterRows,
-              enabledFilterColumns,
-            )!(row),
-            isTrue,
-          );
-        },
-      );
+        expect(
+          FilterHelper.convertRowsToFilter(filterRows, enabledFilterColumns)!(
+            row,
+          ),
+          isTrue,
+        );
+      });
 
-      test(
-        'filterFieldColumn : column2, '
-        'filterFieldType : Contains, '
-        'filterFieldValue : column1, '
-        'false',
-        () {
-          var filterRows = [
-            FilterHelper.createFilterRow(
-              columnField: 'column2',
-              filterValue: 'column1',
-            )
-          ];
+      test('filterFieldColumn : column2, '
+          'filterFieldType : Contains, '
+          'filterFieldValue : column1, '
+          'false', () {
+        var filterRows = [
+          FilterHelper.createFilterRow(
+            columnField: 'column2',
+            filterValue: 'column1',
+          ),
+        ];
 
-          var enabledFilterColumns = columns;
+        var enabledFilterColumns = columns;
 
-          expect(
-            FilterHelper.convertRowsToFilter(
-              filterRows,
-              enabledFilterColumns,
-            )!(row),
-            isFalse,
-          );
-        },
-      );
+        expect(
+          FilterHelper.convertRowsToFilter(filterRows, enabledFilterColumns)!(
+            row,
+          ),
+          isFalse,
+        );
+      });
 
-      test(
-        'filterFieldColumn : column1, '
-        'filterFieldType : StartsWith, '
-        'filterFieldValue : column1, '
-        'true',
-        () {
-          var filterRows = [
-            FilterHelper.createFilterRow(
-              columnField: 'column1',
-              filterType: const PlutoFilterTypeStartsWith(),
-              filterValue: 'column1',
-            )
-          ];
+      test('filterFieldColumn : column1, '
+          'filterFieldType : StartsWith, '
+          'filterFieldValue : column1, '
+          'true', () {
+        var filterRows = [
+          FilterHelper.createFilterRow(
+            columnField: 'column1',
+            filterType: const PlutoFilterTypeStartsWith(),
+            filterValue: 'column1',
+          ),
+        ];
 
-          var enabledFilterColumns = columns;
+        var enabledFilterColumns = columns;
 
-          expect(
-            FilterHelper.convertRowsToFilter(
-              filterRows,
-              enabledFilterColumns,
-            )!(row),
-            isTrue,
-          );
-        },
-      );
+        expect(
+          FilterHelper.convertRowsToFilter(filterRows, enabledFilterColumns)!(
+            row,
+          ),
+          isTrue,
+        );
+      });
 
-      test(
-        'column1 이 enabledFilterColumns 에 존재하지 않을 때, '
-        'filterFieldColumn : column1, '
-        'filterFieldType : Contains, '
-        'filterFieldValue : column1, '
-        'false',
-        () {
-          var filterRows = [
-            FilterHelper.createFilterRow(
-              columnField: 'column1',
-              filterType: const PlutoFilterTypeContains(),
-              filterValue: 'column1',
-            )
-          ];
+      test('column1 이 enabledFilterColumns 에 존재하지 않을 때, '
+          'filterFieldColumn : column1, '
+          'filterFieldType : Contains, '
+          'filterFieldValue : column1, '
+          'false', () {
+        var filterRows = [
+          FilterHelper.createFilterRow(
+            columnField: 'column1',
+            filterType: const PlutoFilterTypeContains(),
+            filterValue: 'column1',
+          ),
+        ];
 
-          columns!.removeWhere((element) => element.field == 'column1');
+        columns!.removeWhere((element) => element.field == 'column1');
 
-          var enabledFilterColumns = columns;
+        var enabledFilterColumns = columns;
 
-          expect(
-            FilterHelper.convertRowsToFilter(
-              filterRows,
-              enabledFilterColumns,
-            )!(row),
-            isFalse,
-          );
-        },
-      );
+        expect(
+          FilterHelper.convertRowsToFilter(filterRows, enabledFilterColumns)!(
+            row,
+          ),
+          isFalse,
+        );
+      });
 
-      test(
-        'filterFieldColumn : All, '
-        'filterFieldType : StartsWith, '
-        'filterFieldValue : column1, '
-        'enabledFilterColumnFields : [column3]'
-        'false',
-        () {
-          var filterRows = [
-            FilterHelper.createFilterRow(
-              filterType: const PlutoFilterTypeStartsWith(),
-              filterValue: 'column1',
-            )
-          ];
+      test('filterFieldColumn : All, '
+          'filterFieldType : StartsWith, '
+          'filterFieldValue : column1, '
+          'enabledFilterColumnFields : [column3]'
+          'false', () {
+        var filterRows = [
+          FilterHelper.createFilterRow(
+            filterType: const PlutoFilterTypeStartsWith(),
+            filterValue: 'column1',
+          ),
+        ];
 
-          var enabledFilterColumns = columns!
-              .where(
-                (element) => element.field == 'column3',
-              )
-              .toList();
+        var enabledFilterColumns = columns!
+            .where((element) => element.field == 'column3')
+            .toList();
 
-          expect(
-            FilterHelper.convertRowsToFilter(
-              filterRows,
-              enabledFilterColumns,
-            )!(row),
-            isFalse,
-          );
-        },
-      );
+        expect(
+          FilterHelper.convertRowsToFilter(filterRows, enabledFilterColumns)!(
+            row,
+          ),
+          isFalse,
+        );
+      });
     });
   });
 
@@ -243,115 +199,139 @@ void main() {
 
     test('filterRows 가 설정 되어 있으면 Map 에 값이 설정되어 리턴되어야 한다.', () {
       final List<PlutoRow> filterRows = [
-        PlutoRow(cells: {
-          FilterHelper.filterFieldColumn: PlutoCell(value: 'column'),
-          FilterHelper.filterFieldType: PlutoCell(
-            value: const PlutoFilterTypeContains(),
-          ),
-          FilterHelper.filterFieldValue: PlutoCell(value: '123'),
-        }),
+        PlutoRow(
+          cells: {
+            FilterHelper.filterFieldColumn: PlutoCell(value: 'column'),
+            FilterHelper.filterFieldType: PlutoCell(
+              value: const PlutoFilterTypeContains(),
+            ),
+            FilterHelper.filterFieldValue: PlutoCell(value: '123'),
+          },
+        ),
       ];
 
       final result = FilterHelper.convertRowsToMap(filterRows);
 
       expect(result.length, 1);
-      expect(result, PlutoObjectMatcher<Map<String, List<Map<String, String>>>>(
-        rule: (value) {
-          return value.keys.first == 'column' &&
-              value.values.first[0].keys.first ==
-                  PlutoFilterTypeContains.name &&
-              value.values.first[0].values.first == '123';
-        },
-      ));
+      expect(
+        result,
+        PlutoObjectMatcher<Map<String, List<Map<String, String>>>>(
+          rule: (value) {
+            return value.keys.first == 'column' &&
+                value.values.first[0].keys.first ==
+                    PlutoFilterTypeContains.name &&
+                value.values.first[0].values.first == '123';
+          },
+        ),
+      );
     });
 
-    test(
-        'filterRows 에 동일한 컬럼의 조건이 2개 설정 되어 있으면, '
+    test('filterRows 에 동일한 컬럼의 조건이 2개 설정 되어 있으면, '
         'Map 에 값이 설정되어 리턴되어야 한다.', () {
       final List<PlutoRow> filterRows = [
-        PlutoRow(cells: {
-          FilterHelper.filterFieldColumn: PlutoCell(value: 'column'),
-          FilterHelper.filterFieldType: PlutoCell(
-            value: const PlutoFilterTypeContains(),
-          ),
-          FilterHelper.filterFieldValue: PlutoCell(value: '123'),
-        }),
-        PlutoRow(cells: {
-          FilterHelper.filterFieldColumn: PlutoCell(value: 'column'),
-          FilterHelper.filterFieldType: PlutoCell(
-            value: const PlutoFilterTypeEndsWith(),
-          ),
-          FilterHelper.filterFieldValue: PlutoCell(value: '456'),
-        }),
+        PlutoRow(
+          cells: {
+            FilterHelper.filterFieldColumn: PlutoCell(value: 'column'),
+            FilterHelper.filterFieldType: PlutoCell(
+              value: const PlutoFilterTypeContains(),
+            ),
+            FilterHelper.filterFieldValue: PlutoCell(value: '123'),
+          },
+        ),
+        PlutoRow(
+          cells: {
+            FilterHelper.filterFieldColumn: PlutoCell(value: 'column'),
+            FilterHelper.filterFieldType: PlutoCell(
+              value: const PlutoFilterTypeEndsWith(),
+            ),
+            FilterHelper.filterFieldValue: PlutoCell(value: '456'),
+          },
+        ),
       ];
 
       final result = FilterHelper.convertRowsToMap(filterRows);
 
       expect(result.length, 1);
-      expect(result, PlutoObjectMatcher<Map<String, List<Map<String, String>>>>(
-        rule: (value) {
-          return value.keys.contains('column') &&
-              value['column']!.length == 2 &&
-              value['column']![0].keys.contains(PlutoFilterTypeContains.name) &&
-              value['column']![0].values.contains('123') &&
-              value['column']![1].keys.contains(PlutoFilterTypeEndsWith.name) &&
-              value['column']![1].values.contains('456');
-        },
-      ));
+      expect(
+        result,
+        PlutoObjectMatcher<Map<String, List<Map<String, String>>>>(
+          rule: (value) {
+            return value.keys.contains('column') &&
+                value['column']!.length == 2 &&
+                value['column']![0].keys.contains(
+                  PlutoFilterTypeContains.name,
+                ) &&
+                value['column']![0].values.contains('123') &&
+                value['column']![1].keys.contains(
+                  PlutoFilterTypeEndsWith.name,
+                ) &&
+                value['column']![1].values.contains('456');
+          },
+        ),
+      );
     });
 
-    test(
-        'filtering 조건에 모든 컬럼 조건이 포함 되어 있으면, '
+    test('filtering 조건에 모든 컬럼 조건이 포함 되어 있으면, '
         'Map 에 기본값 all 로 설정되어 리턴되어야 한다.', () {
       final List<PlutoRow> filterRows = [
-        PlutoRow(cells: {
-          FilterHelper.filterFieldColumn: PlutoCell(value: 'column'),
-          FilterHelper.filterFieldType: PlutoCell(
-            value: const PlutoFilterTypeContains(),
-          ),
-          FilterHelper.filterFieldValue: PlutoCell(value: '123'),
-        }),
-        PlutoRow(cells: {
-          FilterHelper.filterFieldColumn: PlutoCell(
-            value: FilterHelper.filterFieldAllColumns,
-          ),
-          FilterHelper.filterFieldType: PlutoCell(
-            value: const PlutoFilterTypeContains(),
-          ),
-          FilterHelper.filterFieldValue: PlutoCell(value: '123'),
-        }),
+        PlutoRow(
+          cells: {
+            FilterHelper.filterFieldColumn: PlutoCell(value: 'column'),
+            FilterHelper.filterFieldType: PlutoCell(
+              value: const PlutoFilterTypeContains(),
+            ),
+            FilterHelper.filterFieldValue: PlutoCell(value: '123'),
+          },
+        ),
+        PlutoRow(
+          cells: {
+            FilterHelper.filterFieldColumn: PlutoCell(
+              value: FilterHelper.filterFieldAllColumns,
+            ),
+            FilterHelper.filterFieldType: PlutoCell(
+              value: const PlutoFilterTypeContains(),
+            ),
+            FilterHelper.filterFieldValue: PlutoCell(value: '123'),
+          },
+        ),
       ];
 
       final result = FilterHelper.convertRowsToMap(filterRows);
 
       expect(result.length, 2);
-      expect(result, PlutoObjectMatcher<Map<String, List<Map<String, String>>>>(
-        rule: (value) {
-          return value.containsKey('all');
-        },
-      ));
+      expect(
+        result,
+        PlutoObjectMatcher<Map<String, List<Map<String, String>>>>(
+          rule: (value) {
+            return value.containsKey('all');
+          },
+        ),
+      );
     });
 
-    test(
-        'allField 을 allColumns 로 변경하면, '
+    test('allField 을 allColumns 로 변경하면, '
         'Map 에 기본값 allColumns 로 설정되어 리턴되어야 한다.', () {
       final List<PlutoRow> filterRows = [
-        PlutoRow(cells: {
-          FilterHelper.filterFieldColumn: PlutoCell(value: 'column'),
-          FilterHelper.filterFieldType: PlutoCell(
-            value: const PlutoFilterTypeContains(),
-          ),
-          FilterHelper.filterFieldValue: PlutoCell(value: '123'),
-        }),
-        PlutoRow(cells: {
-          FilterHelper.filterFieldColumn: PlutoCell(
-            value: FilterHelper.filterFieldAllColumns,
-          ),
-          FilterHelper.filterFieldType: PlutoCell(
-            value: const PlutoFilterTypeContains(),
-          ),
-          FilterHelper.filterFieldValue: PlutoCell(value: '123'),
-        }),
+        PlutoRow(
+          cells: {
+            FilterHelper.filterFieldColumn: PlutoCell(value: 'column'),
+            FilterHelper.filterFieldType: PlutoCell(
+              value: const PlutoFilterTypeContains(),
+            ),
+            FilterHelper.filterFieldValue: PlutoCell(value: '123'),
+          },
+        ),
+        PlutoRow(
+          cells: {
+            FilterHelper.filterFieldColumn: PlutoCell(
+              value: FilterHelper.filterFieldAllColumns,
+            ),
+            FilterHelper.filterFieldType: PlutoCell(
+              value: const PlutoFilterTypeContains(),
+            ),
+            FilterHelper.filterFieldValue: PlutoCell(value: '123'),
+          },
+        ),
       ];
 
       final result = FilterHelper.convertRowsToMap(
@@ -360,128 +340,118 @@ void main() {
       );
 
       expect(result.length, 2);
-      expect(result, PlutoObjectMatcher<Map<String, List<Map<String, String>>>>(
-        rule: (value) {
-          return value.containsKey('allColumns');
-        },
-      ));
+      expect(
+        result,
+        PlutoObjectMatcher<Map<String, List<Map<String, String>>>>(
+          rule: (value) {
+            return value.containsKey('allColumns');
+          },
+        ),
+      );
     });
   });
 
   group('isFilteredColumn', () {
-    test(
-      'filterRows : null, empty, '
-      'Should be returned false.',
-      () {
-        expect(
-          FilterHelper.isFilteredColumn(
-            PlutoColumn(
-              title: 'column',
-              field: 'column',
-              type: PlutoColumnType.text(),
-            ),
-            null,
+    test('filterRows : null, empty, '
+        'Should be returned false.', () {
+      expect(
+        FilterHelper.isFilteredColumn(
+          PlutoColumn(
+            title: 'column',
+            field: 'column',
+            type: PlutoColumnType.text(),
           ),
-          isFalse,
-        );
+          null,
+        ),
+        isFalse,
+      );
 
-        expect(
-          FilterHelper.isFilteredColumn(
-            PlutoColumn(
-              title: 'column',
-              field: 'column',
-              type: PlutoColumnType.text(),
-            ),
-            [],
+      expect(
+        FilterHelper.isFilteredColumn(
+          PlutoColumn(
+            title: 'column',
+            field: 'column',
+            type: PlutoColumnType.text(),
           ),
-          isFalse,
-        );
-      },
-    );
+          [],
+        ),
+        isFalse,
+      );
+    });
 
-    test(
-      'filterRows : [All columns], '
-      'Should be returned true.',
-      () {
-        expect(
-          FilterHelper.isFilteredColumn(
-            PlutoColumn(
-              title: 'column',
-              field: 'column',
-              type: PlutoColumnType.text(),
-            ),
-            [FilterHelper.createFilterRow()],
+    test('filterRows : [All columns], '
+        'Should be returned true.', () {
+      expect(
+        FilterHelper.isFilteredColumn(
+          PlutoColumn(
+            title: 'column',
+            field: 'column',
+            type: PlutoColumnType.text(),
           ),
-          isTrue,
-        );
-      },
-    );
+          [FilterHelper.createFilterRow()],
+        ),
+        isTrue,
+      );
+    });
 
-    test(
-      'filterRows : [column], '
-      'Should be returned true.',
-      () {
-        expect(
-          FilterHelper.isFilteredColumn(
-            PlutoColumn(
-              title: 'column',
-              field: 'column',
-              type: PlutoColumnType.text(),
-            ),
-            [FilterHelper.createFilterRow(columnField: 'column')],
+    test('filterRows : [column], '
+        'Should be returned true.', () {
+      expect(
+        FilterHelper.isFilteredColumn(
+          PlutoColumn(
+            title: 'column',
+            field: 'column',
+            type: PlutoColumnType.text(),
           ),
-          isTrue,
-        );
-      },
-    );
+          [FilterHelper.createFilterRow(columnField: 'column')],
+        ),
+        isTrue,
+      );
+    });
 
-    test(
-      'filterRows : [non_exists_column], '
-      'Should be returned false.',
-      () {
-        expect(
-          FilterHelper.isFilteredColumn(
-            PlutoColumn(
-              title: 'column',
-              field: 'column',
-              type: PlutoColumnType.text(),
-            ),
-            [FilterHelper.createFilterRow(columnField: 'non_exists_column')],
+    test('filterRows : [non_exists_column], '
+        'Should be returned false.', () {
+      expect(
+        FilterHelper.isFilteredColumn(
+          PlutoColumn(
+            title: 'column',
+            field: 'column',
+            type: PlutoColumnType.text(),
           ),
-          isFalse,
-        );
-      },
-    );
+          [FilterHelper.createFilterRow(columnField: 'non_exists_column')],
+        ),
+        isFalse,
+      );
+    });
   });
 
   group('compareByFilterType', () {
     late bool Function(dynamic a, dynamic b) Function(
       PlutoFilterType filterType, {
       PlutoColumn? column,
-    }) makeCompareFunction;
+    })
+    makeCompareFunction;
 
     setUp(() {
-      makeCompareFunction = (
-        PlutoFilterType filterType, {
-        PlutoColumn? column,
-      }) {
-        column ??= PlutoColumn(
-          title: 'column',
-          field: 'column',
-          type: PlutoColumnType.text(),
-        );
+      makeCompareFunction =
+          (PlutoFilterType filterType, {PlutoColumn? column}) {
+            column ??= PlutoColumn(
+              title: 'column',
+              field: 'column',
+              type: PlutoColumnType.text(),
+            );
 
-        return (dynamic a, dynamic b) {
-          return FilterHelper.compareByFilterType(
-            filterType: filterType,
-            searchObject: null,
-            baseObject: null,
-            base: a.toString(),
-            search: b.toString(),
-            column: column!,
-          );
-        };
-      };
+            return (dynamic a, dynamic b) {
+              return FilterHelper.compareByFilterType(
+                filterType: filterType,
+                searchObject: null,
+                baseObject: null,
+                base: a.toString(),
+                search: b.toString(),
+                column: column!,
+              );
+            };
+          };
     });
 
     group('Contains', () {
@@ -628,60 +598,53 @@ void main() {
   });
 
   group('FilterPopupState', () {
-    test(
-      'columns should not be empty.',
-      () {
-        expect(
-          () {
-            FilterPopupState(
-              context: MockBuildContext(),
-              configuration: const PlutoGridConfiguration(),
-              handleAddNewFilter: (_) {},
-              handleApplyFilter: (_) {},
-              columns: [],
-              filterRows: [],
-              focusFirstFilterValue: false,
-            );
-          },
-          throwsA(isA<AssertionError>()),
+    test('columns should not be empty.', () {
+      expect(() {
+        FilterPopupState(
+          context: MockBuildContext(),
+          configuration: const PlutoGridConfiguration(),
+          handleAddNewFilter: (_) {},
+          handleApplyFilter: (_) {},
+          columns: [],
+          filterRows: [],
+          focusFirstFilterValue: false,
         );
-      },
-    );
+      }, throwsA(isA<AssertionError>()));
+    });
 
     group('onLoaded', () {
-      test(
-        'should be called setSelectingMode, addListener.',
-        () {
-          final List<PlutoRow> filterRows = [];
+      test('should be called setSelectingMode, addListener.', () {
+        final List<PlutoRow> filterRows = [];
 
-          var filterPopupState = FilterPopupState(
-            context: MockBuildContext(),
-            configuration: const PlutoGridConfiguration(),
-            handleAddNewFilter: (_) {},
-            handleApplyFilter: (_) {},
-            columns: ColumnHelper.textColumn('column'),
-            filterRows: filterRows,
-            focusFirstFilterValue: false,
-          );
+        var filterPopupState = FilterPopupState(
+          context: MockBuildContext(),
+          configuration: const PlutoGridConfiguration(),
+          handleAddNewFilter: (_) {},
+          handleApplyFilter: (_) {},
+          columns: ColumnHelper.textColumn('column'),
+          filterRows: filterRows,
+          focusFirstFilterValue: false,
+        );
 
-          var stateManager = MockPlutoGridStateManager();
+        var stateManager = MockPlutoGridStateManager();
 
-          when(stateManager.rows).thenReturn(filterRows);
+        when(stateManager.rows).thenReturn(filterRows);
 
-          filterPopupState.onLoaded(
-            PlutoGridOnLoadedEvent(stateManager: stateManager),
-          );
+        filterPopupState.onLoaded(
+          PlutoGridOnLoadedEvent(stateManager: stateManager),
+        );
 
-          verify(stateManager.setSelectingMode(
+        verify(
+          stateManager.setSelectingMode(
             PlutoGridSelectingMode.row,
             notify: false,
-          )).called(1);
+          ),
+        ).called(1);
 
-          verify(
-            stateManager.addListener(filterPopupState.stateListener),
-          ).called(1);
-        },
-      );
+        verify(
+          stateManager.addListener(filterPopupState.stateListener),
+        ).called(1);
+      });
 
       test(
         'if focusFirstFilterValue is true and stateManager has rows, '
@@ -717,11 +680,13 @@ void main() {
 
           verify(stateManager.setKeepFocus(true, notify: false)).called(1);
 
-          verify(stateManager.setCurrentCell(
-            rows.first.cells[FilterHelper.filterFieldValue],
-            0,
-            notify: false,
-          )).called(1);
+          verify(
+            stateManager.setCurrentCell(
+              rows.first.cells[FilterHelper.filterFieldValue],
+              0,
+              notify: false,
+            ),
+          ).called(1);
 
           verify(stateManager.setEditing(true, notify: false)).called(1);
 
@@ -747,12 +712,14 @@ void main() {
         focusFirstFilterValue: true,
       );
 
-      filterPopupState.onChanged(PlutoGridOnChangedEvent(
-        columnIdx: 0,
-        column: columns.first,
-        rowIdx: 0,
-        row: rows.first,
-      ));
+      filterPopupState.onChanged(
+        PlutoGridOnChangedEvent(
+          columnIdx: 0,
+          column: columns.first,
+          rowIdx: 0,
+          row: rows.first,
+        ),
+      );
 
       verify(mock.oneParamReturnVoid(any)).called(1);
     });
@@ -891,10 +858,7 @@ void main() {
         );
 
         for (var i = 0; i < columns.length; i += 1) {
-          expect(
-            filterColumn.formatter!(columns[i].field),
-            columns[i].title,
-          );
+          expect(filterColumn.formatter!(columns[i].field), columns[i].title);
         }
       });
 
@@ -906,15 +870,38 @@ void main() {
         var columnType = filterColumn.type as PlutoColumnTypeSelect;
 
         // configuration 의 필터 수 만큼 생성 되어야 한다. (기본 8개)
-        expect(configuration.columnFilter.filters.length, 8);
         expect(
-            columnType.items.length, configuration.columnFilter.filters.length);
+          configuration.columnFilter
+              .filters(type: columnType.type, field: filterColumn.field)!
+              .length,
+          8,
+        );
+        expect(
+          columnType.items.length,
+          configuration.columnFilter
+              .filters(type: columnType.type, field: filterColumn.field)!
+              .length,
+        );
 
         // formatter (filter 가 값으로 써 formatter 에서 title 을 반환한다.)
-        for (var i = 0; i < configuration.columnFilter.filters.length; i += 1) {
+        for (
+          var i = 0;
+          i <
+              configuration.columnFilter
+                  .filters(type: columnType.type, field: filterColumn.field)!
+                  .length;
+          i += 1
+        ) {
           expect(
-            filterColumn.formatter!(configuration.columnFilter.filters[i]),
-            configuration.columnFilter.filters[i].title,
+            filterColumn.formatter!(
+              configuration.columnFilter.filters(
+                type: columnType.type,
+                field: filterColumn.field,
+              )![i],
+            ),
+            configuration.columnFilter
+                .filters(type: columnType.type, field: filterColumn.field)![i]
+                .title,
           );
         }
       });
@@ -928,14 +915,15 @@ void main() {
   });
 
   group('PlutoGridFilterPopupHeader', () {
-    testWidgets(
-      'add 버튼을 탭하면 handleAddNewFilter 콜백이 호출 되어야 한다.',
-      (tester) async {
-        final stateManager = MockPlutoGridStateManager();
-        const configuration = PlutoGridConfiguration();
-        final mockListener = MockMethods();
+    testWidgets('add 버튼을 탭하면 handleAddNewFilter 콜백이 호출 되어야 한다.', (
+      tester,
+    ) async {
+      final stateManager = MockPlutoGridStateManager();
+      const configuration = PlutoGridConfiguration();
+      final mockListener = MockMethods();
 
-        await tester.pumpWidget(MaterialApp(
+      await tester.pumpWidget(
+        MaterialApp(
           home: Material(
             child: PlutoGridFilterPopupHeader(
               stateManager: stateManager,
@@ -943,20 +931,20 @@ void main() {
               handleAddNewFilter: mockListener.oneParamReturnVoid,
             ),
           ),
-        ));
+        ),
+      );
 
-        final button = find.byType(IconButton).first;
+      final button = find.byType(IconButton).first;
 
-        await tester.tap(button);
+      await tester.tap(button);
 
-        expect(
-          ((button.evaluate().first.widget as IconButton).icon as Icon).icon,
-          Icons.add,
-        );
+      expect(
+        ((button.evaluate().first.widget as IconButton).icon as Icon).icon,
+        Icons.add,
+      );
 
-        verify(mockListener.oneParamReturnVoid(any)).called(1);
-      },
-    );
+      verify(mockListener.oneParamReturnVoid(any)).called(1);
+    });
 
     testWidgets(
       'currentSelectingRows 이 empty 인 상태에서 remove 아이콘을 탭하면 removeCurrentRow 가 호출 되어야 한다.',
@@ -967,15 +955,17 @@ void main() {
 
         when(stateManager.currentSelectingRows).thenReturn([]);
 
-        await tester.pumpWidget(MaterialApp(
-          home: Material(
-            child: PlutoGridFilterPopupHeader(
-              stateManager: stateManager,
-              configuration: configuration,
-              handleAddNewFilter: mockListener.oneParamReturnVoid,
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Material(
+              child: PlutoGridFilterPopupHeader(
+                stateManager: stateManager,
+                configuration: configuration,
+                handleAddNewFilter: mockListener.oneParamReturnVoid,
+              ),
             ),
           ),
-        ));
+        );
 
         final button = find.byType(IconButton).at(1);
 
@@ -1001,15 +991,17 @@ void main() {
 
         when(stateManager.currentSelectingRows).thenReturn([dummyRow]);
 
-        await tester.pumpWidget(MaterialApp(
-          home: Material(
-            child: PlutoGridFilterPopupHeader(
-              stateManager: stateManager,
-              configuration: configuration,
-              handleAddNewFilter: mockListener.oneParamReturnVoid,
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Material(
+              child: PlutoGridFilterPopupHeader(
+                stateManager: stateManager,
+                configuration: configuration,
+                handleAddNewFilter: mockListener.oneParamReturnVoid,
+              ),
             ),
           ),
-        ));
+        );
 
         final button = find.byType(IconButton).at(1);
 

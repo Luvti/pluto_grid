@@ -1,5 +1,4 @@
 import 'package:collection/collection.dart' show IterableExtension;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
@@ -146,14 +145,19 @@ class PlutoGridConfiguration {
       return;
     }
 
-    var len = refColumns.length;
+    final int len = refColumns.length;
 
-    for (var i = 0; i < len; i += 1) {
-      var column = refColumns[i];
+    for (int i = 0; i < len; i += 1) {
+      final PlutoColumn column = refColumns[i];
       if (column.defaultFilterNullable != null) {
         continue;
       }
-      column.setDefaultFilter(columnFilter.getDefaultColumnFilter(column));
+      final PlutoFilterType? filter = columnFilter.getDefaultColumnFilter(
+        column,
+      );
+      if (filter != null) {
+        column.setDefaultFilter(filter);
+      }
     }
   }
 
@@ -291,12 +295,12 @@ class PlutoGridStyleConfig {
     this.filterTextStyle,
     this.filterHintTextStyle,
     //
-  }) : columnCheckedColor = (columnCheckedColor ?? activatedColor),
-       cellCheckedColor = (cellCheckedColor ?? activatedColor),
-       columnUnselectedColor = (columnUnselectedColor ?? iconColor),
-       columnActiveColor = (columnActiveColor ?? activatedBorderColor),
-       cellUnselectedColor = (cellUnselectedColor ?? iconColor),
-       cellActiveColor = (cellActiveColor ?? activatedBorderColor);
+  }) : columnCheckedColor = columnCheckedColor ?? activatedColor,
+       cellCheckedColor = cellCheckedColor ?? activatedColor,
+       columnUnselectedColor = columnUnselectedColor ?? iconColor,
+       columnActiveColor = columnActiveColor ?? activatedBorderColor,
+       cellUnselectedColor = cellUnselectedColor ?? iconColor,
+       cellActiveColor = cellActiveColor ?? activatedBorderColor;
 
   const PlutoGridStyleConfig.dark({
     this.enableGridBorderShadow = false,
@@ -369,12 +373,12 @@ class PlutoGridStyleConfig {
     //
     this.gridPadding = PlutoGridSettings.gridPadding,
     this.gridBorderWidth = PlutoGridSettings.gridBorderWidth,
-  }) : columnCheckedColor = (columnCheckedColor ?? activatedColor),
-       cellCheckedColor = (cellCheckedColor ?? activatedColor),
-       columnUnselectedColor = (columnUnselectedColor ?? iconColor),
-       columnActiveColor = (columnActiveColor ?? activatedBorderColor),
-       cellUnselectedColor = (cellUnselectedColor ?? iconColor),
-       cellActiveColor = (cellActiveColor ?? activatedBorderColor);
+  }) : columnCheckedColor = columnCheckedColor ?? activatedColor,
+       cellCheckedColor = cellCheckedColor ?? activatedColor,
+       columnUnselectedColor = columnUnselectedColor ?? iconColor,
+       columnActiveColor = columnActiveColor ?? activatedBorderColor,
+       cellUnselectedColor = cellUnselectedColor ?? iconColor,
+       cellActiveColor = cellActiveColor ?? activatedBorderColor;
 
   /// Enable borderShadow in [PlutoGrid].
   final bool enableGridBorderShadow;
@@ -757,7 +761,7 @@ class PlutoGridStyleConfig {
   }
 
   @override
-  int get hashCode => Object.hashAll([
+  int get hashCode => Object.hashAll(<Object?>[
     enableGridBorderShadow,
     enableColumnBorderVertical,
     enableColumnBorderHorizontal,
@@ -918,10 +922,11 @@ class PlutoGridScrollbarConfig {
   );
 }
 
-typedef PlutoGridColumnFilterResolver = Function<T>();
+typedef PlutoGridColumnFilterResolver =
+    Function<T>({required PlutoColumnTypeEnum type, String? field});
 
 typedef PlutoGridResolveDefaultColumnFilter =
-    PlutoFilterType Function(
+    PlutoFilterType? Function(
       PlutoColumn column,
       PlutoGridColumnFilterResolver resolver,
     );
@@ -976,7 +981,11 @@ class PlutoGridColumnFilterConfig {
   /// }
   /// ```
   const PlutoGridColumnFilterConfig({
-    List<PlutoFilterType>? filters,
+    List<PlutoFilterType>? Function({
+      required PlutoColumnTypeEnum type,
+      String? field,
+    })?
+    filters,
     PlutoGridResolveDefaultColumnFilter? resolveDefaultColumnFilter,
     int? debounceMilliseconds,
   }) : _userFilters = filters,
@@ -987,37 +996,54 @@ class PlutoGridColumnFilterConfig {
            ? 0
            : debounceMilliseconds;
 
-  final List<PlutoFilterType>? _userFilters;
+  final List<PlutoFilterType>? Function({
+    required PlutoColumnTypeEnum type,
+    String? field,
+  })?
+  _userFilters;
 
   final PlutoGridResolveDefaultColumnFilter? _userResolveDefaultColumnFilter;
 
   final int _debounceMilliseconds;
 
-  bool get hasUserFilter => _userFilters != null && _userFilters.isNotEmpty;
+  bool get hasUserFilter => _userFilters != null;
 
-  List<PlutoFilterType> get filters =>
-      hasUserFilter ? _userFilters! : FilterHelper.defaultStringFilters;
+  List<PlutoFilterType>? filters({
+    required PlutoColumnTypeEnum type,
+    String? field,
+  }) => hasUserFilter
+      ? _userFilters!.call(type: type, field: field)
+      : FilterHelper.defaultFilter(type: type);
 
   int get debounceMilliseconds => _debounceMilliseconds;
 
-  PlutoFilterType resolver<T>() {
-    return filters.firstWhereOrNull(
+  PlutoFilterType? resolver<T>({
+    required PlutoColumnTypeEnum type,
+    String? field,
+  }) {
+    return filters(type: type, field: field)?.firstWhereOrNull(
           (PlutoFilterType element) => element.runtimeType == T,
         ) ??
-        filters.first;
+        filters(type: type, field: field)?.firstOrNull;
   }
 
-  PlutoFilterType getDefaultColumnFilter(PlutoColumn column) {
+  PlutoFilterType? getDefaultColumnFilter(PlutoColumn column) {
     if (_userResolveDefaultColumnFilter == null) {
-      return filters.first;
+      return filters(type: column.type.type, field: column.field)?.firstOrNull;
     }
 
-    final PlutoFilterType resolvedFilter = _userResolveDefaultColumnFilter!(
+    final PlutoFilterType? resolvedFilter = _userResolveDefaultColumnFilter(
       column,
       resolver,
     );
 
-    assert(filters.contains(resolvedFilter));
+    assert(
+      filters(
+            type: column.type.type,
+            field: column.field,
+          )?.contains(resolvedFilter) ??
+          true,
+    );
 
     return resolvedFilter;
   }
@@ -1027,7 +1053,7 @@ class PlutoGridColumnFilterConfig {
     return identical(this, other) ||
         other is PlutoGridColumnFilterConfig &&
             runtimeType == other.runtimeType &&
-            listEquals(_userFilters, other._userFilters) &&
+            _userFilters == other._userFilters &&
             _userResolveDefaultColumnFilter ==
                 other._userResolveDefaultColumnFilter &&
             _debounceMilliseconds == other._debounceMilliseconds;
@@ -1895,7 +1921,7 @@ class PlutoGridLocaleText {
   }
 
   @override
-  int get hashCode => Object.hashAll([
+  int get hashCode => Object.hashAll(<Object?>[
     unfreezeColumn,
     freezeColumnToStart,
     freezeColumnToEnd,

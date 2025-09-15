@@ -275,11 +275,13 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
                     ).textTheme.bodySmall!.copyWith(color: Colors.green),
                   ),
                   columnFilter: PlutoGridColumnFilterConfig(
-                    filters: [
-                      PlutoFilterTypeContains(),
-                      PlutoFilterTypeGreaterThanOrEqualTo(),
-                      PlutoFilterTypeLessThanOrEqualTo(),
-                    ],
+                    filters:
+                        ({required PlutoColumnTypeEnum type, String? field}) =>
+                            [
+                              PlutoFilterTypeContains(),
+                              PlutoFilterTypeGreaterThanOrEqualTo(),
+                              PlutoFilterTypeLessThanOrEqualTo(),
+                            ],
                   ),
                 ),
               ),
