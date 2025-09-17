@@ -80,7 +80,8 @@ class PlutoGridActionMoveCellFocus extends PlutoGridShortcutAction {
     required PlutoKeyManagerEvent keyEvent,
     required PlutoGridStateManager stateManager,
   }) {
-    bool force = keyEvent.isHorizontal &&
+    bool force =
+        keyEvent.isHorizontal &&
         stateManager.configuration.enableMoveHorizontalInEditing == true;
 
     if (stateManager.currentCell == null) {
@@ -138,8 +139,9 @@ class PlutoGridActionMoveCellFocusByPage extends PlutoGridShortcutAction {
 
         final previousPosition = stateManager.currentCellPosition;
 
-        int toPage =
-            direction.isLeft ? stateManager.page - 1 : stateManager.page + 1;
+        int toPage = direction.isLeft
+            ? stateManager.page - 1
+            : stateManager.page + 1;
 
         if (toPage < 1) {
           toPage = 1;
@@ -215,7 +217,8 @@ class PlutoGridActionMoveSelectedCellFocusByPage
     final int moveCount =
         (stateManager.rowContainerHeight / stateManager.rowTotalHeight).floor();
 
-    int rowIdx = stateManager.currentSelectingPosition?.rowIdx ??
+    int rowIdx =
+        stateManager.currentSelectingPosition?.rowIdx ??
         stateManager.currentCellPosition?.rowIdx ??
         0;
 
@@ -259,7 +262,9 @@ class PlutoGridActionDefaultTab extends PlutoGridShortcutAction {
 
   void _moveCellPrevious(PlutoGridStateManager stateManager) {
     if (_willMoveToPreviousRow(
-        stateManager.currentCellPosition, stateManager)) {
+      stateManager.currentCellPosition,
+      stateManager,
+    )) {
       _moveCellToPreviousRow(stateManager);
     } else {
       stateManager.moveCurrentCell(PlutoMoveDirection.left, force: true);
@@ -347,14 +352,16 @@ class PlutoGridActionDefaultEnterKey extends PlutoGridShortcutAction {
   }) {
     // In SelectRow mode, the current Row is passed to the onSelected callback.
     if (stateManager.mode.isSelectMode && stateManager.onSelected != null) {
-      stateManager.onSelected!(PlutoGridOnSelectedEvent(
-        row: stateManager.currentRow,
-        rowIdx: stateManager.currentRowIdx,
-        cell: stateManager.currentCell,
-        selectedRows: stateManager.mode.isMultiSelectMode
-            ? stateManager.currentSelectingRows
-            : null,
-      ));
+      stateManager.onSelected!(
+        PlutoGridOnSelectedEvent(
+          row: stateManager.currentRow,
+          rowIdx: stateManager.currentRowIdx,
+          cell: stateManager.currentCell,
+          selectedRows: stateManager.mode.isMultiSelectMode
+              ? stateManager.currentSelectingRows
+              : null,
+        ),
+      );
       return;
     }
 
@@ -392,8 +399,9 @@ class PlutoGridActionDefaultEnterKey extends PlutoGridShortcutAction {
   bool _isExpandableCell(PlutoGridStateManager stateManager) {
     return stateManager.currentCell != null &&
         stateManager.enabledRowGroups &&
-        stateManager.rowGroupDelegate
-                ?.isExpandableCell(stateManager.currentCell!) ==
+        stateManager.rowGroupDelegate?.isExpandableCell(
+              stateManager.currentCell!,
+            ) ==
             true;
   }
 
@@ -409,15 +417,9 @@ class PlutoGridActionDefaultEnterKey extends PlutoGridShortcutAction {
 
     if (enterKeyAction.isEditingAndMoveDown) {
       if (keyEvent.isShiftPressed) {
-        stateManager.moveCurrentCell(
-          PlutoMoveDirection.up,
-          notify: false,
-        );
+        stateManager.moveCurrentCell(PlutoMoveDirection.up, notify: false);
       } else {
-        stateManager.moveCurrentCell(
-          PlutoMoveDirection.down,
-          notify: false,
-        );
+        stateManager.moveCurrentCell(PlutoMoveDirection.down, notify: false);
       }
     } else if (enterKeyAction.isEditingAndMoveRight) {
       if (keyEvent.isShiftPressed) {
@@ -633,6 +635,11 @@ class PlutoGridActionCopyValues extends PlutoGridShortcutAction {
       return;
     }
 
+    if (stateManager.refColumns.any((PlutoColumn column) {
+      return column.type.defaultValue == stateManager.currentSelectingText;
+    })) {
+      Clipboard.setData(ClipboardData(text: '-'));
+    }
     Clipboard.setData(ClipboardData(text: stateManager.currentSelectingText));
   }
 }
@@ -658,8 +665,9 @@ class PlutoGridActionPasteValues extends PlutoGridShortcutAction {
     }
 
     Clipboard.getData('text/plain').then((value) {
-      List<List<String>> textList =
-          PlutoClipboardTransformation.stringToList(value!.text!);
+      List<List<String>> textList = PlutoClipboardTransformation.stringToList(
+        value!.text!,
+      );
 
       stateManager.pasteCellValue(textList);
     });
