@@ -95,20 +95,18 @@ class _DevelopmentScreenState extends State<DevelopmentScreen> {
     ),
     // localeText: const PlutoGridLocaleText.korean(),
     columnFilter: PlutoGridColumnFilterConfig(
-      filters: ({
-        required PlutoColumnTypeEnum type,
-        String? field,
-      }) =>
-          [...FilterHelper.defaultStringFilters, ClassYouImplemented()],
-      resolveDefaultColumnFilter: (column, resolver) {
-        if (column.field == 'column3') {
-          return resolver<PlutoFilterTypeGreaterThan>(
-              type: column.type.type, field: column.field) as PlutoFilterType;
-        }
+      filters: ({required PlutoColumnTypeEnum type, String? field}) => [
+        ...FilterHelper.defaultStringFilters,
+        ClassYouImplemented(),
+      ],
+      resolveDefaultColumnFilter:
+          ({required PlutoColumnTypeEnum type, String? field}) {
+            if (field == 'column3') {
+              return PlutoFilterTypeGreaterThan();
+            }
 
-        return resolver<PlutoFilterTypeContains>(
-            type: column.type.type, field: column.field) as PlutoFilterType;
-      },
+            return PlutoFilterTypeContains();
+          },
     ),
   );
 
@@ -351,7 +349,8 @@ class ClassYouImplemented implements PlutoFilterType {
   String get title => 'Custom contains';
 
   @override
-  get compare => ({
+  get compare =>
+      ({
         required dynamic baseObject,
         required String? base,
         required dynamic searchObject,
@@ -801,7 +800,9 @@ class _HeaderState extends State<_Header> {
               children: [
                 PlutoMenuItem.checkbox(
                   title: 'Restore after hide column',
-                  initialCheckValue: widget.stateManager.columnSizeConfig
+                  initialCheckValue: widget
+                      .stateManager
+                      .columnSizeConfig
                       .restoreAutoSizeAfterHideColumn,
                   onChanged: (flag) => handleRestoreAutoSize(
                     _RestoreAutoSizeOptions.restoreAutoSizeAfterHideColumn,
@@ -810,7 +811,9 @@ class _HeaderState extends State<_Header> {
                 ),
                 PlutoMenuItem.checkbox(
                   title: 'Restore after frozen column',
-                  initialCheckValue: widget.stateManager.columnSizeConfig
+                  initialCheckValue: widget
+                      .stateManager
+                      .columnSizeConfig
                       .restoreAutoSizeAfterFrozenColumn,
                   onChanged: (flag) => handleRestoreAutoSize(
                     _RestoreAutoSizeOptions.restoreAutoSizeAfterFrozenColumn,
@@ -819,7 +822,9 @@ class _HeaderState extends State<_Header> {
                 ),
                 PlutoMenuItem.checkbox(
                   title: 'Restore after move column',
-                  initialCheckValue: widget.stateManager.columnSizeConfig
+                  initialCheckValue: widget
+                      .stateManager
+                      .columnSizeConfig
                       .restoreAutoSizeAfterMoveColumn,
                   onChanged: (flag) => handleRestoreAutoSize(
                     _RestoreAutoSizeOptions.restoreAutoSizeAfterMoveColumn,
@@ -828,7 +833,9 @@ class _HeaderState extends State<_Header> {
                 ),
                 PlutoMenuItem.checkbox(
                   title: 'Restore after insert column',
-                  initialCheckValue: widget.stateManager.columnSizeConfig
+                  initialCheckValue: widget
+                      .stateManager
+                      .columnSizeConfig
                       .restoreAutoSizeAfterInsertColumn,
                   onChanged: (flag) => handleRestoreAutoSize(
                     _RestoreAutoSizeOptions.restoreAutoSizeAfterInsertColumn,
@@ -837,7 +844,9 @@ class _HeaderState extends State<_Header> {
                 ),
                 PlutoMenuItem.checkbox(
                   title: 'Restore after remove column',
-                  initialCheckValue: widget.stateManager.columnSizeConfig
+                  initialCheckValue: widget
+                      .stateManager
+                      .columnSizeConfig
                       .restoreAutoSizeAfterRemoveColumn,
                   onChanged: (flag) => handleRestoreAutoSize(
                     _RestoreAutoSizeOptions.restoreAutoSizeAfterRemoveColumn,
@@ -894,8 +903,9 @@ class _HeaderState extends State<_Header> {
             PlutoMenuItem.radio(
               title: 'GridMode',
               initialRadioValue: gridMode,
-              radioItems:
-                  PlutoGridMode.values.where((e) => !e.isPopup).toList(),
+              radioItems: PlutoGridMode.values
+                  .where((e) => !e.isPopup)
+                  .toList(),
               onChanged: handleGridMode,
               getTitle: (option) => (option as PlutoGridMode).name,
             ),
@@ -1043,10 +1053,10 @@ final testColumnsA = [
     titleTextAlign: PlutoColumnTextAlign.center,
     enableAutoEditing: true,
     type: PlutoColumnType.date(
-        // headerFormat: 'yyyy 년 MM 월',
-        // startDate: DateTime(2022, 01, 09),
-        // endDate: DateTime(2022, 08, 10),
-        ),
+      // headerFormat: 'yyyy 년 MM 월',
+      // startDate: DateTime(2022, 01, 09),
+      // endDate: DateTime(2022, 08, 10),
+    ),
   ),
   PlutoColumn(
     title: 'column4',
@@ -1087,8 +1097,9 @@ final testColumnsA = [
     width: 80,
     renderer: (rendererContext) {
       return Container(
-        color:
-            rendererContext.cell.value % 2 == 0 ? Colors.yellow : Colors.teal,
+        color: rendererContext.cell.value % 2 == 0
+            ? Colors.yellow
+            : Colors.teal,
       );
     },
   ),

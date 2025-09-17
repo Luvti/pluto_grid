@@ -5,10 +5,7 @@ class PlutoKeyManagerEvent {
   FocusNode focusNode;
   KeyEvent event;
 
-  PlutoKeyManagerEvent({
-    required this.focusNode,
-    required this.event,
-  });
+  PlutoKeyManagerEvent({required this.focusNode, required this.event});
 
   bool get needsThrottle => isMoving || isTab || isPageUp || isPageDown;
 
@@ -66,8 +63,7 @@ class PlutoKeyManagerEvent {
   bool get isBackspace =>
       event.logicalKey.keyId == LogicalKeyboardKey.backspace.keyId;
 
-  bool get isShift =>
-      event.logicalKey.keyId == LogicalKeyboardKey.shift.keyId;
+  bool get isShift => event.logicalKey.keyId == LogicalKeyboardKey.shift.keyId;
 
   bool get isControl =>
       event.logicalKey.keyId == LogicalKeyboardKey.control.keyId;
@@ -75,17 +71,17 @@ class PlutoKeyManagerEvent {
   bool get isCharacter => _characters.contains(event.logicalKey.keyId);
 
   bool get isCtrlC {
-    return isCtrlPressed &&
+    return (isCtrlPressed || isCmdPressed || isOptionAltPressed) &&
         event.logicalKey.keyId == LogicalKeyboardKey.keyC.keyId;
   }
 
   bool get isCtrlV {
-    return isCtrlPressed &&
+    return (isCtrlPressed || isCmdPressed || isOptionAltPressed) &&
         event.logicalKey.keyId == LogicalKeyboardKey.keyV.keyId;
   }
 
   bool get isCtrlA {
-    return isCtrlPressed &&
+    return (isCtrlPressed || isCmdPressed || isOptionAltPressed) &&
         event.logicalKey.keyId == LogicalKeyboardKey.keyA.keyId;
   }
 
@@ -93,17 +89,44 @@ class PlutoKeyManagerEvent {
     return HardwareKeyboard.instance.isShiftPressed;
   }
 
-  bool get isCtrlPressed {
-    return HardwareKeyboard.instance.isMetaPressed ||
-        HardwareKeyboard.instance.isControlPressed;
+  bool get isCmdPressed {
+    return HardwareKeyboard.instance.logicalKeysPressed.contains(
+          LogicalKeyboardKey.meta,
+        ) ||
+        HardwareKeyboard.instance.logicalKeysPressed.contains(
+          LogicalKeyboardKey.metaLeft,
+        ) ||
+        HardwareKeyboard.instance.logicalKeysPressed.contains(
+          LogicalKeyboardKey.metaRight,
+        );
   }
 
-  bool get isAltPressed {
-    return HardwareKeyboard.instance.isAltPressed;
+  bool get isCtrlPressed {
+    return HardwareKeyboard.instance.logicalKeysPressed.contains(
+          LogicalKeyboardKey.control,
+        ) ||
+        HardwareKeyboard.instance.logicalKeysPressed.contains(
+          LogicalKeyboardKey.controlLeft,
+        ) ||
+        HardwareKeyboard.instance.logicalKeysPressed.contains(
+          LogicalKeyboardKey.controlRight,
+        );
+  }
+
+  bool get isOptionAltPressed {
+    return HardwareKeyboard.instance.logicalKeysPressed.contains(
+          LogicalKeyboardKey.alt,
+        ) ||
+        HardwareKeyboard.instance.logicalKeysPressed.contains(
+          LogicalKeyboardKey.altLeft,
+        ) ||
+        HardwareKeyboard.instance.logicalKeysPressed.contains(
+          LogicalKeyboardKey.altRight,
+        );
   }
 
   bool get isModifierPressed {
-    return isShiftPressed || isCtrlPressed || isAltPressed;
+    return isShiftPressed || isCtrlPressed || isOptionAltPressed;
   }
 }
 

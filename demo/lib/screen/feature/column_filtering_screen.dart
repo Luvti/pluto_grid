@@ -91,38 +91,26 @@ class _ColumnFilteringScreenState extends State<ColumnFilteringScreen> {
           /// Return the value returned by resolveDefaultColumnFilter through the resolver function.
           /// Prevents errors returning filters that are not in the filters list.
           columnFilter: PlutoGridColumnFilterConfig(
-            filters: ({
-              required PlutoColumnTypeEnum type,
-              String? field,
-            }) =>
+            filters: ({required PlutoColumnTypeEnum type, String? field}) =>
                 const [
-              ...FilterHelper.defaultStringFilters,
-              // custom filter
-              ClassYouImplemented(),
-            ],
-            resolveDefaultColumnFilter: (column, resolver) {
-              if (column.field == 'text') {
-                return resolver<PlutoFilterTypeContains>(
-                    type: column.type.type,
-                    field: column.field) as PlutoFilterType;
-              } else if (column.field == 'number') {
-                return resolver<PlutoFilterTypeGreaterThan>(
-                    type: column.type.type,
-                    field: column.field) as PlutoFilterType;
-              } else if (column.field == 'date') {
-                return resolver<PlutoFilterTypeLessThan>(
-                    type: column.type.type,
-                    field: column.field) as PlutoFilterType;
-              } else if (column.field == 'select') {
-                return resolver<ClassYouImplemented>(
-                    type: column.type.type,
-                    field: column.field) as PlutoFilterType;
-              }
+                  ...FilterHelper.defaultStringFilters,
+                  // custom filter
+                  ClassYouImplemented(),
+                ],
+            resolveDefaultColumnFilter:
+                ({required PlutoColumnTypeEnum type, String? field}) {
+                  if (field == 'text') {
+                    return PlutoFilterTypeContains();
+                  } else if (field == 'number') {
+                    return PlutoFilterTypeGreaterThan();
+                  } else if (field == 'date') {
+                    return PlutoFilterTypeLessThan();
+                  } else if (field == 'select') {
+                    return ClassYouImplemented();
+                  }
 
-              return resolver<PlutoFilterTypeContains>(
-                  type: column.type.type,
-                  field: column.field) as PlutoFilterType;
-            },
+                  return PlutoFilterTypeContains();
+                },
           ),
         ),
       ),
@@ -135,7 +123,8 @@ class ClassYouImplemented implements PlutoFilterType {
   String get title => 'Custom contains';
 
   @override
-  get compare => ({
+  get compare =>
+      ({
         required dynamic baseObject,
         required String? base,
         required dynamic searchObject,
