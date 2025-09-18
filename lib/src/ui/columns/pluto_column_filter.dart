@@ -299,8 +299,8 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
                       decoration: InputDecoration(
                         suffixIcon: widget.column.filterSuffixIcon,
                         hintText:
-                            currentFilter?.title ??
                             widget.column.filterHintText ??
+                            currentFilter?.title ??
                             (_enabled ? widget.column.defaultFilter.title : ''),
                         filled: true,
                         hintStyle:
@@ -324,52 +324,6 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
         ),
       ),
     );
-  }
-
-  Widget _textField(PlutoGridStyleConfig style) {
-    return Tooltip(
-      message:
-          widget.column.filterHintText ??
-          (_enabled ? widget.column.defaultFilter.title : ''),
-      showDuration: const Duration(milliseconds: 300),
-      child: TextField(
-        focusNode: _focusNode,
-        controller: _controller,
-        enabled: _enabled,
-        style: style.cellTextStyle,
-        onTap: _handleOnTap,
-        onChanged: _handleOnChanged,
-        onEditingComplete: _handleOnEditingComplete,
-        textAlignVertical: TextAlignVertical.center,
-        decoration: InputDecoration(
-          contentPadding: const EdgeInsets.all(5),
-          hintText:
-              widget.column.filterHintText ??
-              (_enabled ? widget.column.defaultFilter.title : ''),
-          hintStyle: TextStyle(color: widget.column.filterHintTextColor),
-          filled: true,
-          fillColor: _textFieldColor,
-          border: _border,
-          enabledBorder: _border,
-          disabledBorder: _disabledBorder,
-          focusedBorder: _enabledBorder,
-          suffixIcon: widget.column.filterSuffixIcon,
-          suffix: IconButton(
-            icon: Icon(
-              Icons.filter_alt_outlined,
-              color: stateManager.configuration.style.filterHeaderIconColor,
-              size: stateManager.configuration.style.iconSize,
-            ),
-            tooltip: stateManager.configuration.localeText.filter,
-            onPressed: _handleOnPressedFilter,
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _handleOnPressedFilter() {
-    stateManager.showFilterPopup(context, calledColumn: widget.column);
   }
 
   Widget _plutoColumnTypeBool() {

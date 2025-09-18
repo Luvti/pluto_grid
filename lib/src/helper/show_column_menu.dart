@@ -58,7 +58,9 @@ class PlutoColumnMenuDelegateDefault
         stateManager.hideColumn(column, true);
         break;
       case PlutoGridColumnMenuItem.setColumns:
-        if (!mounted) return;
+        if (!mounted) {
+          return;
+        }
         stateManager.showSetColumnsPopup(context);
         break;
       case PlutoGridColumnMenuItem.setFilter:
