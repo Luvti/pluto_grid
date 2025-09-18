@@ -490,6 +490,26 @@ void main() {
       });
     });
 
+    group('Is Empry', () {
+      late Function compare;
+
+      setUp(() {
+        compare = makeCompareFunction(const PlutoFilterTypeIsEmpty());
+      });
+
+      test('null is Empty', () {
+        expect(compare(), isTrue);
+      });
+
+      test('apple is not Empty', () {
+        expect(compare('apple'), isFalse);
+      });
+
+      test('"" is Empty', () {
+        expect(compare(''), isTrue);
+      });
+    });
+
     group('StartsWith', () {
       late Function compare;
 

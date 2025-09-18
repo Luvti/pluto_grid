@@ -884,7 +884,7 @@ class PlutoFilterTypeNotContains implements PlutoFilterType {
   String get title => PlutoFilterTypeNotContains.name;
 
   @override
-  PlutoCompareFunction get compare => FilterHelper.compareNotContainsSet;
+  PlutoCompareFunction get compare => FilterHelper.compareNotContains;
 
   const PlutoFilterTypeNotContains();
 }

@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
-
-import '../ui/ui.dart';
+import 'package:pluto_grid_plus/src/ui/ui.dart';
 
 class PlutoChangeNotifierFilter<T> {
   PlutoChangeNotifierFilter(this._filter, [this._debugNotifierNames])
-      : _type = T;
+    : _type = T;
 
   static bool enabled = true;
 
@@ -13,7 +12,7 @@ class PlutoChangeNotifierFilter<T> {
 
   static bool get printDebug => enabled && debug;
 
-  static List<String> debugWidgets = [];
+  static List<String> debugWidgets = <String>[];
 
   final Set<int> _filter;
 
@@ -23,25 +22,29 @@ class PlutoChangeNotifierFilter<T> {
 
   bool any(PlutoNotifierEvent event) {
     printNotifierOnFilter(event);
-    return _filter.isEmpty ? true : event.any(_filter);
+    return _filter.isEmpty || event.any(_filter);
   }
 
   void printNotifierOnFilter(PlutoNotifierEvent event) {
-    if (_ignoreDebugPrint()) return;
+    if (_ignoreDebugPrint()) {
+      return;
+    }
 
-    final length = event.notifier.length;
+    final int length = event.notifier.length;
 
     debugPrint('[$_type] called on $length notifier.');
     for (int i = 0; i < length; i += 1) {
       final bool isLast = length - 1 == i;
-      final prefix = isLast ? '\u2514' : '\u251c';
-      final notifier = event.notifier.elementAt(i);
+      final String prefix = isLast ? '\u2514' : '\u251c';
+      final int notifier = event.notifier.elementAt(i);
       debugPrint('  $prefix ${_debugNotifierNames?[notifier]}');
     }
   }
 
   void printNotifierOnChange(PlutoNotifierEvent event, bool rebuild) {
-    if (_ignoreDebugPrint()) return;
+    if (_ignoreDebugPrint()) {
+      return;
+    }
 
     debugPrint('    ON_CHANGE - REBUILD : ${rebuild.toString().toUpperCase()}');
   }
@@ -59,7 +62,7 @@ abstract class PlutoChangeNotifierFilterResolver {
   Set<int> resolve(PlutoGridStateManager stateManager, Type type);
 
   static Map<int, String> notifierNames(PlutoGridStateManager stateManager) {
-    return {
+    return <int, String>{
       /// pluto_change_notifier
       stateManager.notifyListeners.hashCode: 'notifyListeners',
       stateManager.notifyListenersOnPostFrame.hashCode:
@@ -174,7 +177,7 @@ class PlutoNotifierFilterResolverDefault
       case const (PlutoRightFrozenRows):
         return defaultRowsFilter(stateManager);
       case const (PlutoNoRowsWidget):
-        return {
+        return <int>{
           ...defaultRowsFilter(stateManager),
           stateManager.setShowLoading.hashCode,
         };
@@ -190,7 +193,7 @@ class PlutoNotifierFilterResolverDefault
   }
 
   static Set<int> defaultGridFilter(PlutoGridStateManager stateManager) {
-    return {
+    return <int>{
       stateManager.setShowColumnTitle.hashCode,
       stateManager.setShowColumnFilter.hashCode,
       stateManager.setShowColumnFooter.hashCode,
@@ -206,7 +209,7 @@ class PlutoNotifierFilterResolverDefault
   }
 
   static Set<int> defaultColumnsFilter(PlutoGridStateManager stateManager) {
-    return {
+    return <int>{
       stateManager.toggleFrozenColumn.hashCode,
       stateManager.insertColumns.hashCode,
       stateManager.removeColumns.hashCode,
@@ -219,7 +222,7 @@ class PlutoNotifierFilterResolverDefault
   }
 
   static Set<int> defaultRowsFilter(PlutoGridStateManager stateManager) {
-    return {
+    return <int>{
       stateManager.toggleFrozenColumn.hashCode,
       stateManager.insertColumns.hashCode,
       stateManager.removeColumns.hashCode,
@@ -248,8 +251,9 @@ class PlutoNotifierFilterResolverDefault
   }
 
   static Set<int> defaultAggregateColumnFooterFilter(
-      PlutoGridStateManager stateManager) {
-    return {
+    PlutoGridStateManager stateManager,
+  ) {
+    return <int>{
       stateManager.toggleAllRowChecked.hashCode,
       stateManager.setRowChecked.hashCode,
       stateManager.setPage.hashCode,
@@ -279,14 +283,14 @@ class PlutoNotifierFilterResolverDefault
       );
     }
 
-    return {
+    return <int>{
       stateManager.toggleAllRowChecked.hashCode,
       stateManager.setRowChecked.hashCode,
     };
   }
 
   static Set<int> defaultCheckboxAllFilter(PlutoGridStateManager stateManager) {
-    return {
+    return <int>{
       stateManager.toggleAllRowChecked.hashCode,
       stateManager.setRowChecked.hashCode,
       stateManager.setPage.hashCode,

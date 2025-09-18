@@ -46,6 +46,7 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       title: 'Name test long name in header',
       field: 'name',
       type: PlutoColumnType.text(),
+      defaultFilter: const PlutoFilterTypeNotContains(),
     ),
     PlutoColumn(
       title: 'Age',
@@ -273,15 +274,6 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
                     filterTextStyle: Theme.of(
                       context,
                     ).textTheme.bodySmall!.copyWith(color: Colors.green),
-                  ),
-                  columnFilter: PlutoGridColumnFilterConfig(
-                    filters:
-                        ({required PlutoColumnTypeEnum type, String? field}) =>
-                            [
-                              PlutoFilterTypeContains(),
-                              PlutoFilterTypeGreaterThanOrEqualTo(),
-                              PlutoFilterTypeLessThanOrEqualTo(),
-                            ],
                   ),
                 ),
               ),

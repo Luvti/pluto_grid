@@ -3,11 +3,11 @@ import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 typedef PlutoColumnValueFormatter = String Function(dynamic value);
 
-typedef PlutoColumnRenderer = Widget Function(
-    PlutoColumnRendererContext rendererContext);
+typedef PlutoColumnRenderer =
+    Widget Function(PlutoColumnRendererContext rendererContext);
 
-typedef PlutoColumnFooterRenderer = Widget Function(
-    PlutoColumnFooterRendererContext context);
+typedef PlutoColumnFooterRenderer =
+    Widget Function(PlutoColumnFooterRendererContext context);
 
 /// It dynamically determines whether the cells of the column are in the edit state.
 ///
@@ -15,10 +15,7 @@ typedef PlutoColumnFooterRenderer = Widget Function(
 /// whether the cell is editable cannot be changed during runtime,
 /// but if this callback is implemented,
 /// it can be determined whether the cell can be edited or not according to the state of the cell.
-typedef PlutoColumnCheckReadOnly = bool Function(
-  PlutoRow row,
-  PlutoCell cell,
-);
+typedef PlutoColumnCheckReadOnly = bool Function(PlutoRow row, PlutoCell cell);
 
 class PlutoColumn {
   /// A title to be displayed on the screen.
@@ -187,17 +184,14 @@ class PlutoColumn {
   ///Set suffix icon for filter field
   Icon? filterSuffixIcon;
 
-  ///Set custom widget
-  @Deprecated("Use new filterWidgetBuilder to provide some parameters")
-  Widget? filterWidget;
-
   Widget Function(
     FocusNode focusNode,
     TextEditingController controller,
     bool enabled,
     void Function(String changed) handleOnChanged,
     PlutoGridStateManager stateManager,
-  )? filterWidgetBuilder;
+  )?
+  filterWidgetBuilder;
 
   /// Displays Hide column menu in the column context menu.
   /// Valid only when [enableContextMenu] is activated.
@@ -251,8 +245,6 @@ class PlutoColumn {
     this.filterHintText,
     this.filterHintTextColor,
     this.filterSuffixIcon,
-    @Deprecated("Use new filterWidgetBuilder to provide some parameters")
-    this.filterWidget,
     this.enableHideColumnMenuItem = true,
     this.enableSetColumnsMenuItem = true,
     this.enableAutoEditing = false,
@@ -261,9 +253,9 @@ class PlutoColumn {
     PlutoFilterType? defaultFilter,
     this.backgroundGradient,
     this.filterWidgetBuilder,
-  })  : _key = UniqueKey(),
-        _defaultFilter = defaultFilter,
-        _checkReadOnly = checkReadOnly;
+  }) : _key = UniqueKey(),
+       _defaultFilter = defaultFilter,
+       _checkReadOnly = checkReadOnly;
 
   final Key _key;
 
@@ -296,9 +288,7 @@ class PlutoColumn {
       return title;
     }
 
-    List<String> titleList = [
-      title,
-    ];
+    List<String> titleList = [title];
 
     if (group!.expandedColumn != true) {
       titleList.add(group!.title);
@@ -350,12 +340,12 @@ class PlutoColumn {
   String formattedValueForDisplayInEditing(dynamic value) {
     if (type is PlutoColumnTypeWithNumberFormat) {
       return value.toString().replaceFirst(
-            '.',
-            (type as PlutoColumnTypeWithNumberFormat)
-                .numberFormat
-                .symbols
-                .DECIMAL_SEP,
-          );
+        '.',
+        (type as PlutoColumnTypeWithNumberFormat)
+            .numberFormat
+            .symbols
+            .DECIMAL_SEP,
+      );
     }
 
     if (formatter != null) {

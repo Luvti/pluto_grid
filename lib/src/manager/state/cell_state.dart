@@ -26,11 +26,7 @@ abstract class ICellState {
   void clearCurrentCell({bool notify = true});
 
   /// Change the selected cell.
-  void setCurrentCell(
-    PlutoCell? cell,
-    int? rowIdx, {
-    bool notify = true,
-  });
+  void setCurrentCell(PlutoCell? cell, int? rowIdx, {bool notify = true});
 
   /// Whether it is possible to move in the [direction] from [cellPosition].
   bool canMoveCell(
@@ -90,9 +86,9 @@ mixin CellState implements IPlutoGridState {
       return null;
     }
 
-    final columnIndexes = columnIndexesByShowFrozen;
+    final List<int> columnIndexes = columnIndexesByShowFrozen;
 
-    final columnField = refColumns[columnIndexes.first].field;
+    final String columnField = refColumns[columnIndexes.first].field;
 
     return refRows.first.cells[columnField];
   }
@@ -137,10 +133,10 @@ mixin CellState implements IPlutoGridState {
       return null;
     }
 
-    final length = refRows.length;
+    final int length = refRows.length;
 
     for (int rowIdx = 0; rowIdx < length; rowIdx += 1) {
-      final columnIdx = columnIdxByCellKeyAndRowIdx(cellKey, rowIdx);
+      final int? columnIdx = columnIdxByCellKeyAndRowIdx(cellKey, rowIdx);
 
       if (columnIdx != null) {
         return PlutoGridCellPosition(columnIdx: columnIdx, rowIdx: rowIdx);
@@ -156,11 +152,11 @@ mixin CellState implements IPlutoGridState {
       return null;
     }
 
-    final columnIndexes = columnIndexesByShowFrozen;
-    final length = columnIndexes.length;
+    final List<int> columnIndexes = columnIndexesByShowFrozen;
+    final int length = columnIndexes.length;
 
     for (int columnIdx = 0; columnIdx < length; columnIdx += 1) {
-      final field = refColumns[columnIndexes[columnIdx]].field;
+      final String field = refColumns[columnIndexes[columnIdx]].field;
 
       if (refRows[rowIdx].cells[field]!.key == cellKey) {
         return columnIdx;
@@ -184,11 +180,7 @@ mixin CellState implements IPlutoGridState {
   }
 
   @override
-  void setCurrentCell(
-    PlutoCell? cell,
-    int? rowIdx, {
-    bool notify = true,
-  }) {
+  void setCurrentCell(PlutoCell? cell, int? rowIdx, {bool notify = true}) {
     if (cell == null ||
         rowIdx == null ||
         refRows.isEmpty ||
@@ -220,7 +212,9 @@ mixin CellState implements IPlutoGridState {
     PlutoGridCellPosition? cellPosition,
     PlutoMoveDirection direction,
   ) {
-    if (cellPosition == null || !cellPosition.hasPosition) return false;
+    if (cellPosition == null || !cellPosition.hasPosition) {
+      return false;
+    }
 
     switch (direction) {
       case PlutoMoveDirection.left:
@@ -297,23 +291,24 @@ mixin CellState implements IPlutoGridState {
 
     if (column.type.isDate) {
       try {
-        final parseNewValue =
-            column.type.date.dateFormat.parseStrict(newValue.toString());
+        final DateTime parseNewValue = column.type.date.dateFormat.parseStrict(
+          newValue.toString(),
+        );
 
         return PlutoDateTimeHelper.isValidRange(
-          date: parseNewValue,
-          start: column.type.date.startDate,
-          end: column.type.date.endDate,
-        )
+              date: parseNewValue,
+              start: column.type.date.startDate,
+              end: column.type.date.endDate,
+            )
             ? column.type.date.dateFormat.format(parseNewValue)
             : oldValue;
-      } catch (e) {
+      } on Exception catch (_) {
         return oldValue;
       }
     }
 
     if (column.type.isTime) {
-      final time = RegExp(r'^([0-1]?\d|2[0-3]):[0-5]\d$');
+      final RegExp time = RegExp(r'^([0-1]?\d|2[0-3]):[0-5]\d$');
 
       return time.hasMatch(newValue.toString()) ? newValue : oldValue;
     }

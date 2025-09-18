@@ -22,36 +22,64 @@ abstract class IFilteringRowState {
     bool notify = true,
   });
 
-  void showFilterPopup(
-    BuildContext context, {
-    PlutoColumn? calledColumn,
-  });
+  void showFilterPopup(BuildContext context, {PlutoColumn? calledColumn});
 
   FilteredListFilter<PlutoRow>? savedFilter;
 }
 
 class _State {
-  List<PlutoRow> _filterRows = [];
+  /// use PlutoRowFilterX extension for PlutoRow (cells with filter info)
+  /// current applied filters for rows
+  List<PlutoRow> _filterRows = <PlutoRow>[];
+
+  /// based on change filter in columns
+  List<PlutoRow> _filterColumns = <PlutoRow>[];
+}
+
+extension PlutoRowFilterX on PlutoRow {
+  PlutoColumn? get filterColumn =>
+      cells[FilterHelper.filterFieldColumn]?.value as PlutoColumn;
+  PlutoFilterType? get filterType =>
+      cells[FilterHelper.filterFieldType]?.value as PlutoFilterType;
+  String? get filterValue =>
+      cells[FilterHelper.filterFieldValue]?.value?.toString();
+  // can be null
+  dynamic get filterValueObject => cells[FilterHelper.filterFieldValue]?.value;
+
+  bool get canApplyFilter =>
+      filterType is PlutoFilterTypeIsEmpty ||
+      filterType is PlutoFilterTypeIsEmptySet ||
+      filterType is PlutoFilterTypeIsNotEmpty ||
+      filterType is PlutoFilterTypeIsNotEmptySet ||
+      (filterValue != null && filterValue!.isNotEmpty);
 }
 
 mixin FilteringRowState implements IPlutoGridState {
   final _State _state = _State();
 
+  /// current applied filters for rows (with canApplyFilter)
   @override
   List<PlutoRow> get filterRows => _state._filterRows;
+
+  /// based on changed filter in columns or default filters with value
+  List<PlutoRow> get filterColumns => _state._filterColumns;
 
   @override
   bool get hasFilter =>
       refRows.hasFilter || (filterOnlyEvent && filterRows.isNotEmpty);
 
   @override
-  void setFilter(FilteredListFilter<PlutoRow>? filter,
-      {bool notify = true, List<PlutoRow>? filterRowsApply}) {
+  void setFilter(
+    FilteredListFilter<PlutoRow>? filter, {
+    bool notify = true,
+    List<PlutoRow>? filterRowsApply,
+  }) {
     if (filterRowsApply != null) {
       setFilterRows(filterRowsApply);
     }
-    if (filter == null) {
-      setFilterRows([]);
+    // fix for save empty custom filters
+    if (filter == null && filterColumns.isEmpty) {
+      setFilterRows(<PlutoRow>[]);
     }
 
     if (filterOnlyEvent) {
@@ -61,7 +89,7 @@ mixin FilteringRowState implements IPlutoGridState {
       return;
     }
 
-    for (final row in iterateAllRowAndGroup) {
+    for (final PlutoRow row in iterateAllRowAndGroup) {
       row.setState(PlutoRowState.none);
     }
 
@@ -88,8 +116,9 @@ mixin FilteringRowState implements IPlutoGridState {
   void setFilterWithFilterRows(List<PlutoRow> rows, {bool notify = true}) {
     setFilterRows(rows);
 
-    var enabledFilterColumnFields =
-        refColumns.where((element) => element.enableFilterMenuItem).toList();
+    List<PlutoColumn> enabledFilterColumnFields = refColumns
+        .where((PlutoColumn element) => element.enableFilterMenuItem)
+        .toList();
 
     setFilter(
       FilterHelper.convertRowsToFilter(filterRows, enabledFilterColumnFields),
@@ -103,23 +132,21 @@ mixin FilteringRowState implements IPlutoGridState {
 
   @override
   void setFilterRows(List<PlutoRow> rows) {
+    _state._filterColumns = rows;
     _state._filterRows = rows
-        .where(
-          (element) => element.cells[FilterHelper.filterFieldValue]!.value
-              .toString()
-              .isNotEmpty,
-        )
+        .where((PlutoRow element) => element.canApplyFilter)
         .toList();
-    final PlutoGridSetColumnFilterEvent event =
-        PlutoGridSetColumnFilterEvent(filterRows: rows);
+    final PlutoGridSetColumnFilterEvent event = PlutoGridSetColumnFilterEvent(
+      filterRows: rows,
+    );
     onFiltered?.call(event);
   }
 
   @override
   List<PlutoRow> filterRowsByField(String columnField) {
-    return filterRows
+    return filterColumns
         .where(
-          (element) =>
+          (PlutoRow element) =>
               element.cells[FilterHelper.filterFieldColumn]!.value ==
               columnField,
         )
@@ -140,15 +167,15 @@ mixin FilteringRowState implements IPlutoGridState {
       return;
     }
 
-    final Set<String> columnFields = Set.from(columns.map((e) => e.field));
-
-    filterRows.removeWhere(
-      (filterRow) {
-        return columnFields.contains(
-          filterRow.cells[FilterHelper.filterFieldColumn]!.value,
-        );
-      },
+    final Set<String> columnFields = Set.from(
+      columns.map((PlutoColumn e) => e.field),
     );
+
+    filterRows.removeWhere((PlutoRow filterRow) {
+      return columnFields.contains(
+        filterRow.cells[FilterHelper.filterFieldColumn]!.value,
+      );
+    });
 
     setFilterWithFilterRows(filterRows, notify: notify);
   }
@@ -159,11 +186,11 @@ mixin FilteringRowState implements IPlutoGridState {
     PlutoColumn? calledColumn,
     void Function()? onClosed,
   }) {
-    var shouldProvideDefaultFilterRow =
-        filterRows.isEmpty && calledColumn != null;
+    bool shouldProvideDefaultFilterRow =
+        filterColumns.isEmpty && calledColumn != null;
 
-    var rows = shouldProvideDefaultFilterRow
-        ? [
+    List<PlutoRow> rows = shouldProvideDefaultFilterRow
+        ? <PlutoRow>[
             FilterHelper.createFilterRow(
               columnField: calledColumn.enableFilterMenuItem
                   ? calledColumn.field
@@ -171,7 +198,7 @@ mixin FilteringRowState implements IPlutoGridState {
               filterType: calledColumn.defaultFilter,
             ),
           ]
-        : filterRows;
+        : filterColumns;
 
     FilterHelper.filterPopup(
       FilterPopupState(
@@ -184,10 +211,10 @@ mixin FilteringRowState implements IPlutoGridState {
             evenRowColor: const PlutoOptional(null),
           ),
         ),
-        handleAddNewFilter: (filterState) {
-          filterState!.appendRows([FilterHelper.createFilterRow()]);
+        handleAddNewFilter: (PlutoGridStateManager? filterState) {
+          filterState!.appendRows(<PlutoRow>[FilterHelper.createFilterRow()]);
         },
-        handleApplyFilter: (filterState) {
+        handleApplyFilter: (PlutoGridStateManager? filterState) {
           setFilterWithFilterRows(filterState!.rows);
         },
         columns: columns,

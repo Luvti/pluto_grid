@@ -16,23 +16,24 @@ class PlutoGridChangeColumnFilterEvent extends PlutoGridEvent {
     required this.filterValueObject,
     this.debounceMilliseconds,
   }) : super(
-          type: PlutoGridEventType.debounce,
-          duration: Duration(
-            milliseconds: debounceMilliseconds == null
-                ? PlutoGridSettings.debounceMillisecondsForColumnFilter
-                : debounceMilliseconds < 0
-                    ? 0
-                    : debounceMilliseconds,
-          ),
-        );
+         type: PlutoGridEventType.debounce,
+         duration: Duration(
+           milliseconds: debounceMilliseconds == null
+               ? PlutoGridSettings.debounceMillisecondsForColumnFilter
+               : debounceMilliseconds < 0
+               ? 0
+               : debounceMilliseconds,
+         ),
+       );
 
   List<PlutoRow> _getFilterRows(PlutoGridStateManager? stateManager) {
-    final List<PlutoRow> foundFilterRows =
-        stateManager!.filterRowsByField(column.field);
+    final List<PlutoRow> foundFilterRows = stateManager!.filterRowsByField(
+      column.field,
+    );
 
     if (foundFilterRows.isEmpty) {
       return [
-        ...stateManager.filterRows,
+        ...stateManager.filterColumns,
         FilterHelper.createFilterRow(
           columnField: column.field,
           filterType: filterType,
@@ -47,7 +48,7 @@ class PlutoGridChangeColumnFilterEvent extends PlutoGridEvent {
     row?.value = filterValue;
     row?.filterValue = filterValueObject;
 
-    return stateManager.filterRows;
+    return stateManager.filterColumns;
   }
 
   @override
