@@ -32,7 +32,7 @@ class PlutoGridChangeColumnFilterEvent extends PlutoGridEvent {
     );
 
     if (foundFilterRows.isEmpty) {
-      return [
+      return <PlutoRow>[
         ...stateManager.filterColumns,
         FilterHelper.createFilterRow(
           columnField: column.field,

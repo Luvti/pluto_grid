@@ -50,7 +50,9 @@ class PlutoColumnMenuDelegateDefault
         stateManager.toggleFrozenColumn(column, PlutoColumnFrozen.end);
         break;
       case PlutoGridColumnMenuItem.autoFit:
-        if (!mounted) return;
+        if (!mounted) {
+          return;
+        }
         stateManager.autoFitColumn(context, column);
         stateManager.notifyResizingListeners();
         break;
