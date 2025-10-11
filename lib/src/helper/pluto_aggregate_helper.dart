@@ -20,9 +20,7 @@ class PlutoAggregateHelper {
         : rows;
 
     final Iterable<num> numbers = foundItems
-        .map(
-          (e) => e.cells[column.field]?.value as num?,
-        )
+        .map((e) => e.cells[column.field]?.value as num?)
         .whereNotNull();
 
     return numbers.isNotEmpty
@@ -43,9 +41,7 @@ class PlutoAggregateHelper {
           : rows;
 
       final Iterable<double> numbers = foundItems
-          .map(
-            (e) => e.cells[column.field]?.valueForSorting as double?,
-          )
+          .map((e) => e.cells[column.field]?.valueForSorting as double?)
           .whereNotNull();
 
       return numbers.isNotEmpty
@@ -64,9 +60,7 @@ class PlutoAggregateHelper {
         : rows;
 
     final Iterable<num> numbers = foundItems
-        .map(
-          (e) => e.cells[column.field]?.value as num?,
-        )
+        .map((e) => e.cells[column.field]?.value as num?)
         .whereNotNull();
 
     return numbers.isNotEmpty
@@ -137,5 +131,21 @@ class PlutoAggregateHelper {
     required PlutoColumn column,
   }) {
     return rows.firstOrNull?.cells.containsKey(column.field) == true;
+  }
+
+  static num? uniqueCount({
+    required Iterable<PlutoRow> rows,
+    required PlutoColumn column,
+    PlutoAggregateFilter? filter,
+  }) {
+    if (!_hasColumnField(rows: rows, column: column)) {
+      return 0;
+    }
+
+    final foundItems = filter != null
+        ? rows.where((row) => filter(row.cells[column.field]!))
+        : rows;
+
+    return foundItems.toSet().length;
   }
 }
