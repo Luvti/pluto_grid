@@ -146,6 +146,6 @@ class PlutoAggregateHelper {
         ? rows.where((row) => filter(row.cells[column.field]!))
         : rows;
 
-    return foundItems.toSet().length;
+    return foundItems.map((c) => c.cells[column.field]?.value).toSet().length;
   }
 }
