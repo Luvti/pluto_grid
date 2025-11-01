@@ -424,7 +424,7 @@ class _ColumnWidget extends StatelessWidget {
                   ),
                 ),
                 child: Padding(
-                  padding: haveCheckbox ? EdgeInsets.zero : padding,
+                  padding: haveCheckbox ? padding.copyWith(left: 0) : padding,
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Row(
