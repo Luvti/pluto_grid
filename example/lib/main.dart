@@ -41,7 +41,12 @@ class PlutoGridExamplePage extends StatefulWidget {
 
 class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
   final List<PlutoColumn> columns = <PlutoColumn>[
-    PlutoColumn(title: 'Id', field: 'id', type: PlutoColumnType.text()),
+    PlutoColumn(
+      title: 'Id',
+      field: 'id',
+      type: PlutoColumnType.text(),
+      enableRowChecked: true,
+    ),
     PlutoColumn(
       title: 'Name test long name in header',
       field: 'name',
