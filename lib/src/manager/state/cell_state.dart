@@ -158,7 +158,7 @@ mixin CellState implements IPlutoGridState {
     for (int columnIdx = 0; columnIdx < length; columnIdx += 1) {
       final String field = refColumns[columnIndexes[columnIdx]].field;
 
-      if (refRows[rowIdx].cells[field]!.key == cellKey) {
+      if (refRows[rowIdx].cells[field]?.key == cellKey) {
         return columnIdx;
       }
     }
