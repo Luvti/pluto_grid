@@ -35,9 +35,9 @@ class PlutoGridScrollUpdateEvent extends PlutoGridEvent {
     required this.offset,
     this.scrollDirection = PlutoGridScrollUpdateDirection.all,
   }) : super(
-          type: PlutoGridEventType.throttleLeading,
-          duration: const Duration(milliseconds: 10),
-        );
+         type: PlutoGridEventType.throttleLeading,
+         duration: const Duration(milliseconds: 10),
+       );
 
   late final Offset _directionalOffset;
 
@@ -68,13 +68,17 @@ class PlutoGridScrollUpdateEvent extends PlutoGridEvent {
     if (scrollDirection.isHorizontal) {
       final ScrollController scroll = stateManager.scroll.bodyRowsHorizontal!;
 
-      scroll.jumpTo(scroll.offset);
+      if (scroll.hasClients) {
+        scroll.jumpTo(scroll.offset);
+      }
     }
 
     if (scrollDirection.isVertical) {
       final ScrollController scroll = stateManager.scroll.bodyRowsVertical!;
 
-      scroll.jumpTo(scroll.offset);
+      if (scroll.hasClients) {
+        scroll.jumpTo(scroll.offset);
+      }
     }
   }
 
@@ -133,16 +137,17 @@ class PlutoGridScrollUpdateEvent extends PlutoGridEvent {
       return;
     }
 
-    final double offsetToReachEndOfScroll =
-        move.isLeft || move.isUp ? 0 : scroll.position.maxScrollExtent;
+    final double offsetToReachEndOfScroll = move.isLeft || move.isUp
+        ? 0
+        : scroll.position.maxScrollExtent;
 
-    final double remainingOffset =
-        (offsetToReachEndOfScroll - scroll.offset).abs();
+    final double remainingOffset = (offsetToReachEndOfScroll - scroll.offset)
+        .abs();
 
     final double offsetInSecond = stateManager.maxWidth! / 2;
 
-    int msToReachEndOfScroll =
-        (remainingOffset / offsetInSecond * 1000).toInt();
+    int msToReachEndOfScroll = (remainingOffset / offsetInSecond * 1000)
+        .toInt();
 
     if (msToReachEndOfScroll < 1) {
       msToReachEndOfScroll = 1;
