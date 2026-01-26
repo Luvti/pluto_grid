@@ -13,14 +13,17 @@ class PlutoAggregateHelper {
       return 0;
     }
 
-    final numberColumn = column.type as PlutoColumnTypeWithNumberFormat;
+    final PlutoColumnTypeWithNumberFormat numberColumn =
+        column.type as PlutoColumnTypeWithNumberFormat;
 
-    final foundItems = filter != null
-        ? rows.where((row) => filter(row.cells[column.field]!))
+    final Iterable<PlutoRow<dynamic>> foundItems = filter != null
+        ? rows.where(
+            (PlutoRow<dynamic> row) => filter(row.cells[column.field]!),
+          )
         : rows;
 
     final Iterable<num> numbers = foundItems
-        .map((e) => e.cells[column.field]?.value as num?)
+        .map((PlutoRow<dynamic> e) => e.cells[column.field]?.value as num?)
         .whereNotNull();
 
     return numbers.isNotEmpty
@@ -34,14 +37,20 @@ class PlutoAggregateHelper {
     PlutoAggregateFilter? filter,
   }) {
     if (column.type is PlutoColumnTypeWithDoubleFormat) {
-      final numberColumn = column.type as PlutoColumnTypeWithDoubleFormat;
+      final PlutoColumnTypeWithDoubleFormat numberColumn =
+          column.type as PlutoColumnTypeWithDoubleFormat;
 
-      final foundItems = filter != null
-          ? rows.where((row) => filter(row.cells[column.field]!))
+      final Iterable<PlutoRow<dynamic>> foundItems = filter != null
+          ? rows.where(
+              (PlutoRow<dynamic> row) => filter(row.cells[column.field]!),
+            )
           : rows;
 
       final Iterable<double> numbers = foundItems
-          .map((e) => e.cells[column.field]?.valueForSorting as double?)
+          .map(
+            (PlutoRow<dynamic> e) =>
+                e.cells[column.field]?.valueForSorting as double?,
+          )
           .whereNotNull();
 
       return numbers.isNotEmpty
@@ -53,14 +62,17 @@ class PlutoAggregateHelper {
       return 0;
     }
 
-    final numberColumn = column.type as PlutoColumnTypeWithNumberFormat;
+    final PlutoColumnTypeWithNumberFormat numberColumn =
+        column.type as PlutoColumnTypeWithNumberFormat;
 
-    final foundItems = filter != null
-        ? rows.where((row) => filter(row.cells[column.field]!))
+    final Iterable<PlutoRow<dynamic>> foundItems = filter != null
+        ? rows.where(
+            (PlutoRow<dynamic> row) => filter(row.cells[column.field]!),
+          )
         : rows;
 
     final Iterable<num> numbers = foundItems
-        .map((e) => e.cells[column.field]?.value as num?)
+        .map((PlutoRow<dynamic> e) => e.cells[column.field]?.value as num?)
         .whereNotNull();
 
     return numbers.isNotEmpty
@@ -78,12 +90,14 @@ class PlutoAggregateHelper {
       return null;
     }
 
-    final foundItems = filter != null
-        ? rows.where((row) => filter(row.cells[column.field]!))
+    final Iterable<PlutoRow<dynamic>> foundItems = filter != null
+        ? rows.where(
+            (PlutoRow<dynamic> row) => filter(row.cells[column.field]!),
+          )
         : rows;
 
     final Iterable<num> mapValues = foundItems.map(
-      (e) => e.cells[column.field]!.value,
+      (PlutoRow<dynamic> e) => e.cells[column.field]!.value,
     );
 
     return mapValues.minOrNull;
@@ -99,12 +113,14 @@ class PlutoAggregateHelper {
       return null;
     }
 
-    final foundItems = filter != null
-        ? rows.where((row) => filter(row.cells[column.field]!))
+    final Iterable<PlutoRow<dynamic>> foundItems = filter != null
+        ? rows.where(
+            (PlutoRow<dynamic> row) => filter(row.cells[column.field]!),
+          )
         : rows;
 
     final Iterable<num> mapValues = foundItems.map(
-      (e) => e.cells[column.field]!.value,
+      (PlutoRow<dynamic> e) => e.cells[column.field]!.value,
     );
 
     return mapValues.maxOrNull;
@@ -119,8 +135,10 @@ class PlutoAggregateHelper {
       return 0;
     }
 
-    final foundItems = filter != null
-        ? rows.where((row) => filter(row.cells[column.field]!))
+    final Iterable<PlutoRow<dynamic>> foundItems = filter != null
+        ? rows.where(
+            (PlutoRow<dynamic> row) => filter(row.cells[column.field]!),
+          )
         : rows;
 
     return foundItems.length;
@@ -142,10 +160,15 @@ class PlutoAggregateHelper {
       return 0;
     }
 
-    final foundItems = filter != null
-        ? rows.where((row) => filter(row.cells[column.field]!))
+    final Iterable<PlutoRow<dynamic>> foundItems = filter != null
+        ? rows.where(
+            (PlutoRow<dynamic> row) => filter(row.cells[column.field]!),
+          )
         : rows;
 
-    return foundItems.map((c) => c.cells[column.field]?.value).toSet().length;
+    return foundItems
+        .map((PlutoRow<dynamic> c) => c.cells[column.field]?.value)
+        .toSet()
+        .length;
   }
 }

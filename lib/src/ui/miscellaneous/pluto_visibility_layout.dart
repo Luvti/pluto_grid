@@ -57,26 +57,32 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
     required PlutoVisibilityLayout widget,
     required this.scrollController,
     this.initialViewportDimension = 1920,
-  })  : assert(!debugChildrenHaveDuplicateKeys(widget, widget.children)),
-        super(widget);
+  }) : assert(!debugChildrenHaveDuplicateKeys(widget, widget.children)),
+       super(widget);
 
   final ScrollController scrollController;
 
   final double initialViewportDimension;
 
   @override
-  ContainerRenderObjectMixin<RenderObject,
-      ContainerParentDataMixin<RenderObject>> get renderObject {
-    return super.renderObject as ContainerRenderObjectMixin<RenderObject,
-        ContainerParentDataMixin<RenderObject>>;
+  ContainerRenderObjectMixin<
+    RenderObject,
+    ContainerParentDataMixin<RenderObject>
+  >
+  get renderObject {
+    return super.renderObject
+        as ContainerRenderObjectMixin<
+          RenderObject,
+          ContainerParentDataMixin<RenderObject>
+        >;
   }
 
   @override
   @protected
   @visibleForTesting
   Iterable<Element> get children => _children.where((Element child) {
-        return !_forgottenChildren.contains(child);
-      });
+    return !_forgottenChildren.contains(child);
+  });
 
   late List<Element> _children;
 
@@ -123,12 +129,14 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
   bool _firstVisible = true;
 
   void scrollListener() {
-    final bool sameBoundScroll = _previousVisibleFirstX1 <= _visibleFirst &&
+    final bool sameBoundScroll =
+        _previousVisibleFirstX1 <= _visibleFirst &&
         _visibleFirst <= _previousVisibleFirstX2 &&
         _previousVisibleLastX1 <= _visibleLast &&
         _visibleLast <= _previousVisibleLastX2;
 
-    final bool sameMaxScrollExtent = _previousMaxScroll == _maxScrollExtent &&
+    final bool sameMaxScrollExtent =
+        _previousMaxScroll == _maxScrollExtent &&
         scrollController.hasClients &&
         scrollController.position.maxScrollExtent == _maxScrollExtent;
 
@@ -150,10 +158,7 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
             startOffset + layoutChild.width >= _visibleFirst);
   }
 
-  void updateLastVisible({
-    required double startOffset,
-    required double width,
-  }) {
+  void updateLastVisible({required double startOffset, required double width}) {
     if (_firstVisible) {
       _previousVisibleFirstX1 = startOffset;
       _previousVisibleFirstX2 = startOffset + width;
@@ -304,10 +309,7 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
 
     assert(widget == newWidget);
 
-    assert(!debugChildrenHaveDuplicateKeys(
-      widget,
-      _widgetChildren,
-    ));
+    assert(!debugChildrenHaveDuplicateKeys(widget, _widgetChildren));
 
     // Safety check to prevent crashes with empty widget children
     if (_widgetChildren.isEmpty) {
@@ -348,20 +350,27 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
 
   @override
   void insertRenderObjectChild(RenderObject child, IndexedSlot<Element?> slot) {
-    final ContainerRenderObjectMixin<RenderObject,
-            ContainerParentDataMixin<RenderObject>> renderObject =
-        this.renderObject;
+    final ContainerRenderObjectMixin<
+      RenderObject,
+      ContainerParentDataMixin<RenderObject>
+    >
+    renderObject = this.renderObject;
     assert(renderObject.debugValidateChild(child));
     renderObject.insert(child, after: slot.value?.renderObject);
     assert(renderObject == this.renderObject);
   }
 
   @override
-  void moveRenderObjectChild(RenderObject child, IndexedSlot<Element?> oldSlot,
-      IndexedSlot<Element?> newSlot) {
-    final ContainerRenderObjectMixin<RenderObject,
-            ContainerParentDataMixin<RenderObject>> renderObject =
-        this.renderObject;
+  void moveRenderObjectChild(
+    RenderObject child,
+    IndexedSlot<Element?> oldSlot,
+    IndexedSlot<Element?> newSlot,
+  ) {
+    final ContainerRenderObjectMixin<
+      RenderObject,
+      ContainerParentDataMixin<RenderObject>
+    >
+    renderObject = this.renderObject;
     assert(child.parent == renderObject);
     renderObject.move(child, after: newSlot.value?.renderObject);
     assert(renderObject == this.renderObject);
@@ -369,9 +378,11 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
 
   @override
   void removeRenderObjectChild(RenderObject child, Object? slot) {
-    final ContainerRenderObjectMixin<RenderObject,
-            ContainerParentDataMixin<RenderObject>> renderObject =
-        this.renderObject;
+    final ContainerRenderObjectMixin<
+      RenderObject,
+      ContainerParentDataMixin<RenderObject>
+    >
+    renderObject = this.renderObject;
     assert(child.parent == renderObject);
     renderObject.remove(child);
     assert(renderObject == this.renderObject);
@@ -406,13 +417,15 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
           FlutterErrorDetails(
             exception: FlutterError.fromParts(<DiagnosticsNode>[
               ErrorSummary(
-                  'The children of `MultiChildRenderObjectElement` must each has an associated render object.'),
+                'The children of `MultiChildRenderObjectElement` must each has an associated render object.',
+              ),
               ErrorHint(
                 'This typically means that the `${newChild.widget}` or its children\n'
                 'are not a subtype of `RenderObjectWidget`.',
               ),
               newChild.describeElement(
-                  'The following element does not have an associated render object'),
+                'The following element does not have an associated render object',
+              ),
               DiagnosticsDebugCreator(DebugCreator(newChild)),
             ]),
           ),

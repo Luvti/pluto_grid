@@ -40,6 +40,7 @@ class FilterHelper {
     PlutoFilterTypeGreaterThanOrEqualTo(),
     PlutoFilterTypeLessThan(),
     PlutoFilterTypeLessThanOrEqualTo(),
+    PlutoFilterTypeBetween(),
     PlutoFilterTypeIsEmpty(),
     PlutoFilterTypeIsNotEmpty(),
   ];
@@ -49,6 +50,7 @@ class FilterHelper {
     PlutoFilterTypeGreaterThanOrEqualTo(),
     PlutoFilterTypeLessThan(),
     PlutoFilterTypeLessThanOrEqualTo(),
+    PlutoFilterTypeBetween(),
     PlutoFilterTypeIsEmpty(),
     PlutoFilterTypeIsNotEmpty(),
   ];
@@ -528,6 +530,40 @@ class FilterHelper {
     return column.type.compare(base, search) < 1;
   }
 
+  static bool compareBetween({
+    required dynamic baseObject,
+    required String? base,
+    required dynamic searchObject,
+    required String? search,
+    required PlutoColumn column,
+  }) {
+    if (base == null || base.isEmpty) {
+      return false;
+    }
+
+    final List<String> values = resolveBetweenValues(
+      search: search,
+      searchObject: searchObject,
+    );
+
+    if (values.isEmpty) {
+      return true;
+    }
+
+    final String start = values.first;
+    final String end = values.length > 1 ? values[1] : '';
+
+    if (start.isNotEmpty && column.type.compare(base, start) < 0) {
+      return false;
+    }
+
+    if (end.isNotEmpty && column.type.compare(base, end) > 0) {
+      return false;
+    }
+
+    return true;
+  }
+
   static bool _compareWithRegExp(
     String pattern,
     String value, {
@@ -556,6 +592,44 @@ class FilterHelper {
     return base != null && base.isNotEmpty;
   }
 
+  static List<String> resolveBetweenValues({
+    required String? search,
+    required dynamic searchObject,
+  }) {
+    if (searchObject is List<String>) {
+      if (searchObject.isEmpty) {
+        return <String>[];
+      }
+
+      return searchObject;
+    }
+
+    if (searchObject is List) {
+      return searchObject
+          .map((dynamic value) => value?.toString() ?? '')
+          .toList(growable: false);
+    }
+
+    if (search == null || search.isEmpty) {
+      return <String>[];
+    }
+
+    final List<String> parts = search
+        .split(RegExp(r'\s*(?:\.\.|~|;|,)\s*'))
+        .map((String value) => value.trim())
+        .toList(growable: false);
+
+    if (parts.isEmpty) {
+      return <String>[];
+    }
+
+    if (parts.length == 1) {
+      return <String>[parts.first, ''];
+    }
+
+    return <String>[parts[0], parts[1]];
+  }
+
   static List<PlutoFilterType> defaultFilter({
     required PlutoColumnTypeEnum type,
   }) {
@@ -573,8 +647,6 @@ class FilterHelper {
         return defaultStringFilters;
       case PlutoColumnTypeEnum.bool:
         return defaultBoolFilters;
-      default:
-        return defaultStringFilters;
     }
   }
 }
@@ -745,6 +817,10 @@ class FilterPopupState {
         field: FilterHelper.filterFieldValue,
         type: PlutoColumnType.text(),
         enableFilterMenuItem: false,
+        enableEditingMode: false,
+        enableAutoEditing: false,
+        renderer: (rendererContext) =>
+            PlutoFilterValueCell(rendererContext: rendererContext),
       ),
     ];
   }
@@ -843,6 +919,137 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+}
+
+class PlutoFilterValueCell extends StatefulWidget {
+  final PlutoColumnRendererContext rendererContext;
+
+  const PlutoFilterValueCell({super.key, required this.rendererContext});
+
+  @override
+  State<PlutoFilterValueCell> createState() => _PlutoFilterValueCellState();
+}
+
+class _PlutoFilterValueCellState extends State<PlutoFilterValueCell> {
+  late final TextEditingController _singleController;
+  late final TextEditingController _startController;
+  late final TextEditingController _endController;
+
+  PlutoRow get _row => widget.rendererContext.row;
+
+  PlutoCell get _cell => widget.rendererContext.cell;
+
+  PlutoGridStateManager get _stateManager =>
+      widget.rendererContext.stateManager;
+
+  PlutoGridStyleConfig get _style => _stateManager.style;
+
+  PlutoFilterType? get _filterType =>
+      _row.cells[FilterHelper.filterFieldType]?.value as PlutoFilterType?;
+
+  bool get _isBetween => _filterType is PlutoFilterTypeBetween;
+
+  @override
+  void initState() {
+    super.initState();
+    _singleController = TextEditingController();
+    _startController = TextEditingController();
+    _endController = TextEditingController();
+    _syncFromCell();
+  }
+
+  @override
+  void didUpdateWidget(covariant PlutoFilterValueCell oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncFromCell();
+  }
+
+  @override
+  void dispose() {
+    _singleController.dispose();
+    _startController.dispose();
+    _endController.dispose();
+    super.dispose();
+  }
+
+  void _syncFromCell() {
+    if (_isBetween) {
+      final List<String> values = FilterHelper.resolveBetweenValues(
+        search: _cell.value?.toString(),
+        searchObject: _cell.filterValue,
+      );
+      _startController.text = values.isNotEmpty ? values.first : '';
+      _endController.text = values.length > 1 ? values[1] : '';
+    } else {
+      _singleController.text = _cell.value?.toString() ?? '';
+    }
+  }
+
+  void _updateSingleValue(String value) {
+    _cell.filterValue = null;
+    _stateManager.changeCellValue(_cell, value, callOnChangedEvent: true);
+  }
+
+  void _updateBetweenValue({required String start, required String end}) {
+    _cell.filterValue = <String>[start, end];
+    final String merged = start.isEmpty && end.isEmpty
+        ? ''
+        : '${start} ~ ${end}'.trim();
+    _stateManager.changeCellValue(_cell, merged, callOnChangedEvent: true);
+  }
+
+  InputDecoration _inputDecoration() {
+    return const InputDecoration(
+      isDense: true,
+      border: InputBorder.none,
+      enabledBorder: InputBorder.none,
+      focusedBorder: InputBorder.none,
+      contentPadding: EdgeInsets.zero,
+    );
+  }
+
+  Widget _buildSingleField() {
+    return TextField(
+      controller: _singleController,
+      style: _style.filterTextStyle,
+      decoration: _inputDecoration(),
+      onChanged: _updateSingleValue,
+    );
+  }
+
+  Widget _buildBetweenFields() {
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: TextField(
+            controller: _startController,
+            style: _style.filterTextStyle,
+            decoration: _inputDecoration(),
+            onChanged: (value) =>
+                _updateBetweenValue(start: value, end: _endController.text),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: TextField(
+            controller: _endController,
+            style: _style.filterTextStyle,
+            decoration: _inputDecoration(),
+            onChanged: (value) =>
+                _updateBetweenValue(start: _startController.text, end: value),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6),
+      child: _isBetween ? _buildBetweenFields() : _buildSingleField(),
     );
   }
 }
@@ -1008,6 +1215,18 @@ class PlutoFilterTypeLessThanOrEqualTo implements PlutoFilterType {
   PlutoCompareFunction get compare => FilterHelper.compareLessThanOrEqualTo;
 
   const PlutoFilterTypeLessThanOrEqualTo();
+}
+
+class PlutoFilterTypeBetween implements PlutoFilterType {
+  static String name = 'Between';
+
+  @override
+  String get title => PlutoFilterTypeBetween.name;
+
+  @override
+  PlutoCompareFunction get compare => FilterHelper.compareBetween;
+
+  const PlutoFilterTypeBetween();
 }
 
 class PlutoFilterTypeIsEmpty implements PlutoFilterType {

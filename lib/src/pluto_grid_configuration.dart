@@ -93,7 +93,8 @@ class PlutoGridConfiguration {
   const PlutoGridConfiguration({
     this.enableMoveDownAfterSelecting = false,
     this.enableMoveHorizontalInEditing = false,
-    this.rowSelectionCheckBoxBehavior = PlutoGridRowSelectionCheckBoxBehavior.none,
+    this.rowSelectionCheckBoxBehavior =
+        PlutoGridRowSelectionCheckBoxBehavior.none,
     this.enterKeyAction = PlutoGridEnterKeyAction.editingAndMoveDown,
     this.tabKeyAction = PlutoGridTabKeyAction.normal,
     this.shortcut = const PlutoGridShortcut(),
@@ -107,7 +108,8 @@ class PlutoGridConfiguration {
   const PlutoGridConfiguration.dark({
     this.enableMoveDownAfterSelecting = false,
     this.enableMoveHorizontalInEditing = false,
-    this.rowSelectionCheckBoxBehavior = PlutoGridRowSelectionCheckBoxBehavior.none,
+    this.rowSelectionCheckBoxBehavior =
+        PlutoGridRowSelectionCheckBoxBehavior.none,
     this.enterKeyAction = PlutoGridEnterKeyAction.editingAndMoveDown,
     this.tabKeyAction = PlutoGridTabKeyAction.normal,
     this.shortcut = const PlutoGridShortcut(),
@@ -128,9 +130,11 @@ class PlutoGridConfiguration {
     PlutoFilterTypeStartsWith.name = localeText.filterStartsWith;
     PlutoFilterTypeEndsWith.name = localeText.filterEndsWith;
     PlutoFilterTypeGreaterThan.name = localeText.filterGreaterThan;
-    PlutoFilterTypeGreaterThanOrEqualTo.name = localeText.filterGreaterThanOrEqualTo;
+    PlutoFilterTypeGreaterThanOrEqualTo.name =
+        localeText.filterGreaterThanOrEqualTo;
     PlutoFilterTypeLessThan.name = localeText.filterLessThan;
     PlutoFilterTypeLessThanOrEqualTo.name = localeText.filterLessThanOrEqualTo;
+    PlutoFilterTypeBetween.name = localeText.filterBetween;
     PlutoFilterTypeIsEmpty.name = localeText.filterIsEmpty;
     PlutoFilterTypeIsEmptySet.name = localeText.filterIsEmpty;
     PlutoFilterTypeIsNotEmpty.name = localeText.filterIsNotEmpty;
@@ -150,7 +154,9 @@ class PlutoGridConfiguration {
       if (column.defaultFilterNullable != null) {
         continue;
       }
-      final PlutoFilterType? filter = columnFilter.getDefaultColumnFilter(column);
+      final PlutoFilterType? filter = columnFilter.getDefaultColumnFilter(
+        column,
+      );
       if (filter != null) {
         column.setDefaultFilter(filter);
       }
@@ -170,8 +176,10 @@ class PlutoGridConfiguration {
     PlutoGridLocaleText? localeText,
   }) {
     return PlutoGridConfiguration(
-      enableMoveDownAfterSelecting: enableMoveDownAfterSelecting ?? this.enableMoveDownAfterSelecting,
-      enableMoveHorizontalInEditing: enableMoveHorizontalInEditing ?? this.enableMoveHorizontalInEditing,
+      enableMoveDownAfterSelecting:
+          enableMoveDownAfterSelecting ?? this.enableMoveDownAfterSelecting,
+      enableMoveHorizontalInEditing:
+          enableMoveHorizontalInEditing ?? this.enableMoveHorizontalInEditing,
       enterKeyAction: enterKeyAction ?? this.enterKeyAction,
       tabKeyAction: tabKeyAction ?? this.tabKeyAction,
       shortcut: shortcut ?? this.shortcut,
@@ -188,8 +196,10 @@ class PlutoGridConfiguration {
     return identical(this, other) ||
         other is PlutoGridConfiguration &&
             runtimeType == other.runtimeType &&
-            enableMoveDownAfterSelecting == other.enableMoveDownAfterSelecting &&
-            enableMoveHorizontalInEditing == other.enableMoveHorizontalInEditing &&
+            enableMoveDownAfterSelecting ==
+                other.enableMoveDownAfterSelecting &&
+            enableMoveHorizontalInEditing ==
+                other.enableMoveHorizontalInEditing &&
             enterKeyAction == other.enterKeyAction &&
             tabKeyAction == other.tabKeyAction &&
             shortcut == other.shortcut &&
@@ -251,7 +261,12 @@ class PlutoGridStyleConfig {
     this.defaultColumnTitlePadding = PlutoGridSettings.columnTitlePadding,
     this.defaultColumnFilterPadding = PlutoGridSettings.columnFilterPadding,
     this.defaultCellPadding = PlutoGridSettings.cellPadding,
-    this.columnTextStyle = const TextStyle(color: Colors.black, decoration: TextDecoration.none, fontSize: 14, fontWeight: FontWeight.w600),
+    this.columnTextStyle = const TextStyle(
+      color: Colors.black,
+      decoration: TextDecoration.none,
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+    ),
     Color? columnUnselectedColor,
     Color? columnActiveColor,
     Color? cellUnselectedColor,
@@ -263,7 +278,11 @@ class PlutoGridStyleConfig {
     this.columnAscendingIcon,
     this.columnDescendingIcon,
     this.rowGroupExpandedIcon = Icons.keyboard_arrow_down,
-    this.rowGroupCollapsedIcon = const IconData(0xe355, matchTextDirection: true, fontFamily: 'MaterialIcons'),
+    this.rowGroupCollapsedIcon = const IconData(
+      0xe355,
+      matchTextDirection: true,
+      fontFamily: 'MaterialIcons',
+    ),
     this.rowGroupEmptyIcon = Icons.noise_control_off,
     this.gridBorderRadius = BorderRadius.zero,
     this.gridPopupBorderRadius = BorderRadius.zero,
@@ -320,7 +339,12 @@ class PlutoGridStyleConfig {
     this.defaultColumnTitlePadding = PlutoGridSettings.columnTitlePadding,
     this.defaultColumnFilterPadding = PlutoGridSettings.columnFilterPadding,
     this.defaultCellPadding = PlutoGridSettings.cellPadding,
-    this.columnTextStyle = const TextStyle(color: Colors.white, decoration: TextDecoration.none, fontSize: 14, fontWeight: FontWeight.w600),
+    this.columnTextStyle = const TextStyle(
+      color: Colors.white,
+      decoration: TextDecoration.none,
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+    ),
     Color? columnUnselectedColor,
     Color? columnActiveColor,
     Color? cellUnselectedColor,
@@ -332,7 +356,11 @@ class PlutoGridStyleConfig {
     this.columnAscendingIcon,
     this.columnDescendingIcon,
     this.rowGroupExpandedIcon = Icons.keyboard_arrow_down,
-    this.rowGroupCollapsedIcon = const IconData(0xe355, matchTextDirection: true, fontFamily: 'MaterialIcons'),
+    this.rowGroupCollapsedIcon = const IconData(
+      0xe355,
+      matchTextDirection: true,
+      fontFamily: 'MaterialIcons',
+    ),
     this.rowGroupEmptyIcon = Icons.noise_control_off,
     this.gridBorderRadius = BorderRadius.zero,
     this.gridPopupBorderRadius = BorderRadius.zero,
@@ -601,52 +629,74 @@ class PlutoGridStyleConfig {
     double? gridBorderWidth,
   }) {
     return PlutoGridStyleConfig(
-      enableGridBorderShadow: enableGridBorderShadow ?? this.enableGridBorderShadow,
-      enableColumnBorderVertical: enableColumnBorderVertical ?? this.enableColumnBorderVertical,
-      enableColumnBorderHorizontal: enableColumnBorderHorizontal ?? this.enableColumnBorderHorizontal,
-      enableCellBorderVertical: enableCellBorderVertical ?? this.enableCellBorderVertical,
-      enableCellBorderHorizontal: enableCellBorderHorizontal ?? this.enableCellBorderHorizontal,
-      enableRowColorAnimation: enableRowColorAnimation ?? this.enableRowColorAnimation,
+      enableGridBorderShadow:
+          enableGridBorderShadow ?? this.enableGridBorderShadow,
+      enableColumnBorderVertical:
+          enableColumnBorderVertical ?? this.enableColumnBorderVertical,
+      enableColumnBorderHorizontal:
+          enableColumnBorderHorizontal ?? this.enableColumnBorderHorizontal,
+      enableCellBorderVertical:
+          enableCellBorderVertical ?? this.enableCellBorderVertical,
+      enableCellBorderHorizontal:
+          enableCellBorderHorizontal ?? this.enableCellBorderHorizontal,
+      enableRowColorAnimation:
+          enableRowColorAnimation ?? this.enableRowColorAnimation,
       gridBackgroundColor: gridBackgroundColor ?? this.gridBackgroundColor,
       rowColor: rowColor ?? this.rowColor,
       oddRowColor: oddRowColor == null ? this.oddRowColor : oddRowColor.value,
-      evenRowColor: evenRowColor == null ? this.evenRowColor : evenRowColor.value,
+      evenRowColor: evenRowColor == null
+          ? this.evenRowColor
+          : evenRowColor.value,
       activatedColor: activatedColor ?? this.activatedColor,
       columnCheckedColor: columnCheckedColor ?? this.columnCheckedColor,
       cellCheckedColor: cellCheckedColor ?? this.cellCheckedColor,
       cellColorInEditState: cellColorInEditState ?? this.cellColorInEditState,
-      cellColorInReadOnlyState: cellColorInReadOnlyState ?? this.cellColorInReadOnlyState,
-      cellColorGroupedRow: cellColorGroupedRow == null ? this.cellColorGroupedRow : cellColorGroupedRow.value,
-      dragTargetColumnColor: dragTargetColumnColor ?? this.dragTargetColumnColor,
+      cellColorInReadOnlyState:
+          cellColorInReadOnlyState ?? this.cellColorInReadOnlyState,
+      cellColorGroupedRow: cellColorGroupedRow == null
+          ? this.cellColorGroupedRow
+          : cellColorGroupedRow.value,
+      dragTargetColumnColor:
+          dragTargetColumnColor ?? this.dragTargetColumnColor,
       iconColor: iconColor ?? this.iconColor,
       disabledIconColor: disabledIconColor ?? this.disabledIconColor,
       menuBackgroundColor: menuBackgroundColor ?? this.menuBackgroundColor,
       gridBorderColor: gridBorderColor ?? this.gridBorderColor,
       borderColor: borderColor ?? this.borderColor,
       activatedBorderColor: activatedBorderColor ?? this.activatedBorderColor,
-      inactivatedBorderColor: inactivatedBorderColor ?? this.inactivatedBorderColor,
+      inactivatedBorderColor:
+          inactivatedBorderColor ?? this.inactivatedBorderColor,
       iconSize: iconSize ?? this.iconSize,
       rowHeight: rowHeight ?? this.rowHeight,
       columnHeight: columnHeight ?? this.columnHeight,
       columnFilterHeight: columnFilterHeight ?? this.columnFilterHeight,
-      defaultColumnTitlePadding: defaultColumnTitlePadding ?? this.defaultColumnTitlePadding,
-      defaultColumnFilterPadding: defaultColumnFilterPadding ?? this.defaultColumnFilterPadding,
+      defaultColumnTitlePadding:
+          defaultColumnTitlePadding ?? this.defaultColumnTitlePadding,
+      defaultColumnFilterPadding:
+          defaultColumnFilterPadding ?? this.defaultColumnFilterPadding,
       defaultCellPadding: defaultCellPadding ?? this.defaultCellPadding,
       columnTextStyle: columnTextStyle ?? this.columnTextStyle,
-      columnUnselectedColor: columnUnselectedColor ?? this.columnUnselectedColor,
+      columnUnselectedColor:
+          columnUnselectedColor ?? this.columnUnselectedColor,
       columnActiveColor: columnActiveColor ?? this.columnActiveColor,
       cellUnselectedColor: cellUnselectedColor ?? this.cellUnselectedColor,
       cellActiveColor: cellActiveColor ?? this.cellActiveColor,
       cellTextStyle: cellTextStyle ?? this.cellTextStyle,
       columnContextIcon: columnContextIcon ?? this.columnContextIcon,
       columnResizeIcon: columnResizeIcon ?? this.columnResizeIcon,
-      columnAscendingIcon: columnAscendingIcon == null ? this.columnAscendingIcon : columnAscendingIcon.value,
-      columnDescendingIcon: columnDescendingIcon == null ? this.columnDescendingIcon : columnDescendingIcon.value,
+      columnAscendingIcon: columnAscendingIcon == null
+          ? this.columnAscendingIcon
+          : columnAscendingIcon.value,
+      columnDescendingIcon: columnDescendingIcon == null
+          ? this.columnDescendingIcon
+          : columnDescendingIcon.value,
       rowGroupExpandedIcon: rowGroupExpandedIcon ?? this.rowGroupExpandedIcon,
-      rowGroupCollapsedIcon: rowGroupCollapsedIcon ?? this.rowGroupCollapsedIcon,
+      rowGroupCollapsedIcon:
+          rowGroupCollapsedIcon ?? this.rowGroupCollapsedIcon,
       rowGroupEmptyIcon: rowGroupEmptyIcon ?? this.rowGroupEmptyIcon,
       gridBorderRadius: gridBorderRadius ?? this.gridBorderRadius,
-      gridPopupBorderRadius: gridPopupBorderRadius ?? this.gridPopupBorderRadius,
+      gridPopupBorderRadius:
+          gridPopupBorderRadius ?? this.gridPopupBorderRadius,
       tooltipTextStyle: tooltipTextStyle ?? this.tooltipTextStyle,
       gridPadding: gridPadding ?? this.gridPadding,
       gridBorderWidth: gridBorderWidth ?? this.gridBorderWidth,
@@ -662,7 +712,8 @@ class PlutoGridStyleConfig {
             runtimeType == other.runtimeType &&
             enableGridBorderShadow == other.enableGridBorderShadow &&
             enableColumnBorderVertical == other.enableColumnBorderVertical &&
-            enableColumnBorderHorizontal == other.enableColumnBorderHorizontal &&
+            enableColumnBorderHorizontal ==
+                other.enableColumnBorderHorizontal &&
             enableCellBorderVertical == other.enableCellBorderVertical &&
             enableCellBorderHorizontal == other.enableCellBorderHorizontal &&
             enableRowColorAnimation == other.enableRowColorAnimation &&
@@ -772,18 +823,20 @@ class PlutoGridStyleConfig {
 class PlutoGridScrollbarConfig {
   const PlutoGridScrollbarConfig({
     this.draggableScrollbar = true,
-    this.isAlwaysShown = false,
+    this.isAlwaysShown = true,
     this.onlyDraggingThumb = true,
     this.enableScrollAfterDragEnd = true,
     this.scrollbarThickness = PlutoScrollbar.defaultThickness,
-    this.scrollbarThicknessWhileDragging = PlutoScrollbar.defaultThicknessWhileDragging,
+    this.scrollbarThicknessWhileDragging =
+        PlutoScrollbar.defaultThicknessWhileDragging,
     this.hoverWidth = PlutoScrollbar.defaultScrollbarHoverWidth,
     this.mainAxisMargin,
     this.crossAxisMargin,
     this.scrollBarColor,
     this.scrollBarTrackColor,
     this.scrollbarRadius = PlutoScrollbar.defaultRadius,
-    this.scrollbarRadiusWhileDragging = PlutoScrollbar.defaultRadiusWhileDragging,
+    this.scrollbarRadiusWhileDragging =
+        PlutoScrollbar.defaultRadiusWhileDragging,
     this.longPressDuration,
     this.dragDevices,
   });
@@ -837,14 +890,16 @@ class PlutoGridScrollbarConfig {
             onlyDraggingThumb == other.onlyDraggingThumb &&
             enableScrollAfterDragEnd == other.enableScrollAfterDragEnd &&
             scrollbarThickness == other.scrollbarThickness &&
-            scrollbarThicknessWhileDragging == other.scrollbarThicknessWhileDragging &&
+            scrollbarThicknessWhileDragging ==
+                other.scrollbarThicknessWhileDragging &&
             hoverWidth == other.hoverWidth &&
             mainAxisMargin == other.mainAxisMargin &&
             crossAxisMargin == other.crossAxisMargin &&
             scrollBarColor == other.scrollBarColor &&
             scrollBarTrackColor == other.scrollBarTrackColor &&
             scrollbarRadius == other.scrollbarRadius &&
-            scrollbarRadiusWhileDragging == other.scrollbarRadiusWhileDragging &&
+            scrollbarRadiusWhileDragging ==
+                other.scrollbarRadiusWhileDragging &&
             longPressDuration == other.longPressDuration &&
             dragDevices == other.dragDevices;
   }
@@ -919,8 +974,16 @@ class PlutoGridColumnFilterConfig {
   /// }
   /// ```
   const PlutoGridColumnFilterConfig({
-    List<PlutoFilterType>? Function({required PlutoColumnTypeEnum type, String? field})? filters,
-    PlutoFilterType? Function({required PlutoColumnTypeEnum type, required String field})? resolveDefaultColumnFilter,
+    List<PlutoFilterType>? Function({
+      required PlutoColumnTypeEnum type,
+      String? field,
+    })?
+    filters,
+    PlutoFilterType? Function({
+      required PlutoColumnTypeEnum type,
+      required String field,
+    })?
+    resolveDefaultColumnFilter,
     int? debounceMilliseconds,
   }) : _userFilters = filters,
        _userResolveDefaultColumnFilter = resolveDefaultColumnFilter,
@@ -930,21 +993,38 @@ class PlutoGridColumnFilterConfig {
            ? 0
            : debounceMilliseconds;
 
-  final List<PlutoFilterType>? Function({required PlutoColumnTypeEnum type, required String field})? _userFilters;
+  final List<PlutoFilterType>? Function({
+    required PlutoColumnTypeEnum type,
+    required String field,
+  })?
+  _userFilters;
 
-  final PlutoFilterType? Function({required PlutoColumnTypeEnum type, required String field})? _userResolveDefaultColumnFilter;
+  final PlutoFilterType? Function({
+    required PlutoColumnTypeEnum type,
+    required String field,
+  })?
+  _userResolveDefaultColumnFilter;
 
   final int _debounceMilliseconds;
 
   bool get hasUserFilter => _userFilters != null;
 
-  List<PlutoFilterType>? filters({required PlutoColumnTypeEnum type, required String field}) =>
-      hasUserFilter ? _userFilters!.call(type: type, field: field) : FilterHelper.defaultFilter(type: type);
+  List<PlutoFilterType>? filters({
+    required PlutoColumnTypeEnum type,
+    required String field,
+  }) => hasUserFilter
+      ? _userFilters!.call(type: type, field: field)
+      : FilterHelper.defaultFilter(type: type);
 
   int get debounceMilliseconds => _debounceMilliseconds;
 
-  PlutoFilterType? resolver<T>({required PlutoColumnTypeEnum type, required String field}) {
-    return filters(type: type, field: field)?.firstWhereOrNull((PlutoFilterType element) => element.runtimeType == T) ??
+  PlutoFilterType? resolver<T>({
+    required PlutoColumnTypeEnum type,
+    required String field,
+  }) {
+    return filters(type: type, field: field)?.firstWhereOrNull(
+          (PlutoFilterType element) => element.runtimeType == T,
+        ) ??
         filters(type: type, field: field)?.firstOrNull;
   }
 
@@ -953,7 +1033,10 @@ class PlutoGridColumnFilterConfig {
       return filters(type: column.type.type, field: column.field)?.firstOrNull;
     }
 
-    final PlutoFilterType? resolvedFilter = _userResolveDefaultColumnFilter(type: column.type.type, field: column.field);
+    final PlutoFilterType? resolvedFilter = _userResolveDefaultColumnFilter(
+      type: column.type.type,
+      field: column.field,
+    );
 
     // assert(
     //   filters(
@@ -973,12 +1056,17 @@ class PlutoGridColumnFilterConfig {
         other is PlutoGridColumnFilterConfig &&
             runtimeType == other.runtimeType &&
             _userFilters == other._userFilters &&
-            _userResolveDefaultColumnFilter == other._userResolveDefaultColumnFilter &&
+            _userResolveDefaultColumnFilter ==
+                other._userResolveDefaultColumnFilter &&
             _debounceMilliseconds == other._debounceMilliseconds;
   }
 
   @override
-  int get hashCode => Object.hash(_userFilters, _userResolveDefaultColumnFilter, _debounceMilliseconds);
+  int get hashCode => Object.hash(
+    _userFilters,
+    _userResolveDefaultColumnFilter,
+    _debounceMilliseconds,
+  );
 }
 
 /// Automatically change the column width or set the mode when changing the width.
@@ -1036,11 +1124,19 @@ class PlutoGridColumnSizeConfig {
     return PlutoGridColumnSizeConfig(
       autoSizeMode: autoSizeMode ?? this.autoSizeMode,
       resizeMode: resizeMode ?? this.resizeMode,
-      restoreAutoSizeAfterHideColumn: restoreAutoSizeAfterHideColumn ?? this.restoreAutoSizeAfterHideColumn,
-      restoreAutoSizeAfterFrozenColumn: restoreAutoSizeAfterFrozenColumn ?? this.restoreAutoSizeAfterFrozenColumn,
-      restoreAutoSizeAfterMoveColumn: restoreAutoSizeAfterMoveColumn ?? this.restoreAutoSizeAfterMoveColumn,
-      restoreAutoSizeAfterInsertColumn: restoreAutoSizeAfterInsertColumn ?? this.restoreAutoSizeAfterInsertColumn,
-      restoreAutoSizeAfterRemoveColumn: restoreAutoSizeAfterRemoveColumn ?? this.restoreAutoSizeAfterRemoveColumn,
+      restoreAutoSizeAfterHideColumn:
+          restoreAutoSizeAfterHideColumn ?? this.restoreAutoSizeAfterHideColumn,
+      restoreAutoSizeAfterFrozenColumn:
+          restoreAutoSizeAfterFrozenColumn ??
+          this.restoreAutoSizeAfterFrozenColumn,
+      restoreAutoSizeAfterMoveColumn:
+          restoreAutoSizeAfterMoveColumn ?? this.restoreAutoSizeAfterMoveColumn,
+      restoreAutoSizeAfterInsertColumn:
+          restoreAutoSizeAfterInsertColumn ??
+          this.restoreAutoSizeAfterInsertColumn,
+      restoreAutoSizeAfterRemoveColumn:
+          restoreAutoSizeAfterRemoveColumn ??
+          this.restoreAutoSizeAfterRemoveColumn,
     );
   }
 
@@ -1051,11 +1147,16 @@ class PlutoGridColumnSizeConfig {
             runtimeType == other.runtimeType &&
             autoSizeMode == other.autoSizeMode &&
             resizeMode == other.resizeMode &&
-            restoreAutoSizeAfterHideColumn == other.restoreAutoSizeAfterHideColumn &&
-            restoreAutoSizeAfterFrozenColumn == other.restoreAutoSizeAfterFrozenColumn &&
-            restoreAutoSizeAfterMoveColumn == other.restoreAutoSizeAfterMoveColumn &&
-            restoreAutoSizeAfterInsertColumn == other.restoreAutoSizeAfterInsertColumn &&
-            restoreAutoSizeAfterRemoveColumn == other.restoreAutoSizeAfterRemoveColumn;
+            restoreAutoSizeAfterHideColumn ==
+                other.restoreAutoSizeAfterHideColumn &&
+            restoreAutoSizeAfterFrozenColumn ==
+                other.restoreAutoSizeAfterFrozenColumn &&
+            restoreAutoSizeAfterMoveColumn ==
+                other.restoreAutoSizeAfterMoveColumn &&
+            restoreAutoSizeAfterInsertColumn ==
+                other.restoreAutoSizeAfterInsertColumn &&
+            restoreAutoSizeAfterRemoveColumn ==
+                other.restoreAutoSizeAfterRemoveColumn;
   }
 
   @override
@@ -1103,6 +1204,9 @@ class PlutoGridLocaleText {
   final String filterGreaterThanOrEqualTo;
   final String filterLessThan;
   final String filterLessThanOrEqualTo;
+  final String filterBetween;
+  final String filterFrom;
+  final String filterTo;
   final String filterIsEmpty;
   final String filterIsNotEmpty;
 
@@ -1153,6 +1257,9 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'Greater than or equal to',
     this.filterLessThan = 'Less than',
     this.filterLessThanOrEqualTo = 'Less than or equal to',
+    this.filterBetween = 'Between',
+    this.filterFrom = 'From',
+    this.filterTo = 'To',
     this.filterIsNotEmpty = 'Not empty',
     this.filterIsEmpty = 'Empty',
     // Date popup
@@ -1201,6 +1308,9 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'Supérieur ou égal à',
     this.filterLessThan = 'Inférieur à',
     this.filterLessThanOrEqualTo = 'Inférieur ou égal à',
+    this.filterBetween = 'Entre',
+    this.filterFrom = 'De',
+    this.filterTo = 'À',
     this.filterIsNotEmpty = 'Non vide',
     this.filterIsEmpty = 'Vide',
     // Date popup
@@ -1249,6 +1359,9 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = '大于等于',
     this.filterLessThan = '小于',
     this.filterLessThanOrEqualTo = '小于等于',
+    this.filterBetween = '介于',
+    this.filterFrom = '从',
+    this.filterTo = '到',
     this.filterIsNotEmpty = '非空',
     this.filterIsEmpty = '空',
     // Date popup
@@ -1297,6 +1410,9 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = '~보다 크거나 같은',
     this.filterLessThan = '~보다 작은',
     this.filterLessThanOrEqualTo = '~보다 작거나 같은',
+    this.filterBetween = '사이',
+    this.filterFrom = '부터',
+    this.filterTo = '까지',
     this.filterIsNotEmpty = '비어있지 않음',
     this.filterIsEmpty = '비어있음',
     // Date popup
@@ -1345,6 +1461,9 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'Больше или равно',
     this.filterLessThan = 'Меньше чем',
     this.filterLessThanOrEqualTo = 'Меньше или равно',
+    this.filterBetween = 'Между',
+    this.filterFrom = 'От',
+    this.filterTo = 'До',
     this.filterIsEmpty = 'Пусто',
     this.filterIsNotEmpty = 'Не пусто',
     // Date popup
@@ -1393,6 +1512,9 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'Větší než nebo rovno',
     this.filterLessThan = 'Menší než',
     this.filterLessThanOrEqualTo = 'Menší než nebo rovno',
+    this.filterBetween = 'Mezi',
+    this.filterFrom = 'Od',
+    this.filterTo = 'Do',
     this.filterIsNotEmpty = 'Není prázdné',
     this.filterIsEmpty = 'Je prázdné',
     // Date popup
@@ -1441,6 +1563,9 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'Maior ou igual que',
     this.filterLessThan = 'Menor que',
     this.filterLessThanOrEqualTo = 'Menor ou igual que',
+    this.filterBetween = 'Entre',
+    this.filterFrom = 'De',
+    this.filterTo = 'Até',
     this.filterIsNotEmpty = 'Não vazio',
     this.filterIsEmpty = 'Vazio',
     // Date popup
@@ -1489,6 +1614,9 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'Más grande o igual que',
     this.filterLessThan = 'Más pequeño que',
     this.filterLessThanOrEqualTo = 'Más pequeño o igual que',
+    this.filterBetween = 'Entre',
+    this.filterFrom = 'Desde',
+    this.filterTo = 'Hasta',
     this.filterIsNotEmpty = 'No vacío',
     this.filterIsEmpty = 'Vacío',
     // Date popup
@@ -1537,6 +1665,9 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'بزرگتر مساوی از',
     this.filterLessThan = 'کمتر از',
     this.filterLessThanOrEqualTo = 'کمتر مساوی از',
+    this.filterBetween = 'بین',
+    this.filterFrom = 'از',
+    this.filterTo = 'تا',
     this.filterIsNotEmpty = 'پر',
     this.filterIsEmpty = 'خالی',
     // Date popup
@@ -1585,6 +1716,9 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'أكبر من أو يساوي',
     this.filterLessThan = 'اصغر من',
     this.filterLessThanOrEqualTo = 'أصغر من أو يساوي',
+    this.filterBetween = 'بين',
+    this.filterFrom = 'من',
+    this.filterTo = 'إلى',
     this.filterIsNotEmpty = 'غير فارغ',
     this.filterIsEmpty = 'فارغ',
     // Date popup
@@ -1633,6 +1767,9 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'Større enn eller lik',
     this.filterLessThan = 'Mindre enn',
     this.filterLessThanOrEqualTo = 'Mindre enn eller lik',
+    this.filterBetween = 'Mellom',
+    this.filterFrom = 'Fra',
+    this.filterTo = 'Til',
     this.filterIsNotEmpty = 'Ikke tom',
     this.filterIsEmpty = 'Tom',
     // Date popup
@@ -1681,6 +1818,9 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'Größer als oder gleich',
     this.filterLessThan = 'Kleiner als',
     this.filterLessThanOrEqualTo = 'Kleiner als oder gleich',
+    this.filterBetween = 'Zwischen',
+    this.filterFrom = 'Von',
+    this.filterTo = 'Bis',
     this.filterIsNotEmpty = 'Nicht leer',
     this.filterIsEmpty = 'Leer',
     // Date popup
@@ -1729,6 +1869,9 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = 'Büyük veya eşittir',
     this.filterLessThan = 'Küçüktür',
     this.filterLessThanOrEqualTo = 'Küçük veya eşittir',
+    this.filterBetween = 'Arasında',
+    this.filterFrom = 'Başlangıç',
+    this.filterTo = 'Bitiş',
     this.filterIsNotEmpty = 'Boş değil',
     this.filterIsEmpty = 'Boş',
     // Date popup
@@ -1777,6 +1920,9 @@ class PlutoGridLocaleText {
     this.filterGreaterThanOrEqualTo = '以上',
     this.filterLessThan = '未満',
     this.filterLessThanOrEqualTo = '以下',
+    this.filterBetween = '範囲内',
+    this.filterFrom = 'から',
+    this.filterTo = 'まで',
     this.filterIsNotEmpty = '空でない',
     this.filterIsEmpty = '空',
     // Date popup
@@ -1909,9 +2055,11 @@ enum PlutoGridEnterKeyAction {
   /// Pressing the Enter key does nothing.
   none;
 
-  bool get isEditingAndMoveDown => this == PlutoGridEnterKeyAction.editingAndMoveDown;
+  bool get isEditingAndMoveDown =>
+      this == PlutoGridEnterKeyAction.editingAndMoveDown;
 
-  bool get isEditingAndMoveRight => this == PlutoGridEnterKeyAction.editingAndMoveRight;
+  bool get isEditingAndMoveRight =>
+      this == PlutoGridEnterKeyAction.editingAndMoveRight;
 
   bool get isToggleEditing => this == PlutoGridEnterKeyAction.toggleEditing;
 

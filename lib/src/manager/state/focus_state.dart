@@ -11,10 +11,7 @@ abstract class IFocusState {
 
   void setKeepFocus(bool flag, {bool notify = true});
 
-  void nextFocusOfColumnFilter(
-    PlutoColumn column, {
-    bool reversed = false,
-  });
+  void nextFocusOfColumnFilter(PlutoColumn column, {bool reversed = false});
 }
 
 class _State {
@@ -52,14 +49,7 @@ mixin FocusState implements IPlutoGridState {
   }
 
   @override
-  void nextFocusOfColumnFilter(
-    PlutoColumn column, {
-    bool reversed = false,
-  }) {
-    if (!column.enableFilterMenuItem) {
-      return;
-    }
-
+  void nextFocusOfColumnFilter(PlutoColumn column, {bool reversed = false}) {
     final columnIndexes = reversed
         ? columnIndexesByShowFrozen.reversed.toList(growable: false)
         : columnIndexesByShowFrozen.toList(growable: false);
