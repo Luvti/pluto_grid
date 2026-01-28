@@ -1,3 +1,5 @@
+// ignore_for_file: cascade_invocations, always_specify_types
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
@@ -11,21 +13,23 @@ void main() {
   late List<PlutoRow> rows;
 
   Future<void> buildGrid(WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
-      home: Material(
-        child: PlutoGrid(
-          columns: columns,
-          rows: rows,
-          onLoaded: (PlutoGridOnLoadedEvent event) {
-            stateManager = event.stateManager;
-          },
-          createFooter: (s) {
-            s.setPageSize(3);
-            return PlutoPagination(s);
-          },
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Material(
+          child: PlutoGrid(
+            columns: columns,
+            rows: rows,
+            onLoaded: (PlutoGridOnLoadedEvent event) {
+              stateManager = event.stateManager;
+            },
+            createFooter: (PlutoGridStateManager s) {
+              s.setPageSize(3);
+              return PlutoPagination(s);
+            },
+          ),
         ),
       ),
-    ));
+    );
   }
 
   Future<List<PlutoBaseCell>> getCells(WidgetTester tester, {int? page}) async {
@@ -34,10 +38,10 @@ void main() {
       await tester.pump();
     }
 
-    final cells = find
+    final List<PlutoBaseCell> cells = find
         .byType(PlutoBaseCell)
         .evaluate()
-        .map((e) => e.widget)
+        .map((Element e) => e.widget)
         .cast<PlutoBaseCell>()
         .toList();
 
@@ -46,7 +50,7 @@ void main() {
 
   group('date 컬럼 정렬.', () {
     setUp(() {
-      columns = [
+      columns = <PlutoColumn>[
         PlutoColumn(
           title: 'date',
           field: 'date',
@@ -54,27 +58,70 @@ void main() {
         ),
       ];
 
-      rows = [
-        PlutoRow(cells: {'date': PlutoCell(value: DateTime(2022, 4, 1))}),
-        PlutoRow(cells: {'date': PlutoCell(value: DateTime(2022, 2, 10))}),
-        PlutoRow(cells: {'date': PlutoCell(value: DateTime(2022, 2, 2))}),
-        PlutoRow(cells: {'date': PlutoCell(value: DateTime(2022, 2, 3))}),
-        PlutoRow(cells: {'date': PlutoCell(value: DateTime(2022, 4, 3))}),
-        PlutoRow(cells: {'date': PlutoCell(value: DateTime(2022, 3, 1))}),
-        PlutoRow(cells: {'date': PlutoCell(value: DateTime(2022, 5, 1))}),
-        PlutoRow(cells: {'date': PlutoCell(value: DateTime(2022, 1, 20))}),
-        PlutoRow(cells: {'date': PlutoCell(value: DateTime(2022, 8, 2))}),
-        PlutoRow(cells: {'date': PlutoCell(value: DateTime(2022, 8, 1))}),
+      rows = <PlutoRow>[
+        PlutoRow(
+          cells: <String, PlutoCell>{
+            'date': PlutoCell(value: DateTime(2022, 4, 1)),
+          },
+        ),
+        PlutoRow(
+          cells: <String, PlutoCell>{
+            'date': PlutoCell(value: DateTime(2022, 2, 10)),
+          },
+        ),
+        PlutoRow(
+          cells: <String, PlutoCell>{
+            'date': PlutoCell(value: DateTime(2022, 2, 2)),
+          },
+        ),
+        PlutoRow(
+          cells: <String, PlutoCell>{
+            'date': PlutoCell(value: DateTime(2022, 2, 3)),
+          },
+        ),
+        PlutoRow(
+          cells: <String, PlutoCell>{
+            'date': PlutoCell(value: DateTime(2022, 4, 3)),
+          },
+        ),
+        PlutoRow(
+          cells: <String, PlutoCell>{
+            'date': PlutoCell(value: DateTime(2022, 3, 1)),
+          },
+        ),
+        PlutoRow(
+          cells: <String, PlutoCell>{
+            'date': PlutoCell(value: DateTime(2022, 5, 1)),
+          },
+        ),
+        PlutoRow(
+          cells: <String, PlutoCell>{
+            'date': PlutoCell(value: DateTime(2022, 1, 20)),
+          },
+        ),
+        PlutoRow(
+          cells: <String, PlutoCell>{
+            'date': PlutoCell(value: DateTime(2022, 8, 2)),
+          },
+        ),
+        PlutoRow(
+          cells: <String, PlutoCell>{
+            'date': PlutoCell(value: DateTime(2022, 8, 1)),
+          },
+        ),
       ];
     });
 
     group('컬럼을 탭하여 정렬.', () {
-      testWidgets('dd/MM/yyyy 포멧이 적용되어 ascending 정렬 되어야 한다.', (tester) async {
+      testWidgets('dd/MM/yyyy 포멧이 적용되어 ascending 정렬 되어야 한다.', (
+        WidgetTester tester,
+      ) async {
         await buildGrid(tester);
         await tester.tap(find.text('date'));
-        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        await tester.pumpAndSettle();
 
-        final List<PlutoBaseCell> cells = [];
+        final List<PlutoBaseCell> cells = <PlutoBaseCell>[];
 
         cells.addAll(await getCells(tester));
         cells.addAll(await getCells(tester, page: 2));
@@ -94,13 +141,17 @@ void main() {
         expect(cells[9].cell.value, '02/08/2022');
       });
 
-      testWidgets('dd/MM/yyyy 포멧이 적용되어 descending 정렬 되어야 한다.', (tester) async {
+      testWidgets('dd/MM/yyyy 포멧이 적용되어 descending 정렬 되어야 한다.', (
+        WidgetTester tester,
+      ) async {
         await buildGrid(tester);
         await tester.tap(find.text('date'));
+        await tester.pump(const Duration(milliseconds: 500));
         await tester.tap(find.text('date')); // descending
-        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        await tester.pumpAndSettle();
 
-        final List<PlutoBaseCell> cells = [];
+        final List<PlutoBaseCell> cells = <PlutoBaseCell>[];
 
         cells.addAll(await getCells(tester));
         cells.addAll(await getCells(tester, page: 2));
@@ -120,15 +171,19 @@ void main() {
         expect(cells[9].cell.value, '20/01/2022');
       });
 
-      testWidgets('dd/MM/yyyy 포멧이 적용되어 descending 후 다시 원래 순서로 정렬 되어야 한다.',
-          (tester) async {
+      testWidgets('dd/MM/yyyy 포멧이 적용되어 descending 후 다시 원래 순서로 정렬 되어야 한다.', (
+        WidgetTester tester,
+      ) async {
         await buildGrid(tester);
         await tester.tap(find.text('date'));
+        await tester.pump(const Duration(milliseconds: 500));
         await tester.tap(find.text('date')); // descending
+        await tester.pump(const Duration(milliseconds: 500));
         await tester.tap(find.text('date')); // none
-        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        await tester.pumpAndSettle();
 
-        final List<PlutoBaseCell> cells = [];
+        final List<PlutoBaseCell> cells = <PlutoBaseCell>[];
 
         cells.addAll(await getCells(tester));
         cells.addAll(await getCells(tester, page: 2));
@@ -150,12 +205,14 @@ void main() {
     });
 
     group('stateManager 로 정렬.', () {
-      testWidgets('dd/MM/yyyy 포멧이 적용되어 ascending 정렬 되어야 한다.', (tester) async {
+      testWidgets('dd/MM/yyyy 포멧이 적용되어 ascending 정렬 되어야 한다.', (
+        WidgetTester tester,
+      ) async {
         await buildGrid(tester);
         stateManager.sortAscending(stateManager.columns.first);
         await tester.pump();
 
-        final List<PlutoBaseCell> cells = [];
+        final List<PlutoBaseCell> cells = <PlutoBaseCell>[];
 
         cells.addAll(await getCells(tester));
         cells.addAll(await getCells(tester, page: 2));
@@ -175,12 +232,14 @@ void main() {
         expect(cells[9].cell.value, '02/08/2022');
       });
 
-      testWidgets('dd/MM/yyyy 포멧이 적용되어 descending 정렬 되어야 한다.', (tester) async {
+      testWidgets('dd/MM/yyyy 포멧이 적용되어 descending 정렬 되어야 한다.', (
+        WidgetTester tester,
+      ) async {
         await buildGrid(tester);
         stateManager.sortDescending(stateManager.columns.first);
         await tester.pump();
 
-        final List<PlutoBaseCell> cells = [];
+        final List<PlutoBaseCell> cells = <PlutoBaseCell>[];
 
         cells.addAll(await getCells(tester));
         cells.addAll(await getCells(tester, page: 2));
@@ -200,14 +259,15 @@ void main() {
         expect(cells[9].cell.value, '20/01/2022');
       });
 
-      testWidgets('dd/MM/yyyy 포멧이 적용되어 descending 후 다시 원래 순서로 정렬 되어야 한다.',
-          (tester) async {
+      testWidgets('dd/MM/yyyy 포멧이 적용되어 descending 후 다시 원래 순서로 정렬 되어야 한다.', (
+        WidgetTester tester,
+      ) async {
         await buildGrid(tester);
         stateManager.sortDescending(stateManager.columns.first);
         stateManager.toggleSortColumn(stateManager.columns.first);
         await tester.pump();
 
-        final List<PlutoBaseCell> cells = [];
+        final List<PlutoBaseCell> cells = <PlutoBaseCell>[];
 
         cells.addAll(await getCells(tester));
         cells.addAll(await getCells(tester, page: 2));
