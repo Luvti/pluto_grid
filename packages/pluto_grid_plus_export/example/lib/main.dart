@@ -112,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await FileSaver.instance.saveFile(
       name: "$title.csv",
       bytes: exported,
-      fileExtension: ".csv",
+      ext: ".csv",
     );
   }
 

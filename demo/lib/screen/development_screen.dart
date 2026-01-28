@@ -446,7 +446,7 @@ class _HeaderState extends State<_Header> {
   void handleAddColumnButton(PlutoColumnFrozen frozen) {
     widget.stateManager.insertColumns(0, [
       PlutoColumn(
-        title: faker_package.faker.food.cuisine(),
+        title: faker.food.cuisine(),
         field: 'new_${DateTime.now()}',
         type: PlutoColumnType.text(),
         frozen: frozen,

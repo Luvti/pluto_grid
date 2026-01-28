@@ -176,7 +176,7 @@ class _Header extends StatefulWidget {
 }
 
 class _HeaderState extends State<_Header> {
-  final faker = faker_package.Faker();
+  final faker = Faker();
 
   int addCount = 1;
 
