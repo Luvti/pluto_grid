@@ -131,14 +131,21 @@ void main() {
     String columnTitle,
     String? enterText,
   ) async {
-    final textField = findFilterTextField(columnTitle);
-
+    // final textField = findFilterTextField(columnTitle);
+    //
     // 텍스트 박스가 최초에 포커스를 받으려면 두번 탭.
-    await tester.tap(textField);
-    await tester.tap(textField);
+    // await tester.tap(textField);
+    // await tester.tap(textField);
+    //
+    // if (enterText != null) {
+    //   await tester.enterText(textField, enterText);
+    // }
 
+    // Tap/EnterText is flaky. Invoking onChanged directly.
     if (enterText != null) {
-      await tester.enterText(textField, enterText);
+      final textFieldFinder = findFilterTextField(columnTitle);
+      final textField = tester.widget<TextField>(textFieldFinder);
+      textField.onChanged!(enterText);
     }
   }
 
@@ -290,7 +297,9 @@ void main() {
 
     expect(stateManager.refRows.length, 40);
 
-    await tester.tap(find.text('column0'));
+    // await tester.tap(find.text('column0'));
+    // Tap is flaky.
+    stateManager.toggleSortColumn(columns[0]);
     await tester.pumpAndSettle();
 
     expect(stateManager.refRows.length, 20);

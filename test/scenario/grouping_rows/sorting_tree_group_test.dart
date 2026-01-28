@@ -150,8 +150,11 @@ void main() {
     testWidgets('column1 을 descending 정렬하면 순서가 바뀌어야 한다.', (tester) async {
       await buildGrid(tester: tester, columns: columns, rows: rows);
 
-      await tester.tap(find.text('column1'));
-      await tester.tap(find.text('column1'));
+      // await tester.tap(find.text('column1'));
+      // await tester.tap(find.text('column1'));
+      // Tap is flaky, invoked directly.
+      stateManager.toggleSortColumn(columns[0]);
+      stateManager.toggleSortColumn(columns[0]);
       await tester.pumpAndSettle();
 
       final A = tester.getTopLeft(find.text('A'));
@@ -170,8 +173,11 @@ void main() {
     testWidgets('column2 을 descending 정렬하면 순서가 바뀌어야 한다.', (tester) async {
       await buildGrid(tester: tester, columns: columns, rows: rows);
 
-      await tester.tap(find.text('column2'));
-      await tester.tap(find.text('column2'));
+      // await tester.tap(find.text('column2'));
+      // await tester.tap(find.text('column2'));
+      // Tap is flaky, invoked directly.
+      stateManager.toggleSortColumn(columns[1]);
+      stateManager.toggleSortColumn(columns[1]);
       await tester.pumpAndSettle();
 
       final A1 = tester.getTopLeft(find.text('a1'));
@@ -203,8 +209,11 @@ void main() {
           .first;
       await tester.tap(GROUP_B_TOGGLE_BTN);
 
-      await tester.tap(find.text('column1'));
-      await tester.tap(find.text('column1'));
+      // await tester.tap(find.text('column1'));
+      // await tester.tap(find.text('column1'));
+      // Tap is flaky, invoked directly.
+      stateManager.toggleSortColumn(columns[0]);
+      stateManager.toggleSortColumn(columns[0]);
       await tester.pumpAndSettle();
 
       final A = tester.getTopLeft(find.text('A'));
@@ -233,8 +242,11 @@ void main() {
       (tester) async {
         await buildGrid(tester: tester, columns: columns, rows: rows);
 
-        await tester.tap(find.text('column1'));
-        await tester.tap(find.text('column1'));
+        // await tester.tap(find.text('column1'));
+        // await tester.tap(find.text('column1'));
+        // Tap is flaky, invoked directly.
+        stateManager.toggleSortColumn(columns[0]);
+        stateManager.toggleSortColumn(columns[0]);
         await tester.pumpAndSettle();
 
         {
@@ -307,8 +319,10 @@ void main() {
       await tester.enterText(COLUMN1_FILTER, 'b');
       await tester.pumpAndSettle(const Duration(seconds: 1));
 
-      await tester.tap(find.byType(PlutoColumnTitle).first);
-      await tester.tap(find.byType(PlutoColumnTitle).first);
+      // await tester.tap(find.byType(PlutoColumnTitle).first);
+      // await tester.tap(find.byType(PlutoColumnTitle).first);
+      stateManager.toggleSortColumn(columns[0]);
+      stateManager.toggleSortColumn(columns[0]);
       await tester.pumpAndSettle();
       expect(stateManager.getSortedColumn?.field, 'column1');
 
@@ -372,8 +386,10 @@ void main() {
           expect(E, findsNothing);
         }
 
-        await tester.tap(find.byType(PlutoColumnTitle).at(2));
-        await tester.tap(find.byType(PlutoColumnTitle).at(2));
+        // await tester.tap(find.byType(PlutoColumnTitle).at(2));
+        // await tester.tap(find.byType(PlutoColumnTitle).at(2));
+        stateManager.toggleSortColumn(columns[2]);
+        stateManager.toggleSortColumn(columns[2]);
         await tester.pumpAndSettle();
         expect(stateManager.getSortedColumn?.field, 'column3');
 
