@@ -77,7 +77,6 @@ coverage/
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
 # FVM Support - https://fvm.app/
-.fvm/flutter_sdk
 example/windows/flutter/generated_plugin_registrant.cc
 example/windows/flutter/generated_plugin_registrant.h
 example/windows/flutter/generated_plugins.cmake
@@ -87,3 +86,6 @@ demo/linux/flutter/ephemeral/.plugin_symlinks/printing
 demo/linux/flutter/ephemeral/.plugin_symlinks/url_launcher_linux
 example/macos/Flutter/GeneratedPluginRegistrant.swift
 example/macos/Flutter/ephemeral/
+
+# FVM Version Cache
+.fvm/
