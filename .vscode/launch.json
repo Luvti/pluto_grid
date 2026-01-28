@@ -48,6 +48,13 @@
             "type": "dart"
         },
         {
+            "name": "example (big)",
+            "cwd": "example",
+            "request": "launch",
+            "type": "dart",
+            "program":"lib/big.dart"
+        },
+        {
             "name": "example (profile mode)",
             "cwd": "example",
             "request": "launch",
