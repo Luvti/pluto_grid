@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:faker/faker.dart' as faker_package;
+import 'package:faker/faker.dart' hide Color;
 import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 

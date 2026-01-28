@@ -1,4 +1,4 @@
-import 'package:faker/faker.dart' as faker_package;
+import 'package:faker/faker.dart' hide Color, Image;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
@@ -13,7 +13,9 @@ enum _Test {
   c;
 
   bool get isA => this == _Test.a;
+
   bool get isB => this == _Test.b;
+
   bool get isC => this == _Test.c;
 }
 
@@ -665,8 +667,12 @@ class _HeaderState extends State<_Header> {
     return PlutoMenuBar(
       borderColor: Colors.transparent,
       mode: _isMobile ? PlutoMenuBarMode.tap : PlutoMenuBarMode.hover,
-      itemStyle: const PlutoMenuItemStyle(
-        textStyle: TextStyle(color: Colors.black, fontSize: 14),
+
+      itemStyle: PlutoMenuItemStyle(
+        textStyle: const TextStyle(
+          color: Colors.black,
+          fontSize: 14,
+        ),
       ),
       menus: [
         PlutoMenuItem(

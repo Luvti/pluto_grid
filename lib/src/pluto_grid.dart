@@ -383,7 +383,7 @@ class PlutoGrid extends PlutoStatefulWidget {
   /// initializeDateFormatting();
   /// ```
   /// {@endtemplate}
-  static setDefaultLocale(String locale) {
+  static void setDefaultLocale(String locale) {
     Intl.defaultLocale = locale;
   }
 
@@ -391,7 +391,7 @@ class PlutoGrid extends PlutoStatefulWidget {
   /// when you need to set date format when changing locale.
   ///
   /// {@macro intl_default_locale}
-  static initializeDateFormat() {
+  static void initializeDateFormat() {
     initializeDateFormatting();
   }
 

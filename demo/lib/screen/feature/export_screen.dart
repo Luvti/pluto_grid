@@ -165,7 +165,9 @@ class _ExportScreenState extends State<ExportScreen> {
 }
 
 class _Header extends StatefulWidget {
-  const _Header({required this.stateManager});
+  const _Header({
+    required this.stateManager,
+  });
 
   final PlutoGridStateManager stateManager;
 

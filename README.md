@@ -1,54 +1,14 @@
-# PlutoGrid Plus for flutter - v8.4.3
-
-PlutoGrid Plus is a maintained version of <https://github.com/bosskmk/pluto_grid>
+## PlutoGrid for flutter - v8.1.0
 
 [![Awesome Flutter](https://img.shields.io/badge/Awesome-Flutter-blue.svg)](https://github.com/Solido/awesome-flutter)
 [![codecov](https://codecov.io/gh/bosskmk/pluto_grid/branch/master/graph/badge.svg)](https://codecov.io/gh/bosskmk/pluto_grid)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-<<<<<<< HEAD
-<br>
-
-`PlutoGrid` is a `DataGrid` that can be operated with the keyboard in various situations such as
-moving cells.  
-=======
 `PlutoGrid` is a `DataGrid` that can be operated with the keyboard in various situations such as moving cells.  
->>>>>>> master_plus
 It is developed with priority on the web and desktop.  
 Improvements such as UI on mobile are being considered.  
 If you comment on an issue, mobile improvements can be made quickly.
 
-<<<<<<< HEAD
-<br>
-
-### [Demo Web](https://bosskmk.github.io/pluto_grid/build/web/index.html)
-
-> You can try out various functions and usage methods right away.  
-> All features provide example code.
-
-<br>
-
-### [Pub.Dev](https://pub.dev/packages/pluto_grid)
-
-> Check out how to install from the official distribution site.
-
-<br>
-
-### [Documentation](https://pluto.weblaze.dev/series/pluto-grid)
-
-> The documentation has more details.
-
-<br>
-
-### [ChangeLog](https://github.com/bosskmk/pluto_grid/blob/master/CHANGELOG.md)
-
-> Please note the changes when changing the version of PlutoGrid you are using.
-
-<br>
-
-### [Issue](https://github.com/bosskmk/pluto_grid/issues)
-
-=======
 ## [Demo Web](https://bosskmk.github.io/pluto_grid/build/web/index.html)
 >
 > You can try out various functions and usage methods right away.  
@@ -68,7 +28,6 @@ If you comment on an issue, mobile improvements can be made quickly.
 
 ## [Issue](https://github.com/bosskmk/pluto_grid/issues)
 >
->>>>>>> master_plus
 > Report any questions or errors.
 
 ## Packages
@@ -80,58 +39,26 @@ If you comment on an issue, mobile improvements can be made quickly.
 
 ### Change the color of the rows or make the cells look the way you want them
 
-<<<<<<< HEAD
-### Screenshots
-
-#### Change the color of the rows or make the cells look the way you want them.
-
-=======
->>>>>>> master_plus
 ![PlutoGrid Normal](https://bosskmk.github.io/images/pluto_grid/2.8.0/pluto_grid_2.8.0_01.png)
 
 ### Date type input can be easily selected by pop-up and keyboard
 
-<<<<<<< HEAD
-#### Date type input can be easily selected by pop-up and keyboard.
-
-=======
->>>>>>> master_plus
 ![PlutoGrid Select Popup](https://bosskmk.github.io/images/pluto_grid/3.1.0/pluto_grid_3.1.0_01.png)
 
 ### The selection type column can be easily selected using a pop-up and keyboard
 
-<<<<<<< HEAD
-#### The selection type column can be easily selected using a pop-up and keyboard.
-
-=======
->>>>>>> master_plus
 ![PlutoGrid Select Date](https://bosskmk.github.io/images/pluto_grid/2.8.0/pluto_grid_2.8.0_03.png)
 
 ### Group columns by desired depth
 
-<<<<<<< HEAD
-#### Group columns by desired depth.
-
-=======
->>>>>>> master_plus
 ![PlutoGrid Cell renderer](https://bosskmk.github.io/images/pluto_grid/2.8.0/pluto_grid_2.8.0_04.png)
 
 ### Grid can be expressed in dark mode or a combination of desired colors. Also, freeze the column, move it by dragging, or adjust the size
 
-<<<<<<< HEAD
-#### Grid can be expressed in dark mode or a combination of desired colors. Also, freeze the column, move it by dragging, or adjust the size.
-
-=======
->>>>>>> master_plus
 ![PlutoGrid Multi select](https://bosskmk.github.io/images/pluto_grid/2.8.0/pluto_grid_2.8.0_05.png)
 
 ## Example
 
-<<<<<<< HEAD
-### Example
-
-=======
->>>>>>> master_plus
 Generate the data to be used in the grid.
 
 ```dart
@@ -235,6 +162,7 @@ Widget build(BuildContext context) {
 
 | Flutter          | PlutoGrid             |
 |------------------|-----------------------|
+| 3.38.0 or higher | 8.1.0 or higher       |
 | 3.19.0 or higher | 8.0.0 or higher       |
 | 3.10.0 or higher | 7.0.0 or higher       |
 | 3.7.0 or higher  | 6.0.0 or higher       |
@@ -244,15 +172,8 @@ Widget build(BuildContext context) {
 
 For other versions, contact the issue
 
-<<<<<<< HEAD
-<br>
-
-### Related packages
-
-=======
 ## Related packages
 >
->>>>>>> master_plus
 > develop packages that make it easy to develop admin pages or CMS with Flutter.
 
 * [PlutoGrid](https://github.com/bosskmk/pluto_grid)

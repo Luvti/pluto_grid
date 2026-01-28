@@ -1,4 +1,8 @@
-# Changelog
+## [8.1.0] - 2025. 12. 12
+
+* Updated for flutter 3.38 version.
+
+## [8.0.0] - 2024. 3. 1
 
 All notable changes to this project will be documented in this file.
 
@@ -131,19 +135,11 @@ upgrade for flutter 3.22.0
 ## [5.4.2] - 2022. 11. 15
 
 * Add properties of PlutoGridScrollbarConfig.
-<<<<<<< HEAD
-    - onlyDraggingThumb
-    - mainAxisMargin
-    - crossAxisMargin
-    - scrollBarColor
-    - scrollBarTrackColor
-=======
   * onlyDraggingThumb
   * mainAxisMargin
   * crossAxisMargin
   * scrollBarColor
   * scrollBarTrackColor
->>>>>>> master_plus
 
 ## [5.4.1] - 2022. 11. 12
 
@@ -202,14 +198,8 @@ upgrade for flutter 3.22.0
 ## [5.0.6] - 2022. 9. 5
 
 * Add support for countries that use comma as Decimal separator.
-<<<<<<< HEAD
-* Breaking change - Only available for flutter 3.3,   
-  otherwise it'll show this error on console: "Error: No named parameter with the name '
-  disabledForegroundColor'"
-=======
 * Breaking change - Only available for flutter 3.3,
   otherwise it'll show this error on console: "Error: No named parameter with the name 'disabledForegroundColor'"
->>>>>>> master_plus
 
 ## [5.0.5] - 2022. 8. 30
 
@@ -240,27 +230,6 @@ upgrade for flutter 3.22.0
 ## [5.0.0] - 2022. 7. 11
 
 * Added middle divider for `PlutoDualGrid`, `PlutoDualPopup` widget.  
-<<<<<<< HEAD
-  By adding a divider in the center of the two grids, the position can be changed by dragging and
-  dropping.  
-  https://weblaze.dev/pluto_grid/build/web/#feature/dual-mode
-* Add to `PlutoGridEventManager` stream to receive column sort changes.  
-  Add `PlutoGrid.onSorted` callback.
-* Added an option to disable column width adjustment while displaying the column right menu.
-    - Activate both `PlutoColumn.enableContextMenu` and `PlutoColumn.enableDropToResize`
-      Tap the column menu to display the context menu. Drag left or right to adjust the column
-      width.
-    - Activate only `PlutoColumn.enableContextMenu`
-      You cannot adjust the column width by dragging the column menu.
-    - Only enable `PlutoColumn.enableDropToResize`
-      You cannot call the context menu by tapping the column menu.
-* Hide all column headings.  
-  `PlutoGridStateManager.setShowColumnTitle`  
-  https://weblaze.dev/pluto_grid/build/web/#development  
-  In the link above, you can hide or show the entire column area by clicking the toggle column title
-  button in the top show menu.
-* When the parent widget of `PlutoGrid` is scrolled, in the previous 4.0.0 logic,   
-=======
   By adding a divider in the center of the two grids, the position can be changed by dragging and dropping.  
   <https://weblaze.dev/pluto_grid/build/web/#feature/dual-mode>
 * Add to `PlutoGridEventManager` stream to receive column sort changes.  
@@ -277,7 +246,6 @@ upgrade for flutter 3.22.0
   <https://weblaze.dev/pluto_grid/build/web/#development>  
   In the link above, you can hide or show the entire column area by clicking the toggle column title button in the top show menu.
 * When the parent widget of `PlutoGrid` is scrolled, in the previous 4.0.0 logic,
->>>>>>> master_plus
   the error that the row area disappears when the column is out of the screen area has been fixed.
 * Improve text selection when edit TextCell by @DmitrySboychakov
 * Improve padding for table cells and column titles by @DmitrySboychakov
@@ -290,23 +258,11 @@ upgrade for flutter 3.22.0
 * Modified to pass `PlutoColumn` instead of passing `PlutoColumn.key` when calling `hideColumn`.
 * Add `PlutoGridStateManager.hideColumns(List<PlutoColumn> columns, bool hide)`
 * Changes due to the constraint of a frozen column.
-<<<<<<< HEAD
-    - The width of the frozen column cannot be expanded beyond the limit width.
-    - When changing a non-frozen column to a frozen column, it cannot be changed if the constraint
-      width is insufficient.
-    - If a column with a hidden frozen column state is unhidden in a narrow constraint width, the
-      column frozen state is forcibly changed to `PlutoColumnFrozen.none`.
-    - If the entire grid width is narrowed to less than the constraint width while   
-      there is a frozen column, the frozen column is permanently changed
-      to `PlutoColumnFrozen.none`, and it does not return to the frozen column again even if the
-      grid width is increased.
-=======
   * The width of the frozen column cannot be expanded beyond the limit width.
   * When changing a non-frozen column to a frozen column, it cannot be changed if the constraint width is insufficient.
   * If a column with a hidden frozen column state is unhidden in a narrow constraint width, the column frozen state is forcibly changed to `PlutoColumnFrozen.none`.
   * If the entire grid width is narrowed to less than the constraint width while
     there is a frozen column, the frozen column is permanently changed to `PlutoColumnFrozen.none`, and it does not return to the frozen column again even if the grid width is increased.
->>>>>>> master_plus
 * Change the logic to move by dragging rows.  
   Previous behavior: rows are moved while dragging.  
   Changed behavior: It does not move while dragging, but moves only when you mouse-up or tap-up.
@@ -429,12 +385,7 @@ upgrade for flutter 3.22.0
 
 ## [2.7.1] - 2021. 12. 8
 
-<<<<<<< HEAD
-* Fixed an error where the row height of the popup did not change when the rowHeight value was
-  changed.
-=======
 * Fixed an error where the row height of the popup did not change when the rowHeight value was changed.
->>>>>>> master_plus
 
 ## [2.7.0] - 2021. 12. 7
 
@@ -540,18 +491,10 @@ upgrade for flutter 3.22.0
 
 ## [1.0.0] - 2020. 12. 30
 
-<<<<<<< HEAD
-* Class name change. Just like changing PlutoConfiguration to PlutoGridConfiguration, the word Grid
-  was added in the middle.
-    - PlutoStateManager > PlutoGridStateManager
-    - PlutoOnLoadedEvent > PlutoGridOnLoadedEvent
-    - Many other classes...
-=======
 * Class name change. Just like changing PlutoConfiguration to PlutoGridConfiguration, the word Grid was added in the middle.
   * PlutoStateManager > PlutoGridStateManager
   * PlutoOnLoadedEvent > PlutoGridOnLoadedEvent
   * Many other classes...
->>>>>>> master_plus
 
 ## [1.0.0-pre.10] - 2020. 12. 21
 
@@ -588,15 +531,9 @@ upgrade for flutter 3.22.0
 ## [1.0.0-pre.4] - 2020. 11. 16
 
 * Enable constant_identifier_names.
-<<<<<<< HEAD
-    - ex) `PlutoColumnFixed.Left` > `PlutoColumnFixed.left`
-    - ex) `PlutoSelectingMode.Row` > `PlutoSelectingMode.row`
-    - All existing constants such as enum are changed.
-=======
   * ex) `PlutoColumnFixed.Left` > `PlutoColumnFixed.left`
   * ex) `PlutoSelectingMode.Row` > `PlutoSelectingMode.row`
   * All existing constants such as enum are changed.
->>>>>>> master_plus
 * Add a loading indicator.
 
 ## [1.0.0-pre.3] - 2020. 11. 13
@@ -625,18 +562,6 @@ upgrade for flutter 3.22.0
   Just clear the popup and create it with PlutoGrid().
 * The column property enableDraggable has been changed to enableColumnDrag.
 
-<<<<<<< HEAD
-##### Improvements:
-
-* Column properties have been added.
-    - enableRowDrag : If set to true, an icon is create in the cell of the column, and the row can
-      be moved by dragging it.
-    - enableRowChecked : If set to true, a check box is create in the cell of the column.
-    - renderer : You can change the displayed cell.
-    - applyFormatterInEditing : If this is set to true, the value changed by a formatter is a
-      reflected in the editing state. However, it is only in the readonly state, or the state in
-      which the cell value cannot be directly modified in the form of popup.
-=======
 ### Improvements
 
 * Column properties have been added.
@@ -644,7 +569,6 @@ upgrade for flutter 3.22.0
   * enableRowChecked : If set to true, a check box is create in the cell of the column.
   * renderer : You can change the displayed cell.
   * applyFormatterInEditing : If this is set to true, the value changed by a formatter is a reflected in the editing state. However, it is only in the readonly state, or the state in which the cell value cannot be directly modified in the form of popup.
->>>>>>> master_plus
 
 ## [0.1.21] - 2020. 11. 01
 
