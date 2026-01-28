@@ -304,47 +304,50 @@ void main() {
     },
   );
 
-  testWidgets('컬럼을 탭하면 onSorted 콜백이 호출 되어야 한다.', (tester) async {
-    final columns = ColumnHelper.textColumn('title', count: 10);
-    final rows = RowHelper.count(10, columns);
+  testWidgets(
+    'After tapping the column, the onSorted callback should be called.',
+    (tester) async {
+      final columns = ColumnHelper.textColumn('title', count: 10);
+      final rows = RowHelper.count(10, columns);
 
-    PlutoGridOnSortedEvent? event;
+      PlutoGridOnSortedEvent? event;
 
-    await build(
-      tester: tester,
-      columns: columns,
-      rows: rows,
-      onSorted: (e) => event = e,
-    );
+      await build(
+        tester: tester,
+        columns: columns,
+        rows: rows,
+        onSorted: (e) => event = e,
+      );
 
-    await tester.tap(find.text(buttonText));
-    await tester.pumpAndSettle();
+      await tester.tap(find.text(buttonText));
+      await tester.pumpAndSettle();
 
-    final cell = find.text('title2');
-    await tester.tap(cell);
-    await tester.pump();
+      final cell = find.text('title2');
+      await tester.tap(cell);
+      await tester.pump();
 
-    expect(event, isNotNull);
-    expect(event!.column.title, 'title2');
-    expect(event!.column.sort, PlutoColumnSort.ascending);
-    expect(event!.oldSort, PlutoColumnSort.none);
+      expect(event, isNotNull);
+      expect(event!.column.title, 'title2');
+      expect(event!.column.sort, PlutoColumnSort.ascending);
+      expect(event!.oldSort, PlutoColumnSort.none);
 
-    await tester.tap(cell);
-    await tester.pump();
+      await tester.tap(cell);
+      await tester.pump();
 
-    expect(event, isNotNull);
-    expect(event!.column.title, 'title2');
-    expect(event!.column.sort, PlutoColumnSort.descending);
-    expect(event!.oldSort, PlutoColumnSort.ascending);
+      expect(event, isNotNull);
+      expect(event!.column.title, 'title2');
+      expect(event!.column.sort, PlutoColumnSort.descending);
+      expect(event!.oldSort, PlutoColumnSort.ascending);
 
-    await tester.tap(cell);
-    await tester.pump();
+      await tester.tap(cell);
+      await tester.pump();
 
-    expect(event, isNotNull);
-    expect(event!.column.title, 'title2');
-    expect(event!.column.sort, PlutoColumnSort.none);
-    expect(event!.oldSort, PlutoColumnSort.descending);
-  });
+      expect(event, isNotNull);
+      expect(event!.column.title, 'title2');
+      expect(event!.column.sort, PlutoColumnSort.none);
+      expect(event!.oldSort, PlutoColumnSort.descending);
+    },
+  );
 
   testWidgets('PlutoColumn.enableRowChecked 가 true 인 상태에서 '
       '셀의 체크박스를 체크 하면 onRowChecked 콜백이 호출 되어야 한다.', (tester) async {

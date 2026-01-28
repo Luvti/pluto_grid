@@ -22,6 +22,13 @@ If you comment on an issue, mobile improvements can be made quickly.
 >
 > The documentation has more details.
 
+## [Find broken tests](find_broken_tests.dart)
+>
+> Find broken tests.
+```
+dart find_broken_tests.dart.
+```
+
 ## [ChangeLog](https://github.com/bosskmk/pluto_grid/blob/master/CHANGELOG.md)
 >
 > Please note the changes when changing the version of PlutoGrid you are using.

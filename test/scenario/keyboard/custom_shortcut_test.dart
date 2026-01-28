@@ -76,7 +76,7 @@ void main() {
   );
 
   testWidgets(
-    '셀을 포커스 한 후 Control + C 키를 입력하면 기본 동작이 실행 되어야 한다.',
+    'After focusing the cell, pressing Control + C should execute the default action.',
     (tester) async {
       String? copied;
 
@@ -90,7 +90,9 @@ void main() {
         },
       );
 
-      const shortcut = PlutoGridShortcut();
+      final PlutoGridShortcut shortcut = PlutoGridShortcut(
+        actions: PlutoGridShortcut.allActions,
+      );
 
       await buildGrid(tester, shortcut: shortcut);
 

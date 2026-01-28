@@ -110,8 +110,8 @@ void main() {
     expect(find.byType(PlutoGridColumnIcon), findsOneWidget);
   });
 
-  testWidgets('enableSorting 가 기본값 true 인 상태에서 '
-      'title 을 탭하면 toggleSortColumn 함수가 호출 되어야 한다.', (
+  testWidgets('When enableSorting is true by default, '
+      'tapping the title should call toggleSortColumn.', (
     WidgetTester tester,
   ) async {
     // given
@@ -119,6 +119,7 @@ void main() {
       title: 'header',
       field: 'header',
       type: PlutoColumnType.text(),
+      enableColumnDrag: false,
     );
 
     // when
@@ -132,8 +133,10 @@ void main() {
     verify(stateManager.toggleSortColumn(captureAny)).called(1);
   });
 
-  testWidgets('enableSorting 가 false 인 상태에서 '
-      'GestureDetector 위젯이 없어야 한다.', (WidgetTester tester) async {
+  testWidgets('When enableSorting is false, '
+      'GestureDetector widget should not be displayed.', (
+    WidgetTester tester,
+  ) async {
     // given
     final PlutoColumn column = PlutoColumn(
       title: 'header',
@@ -343,7 +346,7 @@ void main() {
     );
 
     columnHasCheckbox.test(
-      'checkbox 를 탭하면 toggleAllRowChecked 가 호출 되어야 한다.',
+      'After tapping the checkbox, the toggleAllRowChecked function should be called.',
       (tester) async {
         await tester.tap(find.byType(Checkbox));
 

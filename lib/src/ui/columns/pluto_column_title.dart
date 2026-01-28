@@ -491,6 +491,8 @@ class CheckboxAllSelectionWidgetState
 
     if (_checked == null) changed = true;
 
+    if (_checked == null) changed = true;
+
     stateManager.toggleAllRowChecked(changed);
 
     if (stateManager.onRowChecked != null) {
@@ -581,6 +583,12 @@ class _ColumnTextWidgetState extends PlutoStateWithChange<_ColumnTextWidget> {
             textAlign: widget.column.titleTextAlign.value,
           ),
         ),
+        if (_isFilteredList)
+          Icon(
+            Icons.filter_alt_outlined,
+            color: stateManager.configuration.style.iconColor,
+            size: stateManager.configuration.style.iconSize,
+          ),
         SizedBox(width: stateManager.configuration.style.iconSize),
       ],
     );

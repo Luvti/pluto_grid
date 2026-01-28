@@ -78,7 +78,9 @@ class PlutoGridKeyManager {
   }
 
   void _handler(PlutoKeyManagerEvent keyEvent) {
-    if (keyEvent.isKeyUpEvent) return;
+    if (keyEvent.isKeyUpEvent) {
+      return;
+    }
 
     if (stateManager.configuration.shortcut.handle(
       keyEvent: keyEvent,

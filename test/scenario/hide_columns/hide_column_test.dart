@@ -8,7 +8,7 @@ import '../../helper/pluto_widget_test_helper.dart';
 import '../../helper/row_helper.dart';
 
 void main() {
-  group('숨김 컬럼이 없는 상태에서', () {
+  group('Without hidden columns', () {
     late List<PlutoColumn> columns;
 
     late List<PlutoRow> rows;
@@ -16,7 +16,7 @@ void main() {
     late PlutoGridStateManager stateManager;
 
     final withTenColumns = PlutoWidgetTestHelper(
-      '10개의 컬럼을 생성',
+      'Create 10 columns',
       (tester) async {
         columns = [
           ...ColumnHelper.textColumn('header', count: 10),
@@ -41,7 +41,7 @@ void main() {
     );
 
     withTenColumns.test(
-      'hideColumn 으로 header1 을 숨기면 header1 컬럼이 숨겨져야 한다.',
+      'When header1 is hidden using hideColumn, the header1 column should be hidden.',
       (tester) async {
         var column = find.text('header1');
 
@@ -56,14 +56,14 @@ void main() {
     );
 
     withTenColumns.test(
-      'showSetColumnsPopup 을 호출 하면 컬럼 설정 팝업이 호출 되어야 한다.',
+      'When showSetColumnsPopup is called, the column settings popup should be displayed.',
       (tester) async {
         stateManager.showSetColumnsPopup(stateManager.gridFocusNode.context!);
 
         await tester.pumpAndSettle();
 
         var columnTitleOfPopup = find.text(
-          stateManager.configuration.localeText.setColumnsTitle,
+          stateManager.configuration.localeText.setColumnsTitle.toUpperCase(),
         );
 
         expect(columnTitleOfPopup, findsOneWidget);
@@ -71,7 +71,7 @@ void main() {
     );
 
     withTenColumns.test(
-      '컬럼 설정 팝업에서 전체 체크 박스를 탭하면 전체 컬럼이 숨겨져야 한다.',
+      'Tapping the All checkbox in the column settings popup should hide all columns.',
       (tester) async {
         stateManager.showSetColumnsPopup(stateManager.gridFocusNode.context!);
 
@@ -84,21 +84,19 @@ void main() {
 
         await tester.tap(allCheckbox, warnIfMissed: false);
 
-        await tester.pump();
-
         expect(stateManager.refColumns.length, 0);
       },
     );
 
     withTenColumns.test(
-      '컬럼 설정 팝업에서 header0 컬럼의 체크 박스를 탭하면 header0 컬럼이 숨겨져야 한다.',
+      'Tapping the checkbox of the header0 column in the column settings popup should hide the header0 column.',
       (tester) async {
         stateManager.showSetColumnsPopup(stateManager.gridFocusNode.context!);
 
         await tester.pumpAndSettle();
 
         final columnTitleOfPopup = find.text(
-          stateManager.configuration.localeText.setColumnsTitle,
+          stateManager.configuration.localeText.setColumnsTitle.toUpperCase(),
         );
 
         final firstColumnCell = find
@@ -137,7 +135,7 @@ void main() {
     );
 
     withTenColumns.test(
-      'header0 컬럼이 숨겨진 상태에서 header0 의 체크 박스를 탭하면 header0 컬럼이 나타나야 한다.',
+      'When header0 is hidden, tapping the checkbox of header0 should display the header0 column.',
       (tester) async {
         stateManager.hideColumn(stateManager.refColumns.first, true);
 
@@ -150,7 +148,7 @@ void main() {
         await tester.pumpAndSettle();
 
         final columnTitleOfPopup = find.text(
-          stateManager.configuration.localeText.setColumnsTitle,
+          stateManager.configuration.localeText.setColumnsTitle.toUpperCase(),
         );
 
         final firstColumnCell = find
@@ -189,7 +187,7 @@ void main() {
     );
 
     withTenColumns.test(
-      '모든 컬럼을 숨긴 상태에서 컬럼 설정 팝업의 전체 체크 박스를 탭하면 전체 컬럼이 나타나야 한다.',
+      'When all columns are hidden, tapping the “All” checkbox in the column settings popup should display all columns.',
       (tester) async {
         stateManager.hideColumns(stateManager.refColumns, true);
 
@@ -202,7 +200,7 @@ void main() {
         await tester.pumpAndSettle();
 
         final allCheckbox = find.descendant(
-          of: find.byType(PlutoBaseColumn),
+          of: find.byType(PlutoColumn),
           matching: find.byType(PlutoScaledCheckbox),
         );
 
@@ -215,7 +213,7 @@ void main() {
     );
   });
 
-  group('숨김 컬럼이 없는 상태에서', () {
+  group('Without hidden columns', () {
     List<PlutoColumn> columns;
 
     List<PlutoRow> rows;
@@ -223,7 +221,7 @@ void main() {
     PlutoGridStateManager? stateManager;
 
     final withTenColumns = PlutoWidgetTestHelper(
-      '10개의 컬럼을 생성하고 0, 5번 컬럼을 숨김',
+      'Create 10 columns and hide columns 0 and 5.',
       (tester) async {
         columns = [
           ...ColumnHelper.textColumn('header', count: 10),
@@ -253,7 +251,7 @@ void main() {
     );
 
     withTenColumns.test(
-      'hideColumn 으로 header0 을 숨김 해제 하면 컬럼이 나타나야 한다.',
+      'When header0 is unhidden using hideColumn, the column should appear.',
       (tester) async {
         var column = find.text('header0');
 

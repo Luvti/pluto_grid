@@ -39,8 +39,14 @@ class PlutoGridShortcut {
     return false;
   }
 
+  static Map<ShortcutActivator, PlutoGridShortcutAction> get allActions =>
+      <ShortcutActivator, PlutoGridShortcutAction>{
+        ...defaultActions,
+        ...exportAvailableActions,
+      };
+
   static final Map<ShortcutActivator, PlutoGridShortcutAction>
-  defaultActions = {
+  defaultActions = <ShortcutActivator, PlutoGridShortcutAction>{
     // Move cell focus
     LogicalKeySet(LogicalKeyboardKey.arrowLeft):
         const PlutoGridActionMoveCellFocus(PlutoMoveDirection.left),
@@ -350,7 +356,7 @@ class PlutoGridShortcut {
   };
 
   static final Map<ShortcutActivator, PlutoGridShortcutAction>
-  exportAvailableActions = {
+  exportAvailableActions = <ShortcutActivator, PlutoGridShortcutAction>{
     // Copy the values of cells
     LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyC):
         const PlutoGridActionCopyValues(),

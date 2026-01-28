@@ -18,18 +18,21 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.9.0 <4.0.0'
+  sdk: '>=3.8.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  pluto_grid:
+  pluto_grid_plus:
     path: ../
   faker: ^2.2.0
   url_launcher: ^6.3.2
-  font_awesome_flutter: ^10.12.0
+  font_awesome_flutter: 
   rainbow_color: ^2.0.1
   pluto_menu_bar: ^3.0.1
+  file_saver: 
+  pluto_grid_plus_export: 
+    path: ../packages/pluto_grid_plus_export
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

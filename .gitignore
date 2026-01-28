@@ -89,3 +89,4 @@ example/macos/Flutter/ephemeral/
 
 # FVM Version Cache
 .fvm/
+demo/macos/Podfile.lock

@@ -17,7 +17,9 @@ void main() {
 
   setUp(() {
     stateManager = MockPlutoGridStateManager();
-    configuration = const PlutoGridConfiguration();
+    configuration = PlutoGridConfiguration(
+      shortcut: PlutoGridShortcut(actions: PlutoGridShortcut.allActions),
+    );
     when(stateManager.configuration).thenReturn(configuration);
     when(stateManager.keyPressed).thenReturn(PlutoGridKeyPressed());
     when(stateManager.rowTotalHeight).thenReturn(
