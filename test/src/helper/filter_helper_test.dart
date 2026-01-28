@@ -446,7 +446,7 @@ void main() {
                 filterType: filterType,
                 searchObject: null,
                 baseObject: null,
-                base: a.toString(),
+                base: a?.toString(),
                 search: b.toString(),
                 column: column!,
               );
@@ -498,15 +498,15 @@ void main() {
       });
 
       test('null is Empty', () {
-        expect(compare(), isTrue);
+        expect(compare(null, null), isTrue);
       });
 
       test('apple is not Empty', () {
-        expect(compare('apple'), isFalse);
+        expect(compare('apple', null), isFalse);
       });
 
       test('"" is Empty', () {
-        expect(compare(''), isTrue);
+        expect(compare('', null), isTrue);
       });
     });
 

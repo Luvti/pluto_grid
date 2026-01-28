@@ -45,101 +45,77 @@ void main() {
     focusNode.requestFocus();
   }
 
-  testWidgets(
-    '아무 키나 입력하면 isKeyDownEvent 가 true 여야 한다.',
-    (tester) async {
-      await buildWidget(tester: tester, callback: callback);
+  testWidgets('아무 키나 입력하면 isKeyDownEvent 가 true 여야 한다.', (tester) async {
+    await buildWidget(tester: tester, callback: callback);
 
-      const key = LogicalKeyboardKey.keyE;
-      await tester.sendKeyDownEvent(key);
-      expect(keyManagerEvent!.isKeyDownEvent, true);
-      await tester.sendKeyUpEvent(key);
-      expect(keyManagerEvent!.isKeyDownEvent, false);
-    },
-  );
+    const key = LogicalKeyboardKey.keyE;
+    await tester.sendKeyDownEvent(key);
+    expect(keyManagerEvent!.isKeyDownEvent, true);
+    await tester.sendKeyUpEvent(key);
+    expect(keyManagerEvent!.isKeyDownEvent, false);
+  });
 
-  testWidgets(
-    'Home 키를 입력하면 isHome 이 true 여야 한다.',
-    (tester) async {
-      late PlutoKeyManagerEvent keyManagerEvent;
+  testWidgets('Home 키를 입력하면 isHome 이 true 여야 한다.', (tester) async {
+    late PlutoKeyManagerEvent keyManagerEvent;
 
-      KeyEventResult callback(FocusNode node, KeyEvent event) {
-        keyManagerEvent = PlutoKeyManagerEvent(
-          focusNode: node,
-          event: event,
-        );
+    KeyEventResult callback(FocusNode node, KeyEvent event) {
+      keyManagerEvent = PlutoKeyManagerEvent(focusNode: node, event: event);
 
-        return KeyEventResult.handled;
-      }
+      return KeyEventResult.handled;
+    }
 
-      await buildWidget(tester: tester, callback: callback);
+    await buildWidget(tester: tester, callback: callback);
 
-      const key = LogicalKeyboardKey.home;
-      await tester.sendKeyDownEvent(key);
-      expect(keyManagerEvent.isHome, true);
-      await tester.sendKeyUpEvent(key);
-    },
-  );
+    const key = LogicalKeyboardKey.home;
+    await tester.sendKeyDownEvent(key);
+    expect(keyManagerEvent.isHome, true);
+    await tester.sendKeyUpEvent(key);
+  });
 
-  testWidgets(
-    'End 키를 입력하면 isEnd 가 true 여야 한다.',
-    (tester) async {
-      await buildWidget(tester: tester, callback: callback);
+  testWidgets('End 키를 입력하면 isEnd 가 true 여야 한다.', (tester) async {
+    await buildWidget(tester: tester, callback: callback);
 
-      const key = LogicalKeyboardKey.end;
-      await tester.sendKeyDownEvent(key);
-      expect(keyManagerEvent!.isEnd, true);
-      await tester.sendKeyUpEvent(key);
-    },
-  );
+    const key = LogicalKeyboardKey.end;
+    await tester.sendKeyDownEvent(key);
+    expect(keyManagerEvent!.isEnd, true);
+    await tester.sendKeyUpEvent(key);
+  });
 
-  testWidgets(
-    'F4 키를 입력하면 isF4 가 true 여야 한다.',
-    (tester) async {
-      await buildWidget(tester: tester, callback: callback);
+  testWidgets('F4 키를 입력하면 isF4 가 true 여야 한다.', (tester) async {
+    await buildWidget(tester: tester, callback: callback);
 
-      const key = LogicalKeyboardKey.f4;
-      await tester.sendKeyDownEvent(key);
-      expect(keyManagerEvent!.isF4, true);
-      await tester.sendKeyUpEvent(key);
-    },
-  );
+    const key = LogicalKeyboardKey.f4;
+    await tester.sendKeyDownEvent(key);
+    expect(keyManagerEvent!.isF4, true);
+    await tester.sendKeyUpEvent(key);
+  });
 
-  testWidgets(
-    'Backspace 키를 입력하면 isBackspace 가 true 여야 한다.',
-    (tester) async {
-      await buildWidget(tester: tester, callback: callback);
+  testWidgets('Backspace 키를 입력하면 isBackspace 가 true 여야 한다.', (tester) async {
+    await buildWidget(tester: tester, callback: callback);
 
-      const key = LogicalKeyboardKey.backspace;
-      await tester.sendKeyDownEvent(key);
-      expect(keyManagerEvent!.isBackspace, true);
-      await tester.sendKeyUpEvent(key);
-    },
-  );
+    const key = LogicalKeyboardKey.backspace;
+    await tester.sendKeyDownEvent(key);
+    expect(keyManagerEvent!.isBackspace, true);
+    await tester.sendKeyUpEvent(key);
+  });
 
-  testWidgets(
-    'Shift 키를 입력하면 isShift 가 true 여야 한다.',
-    (tester) async {
-      await buildWidget(tester: tester, callback: callback);
+  testWidgets('Shift 키를 입력하면 isShift 가 true 여야 한다.', (tester) async {
+    await buildWidget(tester: tester, callback: callback);
 
-      const key = LogicalKeyboardKey.shift;
-      await tester.sendKeyDownEvent(key);
-      expect(keyManagerEvent!.isShift, true);
-      await tester.sendKeyUpEvent(key);
-    },
-  );
+    const key = LogicalKeyboardKey.shift;
+    await tester.sendKeyDownEvent(key);
+    expect(keyManagerEvent!.isShift, true);
+    await tester.sendKeyUpEvent(key);
+  });
 
-  testWidgets(
-    'Control 키를 입력하면 isControl 가 true 여야 한다.',
-    (tester) async {
-      await buildWidget(tester: tester, callback: callback);
+  testWidgets('Control 키를 입력하면 isControl 가 true 여야 한다.', (tester) async {
+    await buildWidget(tester: tester, callback: callback);
 
-      const key = LogicalKeyboardKey.control;
-      await simulateKeyDownEvent(key);
-      expect(keyManagerEvent!.isControl, true);
-      await simulateKeyUpEvent(key);
-    },
-  );
+    const key = LogicalKeyboardKey.control;
+    await tester.sendKeyDownEvent(key);
+    expect(keyManagerEvent!.isControl, true);
+    await tester.sendKeyUpEvent(key);
+  });
 
   // While key combos still work in the real world, these 3 tests are failing due to what I suspect is an
   // incomplete deprecation/migration from focusNode `onKey` to `onKeyEvent`.
@@ -148,48 +124,37 @@ void main() {
   // such as pasting multiple times due to repeating key presses. It might also be fine.
 
   // https://github.com/flutter/flutter/issues/136419
-  testWidgets(
-    'Control + C 키를 입력하면 isCtrlC 가 true 여야 한다.',
-    (tester) async {
-      await buildWidget(tester: tester, callback: callback);
+  testWidgets('Control + C 키를 입력하면 isCtrlC 가 true 여야 한다.', (tester) async {
+    await buildWidget(tester: tester, callback: callback);
 
-      const key = LogicalKeyboardKey.control;
-      const key2 = LogicalKeyboardKey.keyC;
-      await tester.sendKeyDownEvent(key);
-      await tester.sendKeyUpEvent(
-        key2,
-      ); // sendKeyUpEvent is not sending a keyManagerEvent
+    const key = LogicalKeyboardKey.control;
+    const key2 = LogicalKeyboardKey.keyC;
+    await tester.sendKeyDownEvent(key);
+    await tester.sendKeyDownEvent(key2);
 
-      expect(keyManagerEvent?.isCtrlC, true);
-      await tester.sendKeyUpEvent(key);
-    },
-  );
+    expect(keyManagerEvent?.isCtrlC, true);
+    await tester.sendKeyUpEvent(key);
+  });
 
-  testWidgets(
-    'Control + V 키를 입력하면 isCtrlV 가 true 여야 한다.',
-    (tester) async {
-      await buildWidget(tester: tester, callback: callback);
+  testWidgets('Control + V 키를 입력하면 isCtrlV 가 true 여야 한다.', (tester) async {
+    await buildWidget(tester: tester, callback: callback);
 
-      const key = LogicalKeyboardKey.control;
-      await simulateKeyDownEvent(key);
-      await simulateKeyDownEvent(LogicalKeyboardKey.keyV);
-      expect(keyManagerEvent!.isCtrlV, true);
-      await simulateKeyUpEvent(LogicalKeyboardKey.keyV);
-      await simulateKeyUpEvent(key);
-    },
-  );
+    const key = LogicalKeyboardKey.control;
+    await tester.sendKeyDownEvent(key);
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.keyV);
+    expect(keyManagerEvent!.isCtrlV, true);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.keyV);
+    await tester.sendKeyUpEvent(key);
+  });
 
-  testWidgets(
-    'Control + A 키를 입력하면 isCtrlA 가 true 여야 한다.',
-    (tester) async {
-      await buildWidget(tester: tester, callback: callback);
+  testWidgets('Control + A 키를 입력하면 isCtrlA 가 true 여야 한다.', (tester) async {
+    await buildWidget(tester: tester, callback: callback);
 
-      const key = LogicalKeyboardKey.control;
-      await tester.sendKeyDownEvent(key);
-      await tester.sendKeyDownEvent(LogicalKeyboardKey.keyA);
-      expect(keyManagerEvent!.isCtrlA, true);
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.keyA);
-      await tester.sendKeyUpEvent(key);
-    },
-  );
+    const key = LogicalKeyboardKey.control;
+    await tester.sendKeyDownEvent(key);
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.keyA);
+    expect(keyManagerEvent!.isCtrlA, true);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.keyA);
+    await tester.sendKeyUpEvent(key);
+  });
 }

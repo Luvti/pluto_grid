@@ -337,17 +337,20 @@ void main() {
 
   group('columnFilter', () {
     test('값이 동일한 경우 동등 비교가 true 여야 한다.', () {
+      List<PlutoFilterType> filters({
+        required PlutoColumnTypeEnum type,
+        String? field,
+      }) => <PlutoFilterType>[...FilterHelper.defaultStringFilters];
+
       final PlutoGridColumnFilterConfig columnFilterA =
           PlutoGridColumnFilterConfig(
-            filters: ({required PlutoColumnTypeEnum type, String? field}) =>
-                <PlutoFilterType>[...FilterHelper.defaultStringFilters],
+            filters: filters,
             debounceMilliseconds: 300,
           );
 
       final PlutoGridColumnFilterConfig columnFilterB =
           PlutoGridColumnFilterConfig(
-            filters: ({required PlutoColumnTypeEnum type, String? field}) =>
-                <PlutoFilterType>[...FilterHelper.defaultStringFilters],
+            filters: filters,
             debounceMilliseconds: 300,
           );
 
@@ -355,17 +358,20 @@ void main() {
     });
 
     test('값이 동일한 경우 hashCode 비교가 true 여야 한다.', () {
+      List<PlutoFilterType> filters({
+        required PlutoColumnTypeEnum type,
+        String? field,
+      }) => <PlutoFilterType>[...FilterHelper.defaultStringFilters];
+
       final PlutoGridColumnFilterConfig columnFilterA =
           PlutoGridColumnFilterConfig(
-            filters: ({required PlutoColumnTypeEnum type, String? field}) =>
-                <PlutoFilterType>[...FilterHelper.defaultStringFilters],
+            filters: filters,
             debounceMilliseconds: 300,
           );
 
       final PlutoGridColumnFilterConfig columnFilterB =
           PlutoGridColumnFilterConfig(
-            filters: ({required PlutoColumnTypeEnum type, String? field}) =>
-                <PlutoFilterType>[...FilterHelper.defaultStringFilters],
+            filters: filters,
             debounceMilliseconds: 300,
           );
 

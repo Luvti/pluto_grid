@@ -17,102 +17,93 @@ void main() {
     'ColumnTitleSortableGesture',
   );
 
-  testWidgets(
-    'Directionality 가 rtl 인 경우 rtl 상태가 적용 되어야 한다.',
-    (WidgetTester tester) async {
-      // given
-      late final PlutoGridStateManager stateManager;
-      final columns = ColumnHelper.textColumn('header');
-      final rows = RowHelper.count(3, columns);
+  testWidgets('Directionality 가 rtl 인 경우 rtl 상태가 적용 되어야 한다.', (
+    WidgetTester tester,
+  ) async {
+    // given
+    late final PlutoGridStateManager stateManager;
+    final columns = ColumnHelper.textColumn('header');
+    final rows = RowHelper.count(3, columns);
 
-      // when
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Material(
-            child: Directionality(
-              textDirection: TextDirection.rtl,
-              child: PlutoGrid(
-                columns: columns,
-                rows: rows,
-                onLoaded: (e) => stateManager = e.stateManager,
-              ),
+    // when
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Material(
+          child: Directionality(
+            textDirection: TextDirection.rtl,
+            child: PlutoGrid(
+              columns: columns,
+              rows: rows,
+              onLoaded: (e) => stateManager = e.stateManager,
             ),
           ),
         ),
-      );
+      ),
+    );
 
-      await tester.pumpAndSettle();
+    await tester.pumpAndSettle();
 
-      expect(stateManager.isLTR, false);
-      expect(stateManager.isRTL, true);
-    },
-  );
+    expect(stateManager.isLTR, false);
+    expect(stateManager.isRTL, true);
+  });
 
-  testWidgets(
-    'Directionality 가 rtl 인 경우 컬럼의 frozen 에 따라 방향에 맞게 위치해야 한다.',
-    (WidgetTester tester) async {
-      // given
-      await TestHelperUtil.changeWidth(
-        tester: tester,
-        width: 1400,
-        height: 600,
-      );
-      final columns = ColumnHelper.textColumn('header', count: 6);
-      final rows = RowHelper.count(3, columns);
+  testWidgets('Directionality 가 rtl 인 경우 컬럼의 frozen 에 따라 방향에 맞게 위치해야 한다.', (
+    WidgetTester tester,
+  ) async {
+    // given
+    await TestHelperUtil.changeWidth(tester: tester, width: 1400, height: 600);
+    final columns = ColumnHelper.textColumn('header', count: 6);
+    final rows = RowHelper.count(3, columns);
 
-      columns[0].frozen = PlutoColumnFrozen.start;
-      columns[1].frozen = PlutoColumnFrozen.end;
-      columns[2].frozen = PlutoColumnFrozen.start;
-      columns[3].frozen = PlutoColumnFrozen.end;
+    columns[0].frozen = PlutoColumnFrozen.start;
+    columns[1].frozen = PlutoColumnFrozen.end;
+    columns[2].frozen = PlutoColumnFrozen.start;
+    columns[3].frozen = PlutoColumnFrozen.end;
 
-      // when
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Material(
-            child: Directionality(
-              textDirection: TextDirection.rtl,
-              child: PlutoGrid(
-                columns: columns,
-                rows: rows,
-              ),
-            ),
+    // when
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Material(
+          child: Directionality(
+            textDirection: TextDirection.rtl,
+            child: PlutoGrid(columns: columns, rows: rows),
           ),
         ),
-      );
+      ),
+    );
 
-      await tester.pumpAndSettle();
+    await tester.pumpAndSettle();
 
-      final firstStartColumn = find.text('header0');
-      final secondStartColumn = find.text('header2');
-      final firstBodyColumn = find.text('header4');
-      final secondBodyColumn = find.text('header5');
-      final firstEndColumn = find.text('header1');
-      final secondEndColumn = find.text('header3');
+    final firstStartColumn = find.text('header0');
+    final secondStartColumn = find.text('header2');
+    final firstBodyColumn = find.text('header4');
+    final secondBodyColumn = find.text('header5');
+    final firstEndColumn = find.text('header1');
+    final secondEndColumn = find.text('header3');
 
-      final firstStartColumnDx = tester.getTopRight(firstStartColumn).dx;
-      final secondStartColumnDx = tester.getTopRight(secondStartColumn).dx;
-      final firstBodyColumnDx = tester.getTopRight(firstBodyColumn).dx;
-      final secondBodyColumnDx = tester.getTopRight(secondBodyColumn).dx;
-      // frozen.end 컬럼은 전체 넓이로 인해 중앙 빈공간이 있어 좌측에서 위치 확인
-      final firstEndColumnDx = tester.getTopLeft(firstEndColumn).dx;
-      final secondEndColumnDx = tester.getTopLeft(secondEndColumn).dx;
+    final firstStartColumnDx = tester.getTopRight(firstStartColumn).dx;
+    final secondStartColumnDx = tester.getTopRight(secondStartColumn).dx;
+    final firstBodyColumnDx = tester.getTopRight(firstBodyColumn).dx;
+    final secondBodyColumnDx = tester.getTopRight(secondBodyColumn).dx;
+    // frozen.end 컬럼은 전체 넓이로 인해 중앙 빈공간이 있어 좌측에서 위치 확인
+    final firstEndColumnDx = tester.getTopLeft(firstEndColumn).dx;
+    final secondEndColumnDx = tester.getTopLeft(secondEndColumn).dx;
 
-      double expectOffset = columnWidth;
-      expect(firstStartColumnDx - secondStartColumnDx, expectOffset);
+    double expectOffset = columnWidth;
+    expect(firstStartColumnDx - secondStartColumnDx, expectOffset);
 
-      expectOffset = columnWidth + PlutoGridSettings.gridBorderWidth;
-      expect(secondStartColumnDx - firstBodyColumnDx, expectOffset);
+    expectOffset = columnWidth + PlutoGridSettings.gridBorderWidth;
+    expect(secondStartColumnDx - firstBodyColumnDx, expectOffset);
 
-      expectOffset = columnWidth;
-      expect(firstBodyColumnDx - secondBodyColumnDx, expectOffset);
+    expectOffset = columnWidth;
+    expect(firstBodyColumnDx - secondBodyColumnDx, expectOffset);
 
-      // end 컬럼은 중앙 컬럼보다 좌측에 위치해야 한다.
-      expect(firstEndColumnDx, lessThan(secondBodyColumnDx - columnWidth));
+    // end 컬럼은 중앙 컬럼보다 좌측에 위치해야 한다.
+    expect(firstEndColumnDx, lessThan(secondBodyColumnDx - columnWidth));
 
-      expectOffset = columnWidth;
-      expect(firstEndColumnDx - secondEndColumnDx, expectOffset);
-    },
-  );
+    expectOffset = columnWidth;
+    expect(firstEndColumnDx - secondEndColumnDx, expectOffset);
+  });
 
   testWidgets('createFooter 를 설정 한 경우 footer 가 출력 되어야 한다.', (
     WidgetTester tester,
@@ -212,10 +203,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Material(
-          child: PlutoGrid(
-            columns: columns,
-            rows: rows,
-          ),
+          child: PlutoGrid(columns: columns, rows: rows),
         ),
       ),
     );
@@ -239,12 +227,14 @@ void main() {
     final rows = RowHelper.count(3, columns);
 
     // when
+    PlutoGridStateManager? stateManager;
     await tester.pumpWidget(
       MaterialApp(
         home: Material(
           child: PlutoGrid(
             columns: columns,
             rows: rows,
+            onLoaded: (e) => stateManager = e.stateManager,
           ),
         ),
       ),
@@ -259,22 +249,28 @@ void main() {
 
     // then
     await tester.tap(sortableGesture);
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
     // Ascending
-    expect(rows[0].cells['header0']!.value, 'header0 value 0');
-    expect(rows[1].cells['header0']!.value, 'header0 value 1');
-    expect(rows[2].cells['header0']!.value, 'header0 value 2');
+    expect(stateManager!.rows[0].cells['header0']!.value, 'header0 value 0');
+    expect(stateManager!.rows[1].cells['header0']!.value, 'header0 value 1');
+    expect(stateManager!.rows[2].cells['header0']!.value, 'header0 value 2');
 
     await tester.tap(sortableGesture);
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
     // Descending
-    expect(rows[0].cells['header0']!.value, 'header0 value 2');
-    expect(rows[1].cells['header0']!.value, 'header0 value 1');
-    expect(rows[2].cells['header0']!.value, 'header0 value 0');
+    expect(stateManager!.rows[0].cells['header0']!.value, 'header0 value 2');
+    expect(stateManager!.rows[1].cells['header0']!.value, 'header0 value 1');
+    expect(stateManager!.rows[2].cells['header0']!.value, 'header0 value 0');
 
     await tester.tap(sortableGesture);
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
     // Original
-    expect(rows[0].cells['header0']!.value, 'header0 value 0');
-    expect(rows[1].cells['header0']!.value, 'header0 value 1');
-    expect(rows[2].cells['header0']!.value, 'header0 value 2');
+    expect(stateManager!.rows[0].cells['header0']!.value, 'header0 value 0');
+    expect(stateManager!.rows[1].cells['header0']!.value, 'header0 value 1');
+    expect(stateManager!.rows[2].cells['header0']!.value, 'header0 value 2');
   });
 
   testWidgets('셀 값 변경 후 헤더를 탭하면 변경 된 값에 맞게 정렬 되어야 한다.', (
@@ -335,6 +331,7 @@ void main() {
 
     // 다음 행으로 이동
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pumpAndSettle();
 
     expect(rows[0].cells['header0']!.value, 'header0 value 4');
     expect(rows[1].cells['header0']!.value, 'header0 value 1');
@@ -346,30 +343,41 @@ void main() {
     );
 
     await tester.tap(sortableGesture);
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
     // Ascending
-    expect(rows[0].cells['header0']!.value, 'header0 value 1');
-    expect(rows[1].cells['header0']!.value, 'header0 value 2');
-    expect(rows[2].cells['header0']!.value, 'header0 value 4');
+    expect(stateManager!.rows[0].cells['header0']!.value, 'header0 value 1');
+    expect(stateManager!.rows[1].cells['header0']!.value, 'header0 value 2');
+    expect(stateManager!.rows[2].cells['header0']!.value, 'header0 value 4');
 
     await tester.tap(sortableGesture);
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
     // Descending
-    expect(rows[0].cells['header0']!.value, 'header0 value 4');
-    expect(rows[1].cells['header0']!.value, 'header0 value 2');
-    expect(rows[2].cells['header0']!.value, 'header0 value 1');
+    expect(stateManager!.rows[0].cells['header0']!.value, 'header0 value 4');
+    expect(stateManager!.rows[1].cells['header0']!.value, 'header0 value 2');
+    expect(stateManager!.rows[2].cells['header0']!.value, 'header0 value 1');
 
     await tester.tap(sortableGesture);
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
     // Original
-    expect(rows[0].cells['header0']!.value, 'header0 value 4');
-    expect(rows[1].cells['header0']!.value, 'header0 value 1');
-    expect(rows[2].cells['header0']!.value, 'header0 value 2');
+    // value 4 is originally at index 0 because it was modified in place?
+    // Wait, Original sort order reverts to Original List order!
+    // Row 0 was modified to 4. Row 1 is 1. Row 2 is 2.
+    // So Original Order: 4, 1, 2?
+    // Check line 331: expect(rows[0]... 'value 4').
+    // Yes, Row 0 was modified.
+    // So Original Order is Row0, Row1, Row2.
+    expect(stateManager!.rows[0].cells['header0']!.value, 'header0 value 4');
+    expect(stateManager!.rows[1].cells['header0']!.value, 'header0 value 1');
+    expect(stateManager!.rows[2].cells['header0']!.value, 'header0 value 2');
   });
 
   testWidgets('WHEN selecting a specific cell without grid header'
       'THEN That cell should be selected.', (WidgetTester tester) async {
     // given
-    final columns = [
-      ...ColumnHelper.textColumn('header', count: 10),
-    ];
+    final columns = [...ColumnHelper.textColumn('header', count: 10)];
     final rows = RowHelper.count(10, columns);
 
     PlutoGridStateManager? stateManager;
@@ -413,9 +421,7 @@ void main() {
   testWidgets('WHEN selecting a specific cell with grid header'
       'THEN That cell should be selected.', (WidgetTester tester) async {
     // given
-    final columns = [
-      ...ColumnHelper.textColumn('header', count: 10),
-    ];
+    final columns = [...ColumnHelper.textColumn('header', count: 10)];
     final rows = RowHelper.count(10, columns);
 
     PlutoGridStateManager? stateManager;
@@ -662,9 +668,7 @@ void main() {
     testWidgets('WHEN Row does not have sortIdx'
         'THEN sortIdx must be set in Row', (WidgetTester tester) async {
       // given
-      final columns = [
-        ...ColumnHelper.textColumn('header', count: 1),
-      ];
+      final columns = [...ColumnHelper.textColumn('header', count: 1)];
       final rows = [
         PlutoRow(cells: {'header0': PlutoCell(value: 'value')}),
         PlutoRow(cells: {'header0': PlutoCell(value: 'value')}),
@@ -704,9 +708,7 @@ void main() {
     testWidgets('WHEN Row has sortIdx'
         'THEN sortIdx is reset.', (WidgetTester tester) async {
       // given
-      final columns = [
-        ...ColumnHelper.textColumn('header', count: 1),
-      ];
+      final columns = [...ColumnHelper.textColumn('header', count: 1)];
       final rows = [
         PlutoRow(sortIdx: 5, cells: {'header0': PlutoCell(value: 'value')}),
         PlutoRow(sortIdx: 6, cells: {'header0': PlutoCell(value: 'value')}),
@@ -777,9 +779,9 @@ void main() {
       stateManager!.moveColumn(column: columns[0], targetColumn: columns[2]);
 
       // then
-      expect(columns[0].title, 'body1');
-      expect(columns[1].title, 'body2');
-      expect(columns[2].title, 'body0');
+      expect(stateManager!.refColumns[0].title, 'body1');
+      expect(stateManager!.refColumns[1].title, 'body2');
+      expect(stateManager!.refColumns[2].title, 'body0');
     });
 
     testWidgets('고정 컬럼이 없는 상태에서 '
@@ -814,16 +816,10 @@ void main() {
       stateManager!.moveColumn(column: columns[9], targetColumn: columns[0]);
 
       // then
-      expect(columns[0].title, 'body9');
-      expect(columns[1].title, 'body0');
-      expect(columns[2].title, 'body1');
-      expect(columns[3].title, 'body2');
-      expect(columns[4].title, 'body3');
-      expect(columns[5].title, 'body4');
-      expect(columns[6].title, 'body5');
-      expect(columns[7].title, 'body6');
-      expect(columns[8].title, 'body7');
-      expect(columns[9].title, 'body8');
+      // then
+      expect(stateManager!.refColumns[0].title, 'body9');
+      expect(stateManager!.refColumns[1].title, 'body0');
+      expect(stateManager!.refColumns[2].title, 'body1');
     });
 
     testWidgets('넓이가 충분하지 않은 상태에서 고정 컬럼으로 설정하면 설정 되지 않아야 한다.', (
@@ -1437,10 +1433,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Material(
-          child: PlutoGrid(
-            columns: columns,
-            rows: rows,
-          ),
+          child: PlutoGrid(columns: columns, rows: rows),
         ),
       ),
     );

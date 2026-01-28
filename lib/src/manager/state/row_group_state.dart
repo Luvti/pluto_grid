@@ -722,8 +722,6 @@ mixin RowGroupState implements IPlutoGridState {
     }
 
     _state._previousEnabledRowGroups = enabledRowGroups;
-    print(refRows.runtimeType);
-    print(rows.runtimeType);
     refRows
       ..clearFromOriginal()
       ..addAll(rows);

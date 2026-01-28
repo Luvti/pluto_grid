@@ -28,7 +28,7 @@ class PlutoAggregateHelper {
 
     return numbers.isNotEmpty
         ? numberColumn.toNumber(numberColumn.applyFormat(numbers.sum))
-        : null;
+        : 0;
   }
 
   static num? average({
