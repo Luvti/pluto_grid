@@ -25,9 +25,15 @@ void main() {
             enableAutoEditing: true,
           ),
           PlutoColumn(
-              title: 'header1', field: 'header1', type: PlutoColumnType.text()),
+            title: 'header1',
+            field: 'header1',
+            type: PlutoColumnType.text(),
+          ),
           PlutoColumn(
-              title: 'header2', field: 'header2', type: PlutoColumnType.text()),
+            title: 'header2',
+            field: 'header2',
+            type: PlutoColumnType.text(),
+          ),
           PlutoColumn(
             title: 'header3',
             field: 'header3',
@@ -35,7 +41,10 @@ void main() {
             enableAutoEditing: true,
           ),
           PlutoColumn(
-              title: 'header4', field: 'header4', type: PlutoColumnType.text()),
+            title: 'header4',
+            field: 'header4',
+            type: PlutoColumnType.text(),
+          ),
         ];
 
         rows = RowHelper.count(10, columns);

@@ -13,147 +13,154 @@ void main() {
 
   grid
       .buildSelectedRows(
-    numberOfRows: 10,
-    startRowIdx: 3,
-    endRowIdx: 5,
-    columns: columns,
-  )
-      .test('선택되지 않은 행의 드래그 아이콘을 드래그 하면 선택 된 행이 무효화 되어야 한다.',
-          (WidgetTester tester) async {
-    final selectedCell = find.text(
-      grid.stateManager.refRows[0].cells['column1']!.value,
-    );
+        numberOfRows: 10,
+        startRowIdx: 3,
+        endRowIdx: 5,
+        columns: columns,
+      )
+      .test('선택되지 않은 행의 드래그 아이콘을 드래그 하면 선택 된 행이 무효화 되어야 한다.', (
+        WidgetTester tester,
+      ) async {
+        final selectedCell = find.text(
+          grid.stateManager.refRows[0].cells['column1']!.value,
+        );
 
-    final dragIcon = find.descendant(
-      of: find.ancestor(of: selectedCell, matching: find.byType(Row)),
-      matching: find.byType(Icon),
-    );
+        final dragIcon = find.descendant(
+          of: find.ancestor(of: selectedCell, matching: find.byType(Row)),
+          matching: find.byType(Icon),
+        );
 
-    await tester.drag(dragIcon, const Offset(5, 5));
+        await tester.drag(dragIcon, const Offset(5, 5));
 
-    await tester.pumpAndSettle();
+        await tester.pumpAndSettle();
 
-    expect(grid.stateManager.currentSelectingRows.length, 0);
-  });
-
-  grid
-      .buildSelectedRows(
-    numberOfRows: 10,
-    startRowIdx: 3,
-    endRowIdx: 5,
-    columns: columns,
-  )
-      .test('선택되지 않은 행의 드래그 아이콘을 드래그 하면 드래그 한 행이 이동 되어야 한다.',
-          (WidgetTester tester) async {
-    final dragRow = grid.stateManager.refRows[0];
-
-    final movedRow = grid.stateManager.refRows[1];
-
-    final selectedCell = find.text(
-      dragRow.cells['column1']!.value,
-    );
-
-    final dragIcon = find.descendant(
-      of: find.ancestor(of: selectedCell, matching: find.byType(Row)),
-      matching: find.byType(Icon),
-    );
-
-    await tester.drag(dragIcon, Offset(5, grid.stateManager.columnHeight));
-
-    await tester.pumpAndSettle(const Duration(milliseconds: 300));
-
-    expect(grid.stateManager.refRows[0], movedRow);
-
-    expect(grid.stateManager.refRows[1], dragRow);
-
-    expect(grid.stateManager.currentSelectingRows.length, 0);
-  });
+        expect(grid.stateManager.currentSelectingRows.length, 0);
+      });
 
   grid
       .buildSelectedRows(
-    numberOfRows: 10,
-    startRowIdx: 3,
-    endRowIdx: 5,
-    columns: columns,
-  )
-      .test('선택된 행의 드래그 아이콘을 드래그 하면 선택 된 행이 유지 되어야 한다.',
-          (WidgetTester tester) async {
-    final selectedCell = find.text(
-      grid.stateManager.currentSelectingRows[0].cells['column1']!.value,
-    );
+        numberOfRows: 10,
+        startRowIdx: 3,
+        endRowIdx: 5,
+        columns: columns,
+      )
+      .test('선택되지 않은 행의 드래그 아이콘을 드래그 하면 드래그 한 행이 이동 되어야 한다.', (
+        WidgetTester tester,
+      ) async {
+        final dragRow = grid.stateManager.refRows[0];
 
-    final dragIcon = find.descendant(
-      of: find.ancestor(of: selectedCell, matching: find.byType(Row)),
-      matching: find.byType(Icon),
-    );
+        final movedRow = grid.stateManager.refRows[1];
 
-    await tester.drag(dragIcon, const Offset(5, 5));
+        final selectedCell = find.text(
+          dragRow.cells['column1']!.value,
+        );
 
-    await tester.pumpAndSettle();
+        final dragIcon = find.descendant(
+          of: find.ancestor(of: selectedCell, matching: find.byType(Row)),
+          matching: find.byType(Icon),
+        );
 
-    expect(grid.stateManager.currentSelectingRows.length, 3);
-  });
+        await tester.drag(dragIcon, Offset(5, grid.stateManager.columnHeight));
+
+        await tester.pumpAndSettle(const Duration(milliseconds: 300));
+
+        expect(grid.stateManager.refRows[0], movedRow);
+
+        expect(grid.stateManager.refRows[1], dragRow);
+
+        expect(grid.stateManager.currentSelectingRows.length, 0);
+      });
 
   grid
       .buildSelectedRows(
-    numberOfRows: 10,
-    startRowIdx: 3,
-    endRowIdx: 5,
-    columns: columns,
-  )
-      .test(
-          '선택 되지 않은 행의 드래그 아이콘을 길게 탭하여 드래그 하면, '
-          '기존 선택이 무효화 되고 드래그 한 행이 선택되고 드래깅은 되지 않아야 한다.',
-          (WidgetTester tester) async {
-    final existsSelectingRows = [...grid.stateManager.currentSelectingRows];
+        numberOfRows: 10,
+        startRowIdx: 3,
+        endRowIdx: 5,
+        columns: columns,
+      )
+      .test('선택된 행의 드래그 아이콘을 드래그 하면 선택 된 행이 유지 되어야 한다.', (
+        WidgetTester tester,
+      ) async {
+        final selectedCell = find.text(
+          grid.stateManager.currentSelectingRows[0].cells['column1']!.value,
+        );
 
-    final dragRowCellValue =
-        grid.stateManager.refRows[0].cells['column1']!.value;
+        final dragIcon = find.descendant(
+          of: find.ancestor(of: selectedCell, matching: find.byType(Row)),
+          matching: find.byType(Icon),
+        );
 
-    final targetRowCellValue =
-        grid.stateManager.refRows[1].cells['column1']!.value;
+        await tester.drag(dragIcon, const Offset(5, 5));
 
-    expect(dragRowCellValue, 'column1 value 1');
+        await tester.pumpAndSettle();
 
-    expect(targetRowCellValue, 'column1 value 2');
+        expect(grid.stateManager.currentSelectingRows.length, 3);
+      });
 
-    final dragRow = find.text(dragRowCellValue);
+  grid
+      .buildSelectedRows(
+        numberOfRows: 10,
+        startRowIdx: 3,
+        endRowIdx: 5,
+        columns: columns,
+      )
+      .test('선택 되지 않은 행의 드래그 아이콘을 길게 탭하여 드래그 하면, '
+          '기존 선택이 무효화 되고 드래그 한 행이 선택되고 드래깅은 되지 않아야 한다.', (
+        WidgetTester tester,
+      ) async {
+        final existsSelectingRows = [...grid.stateManager.currentSelectingRows];
 
-    final targetRow = find.text(targetRowCellValue);
+        final dragRowCellValue =
+            grid.stateManager.refRows[0].cells['column1']!.value;
 
-    await grid.gesture.down(tester.getCenter(dragRow));
+        final targetRowCellValue =
+            grid.stateManager.refRows[1].cells['column1']!.value;
 
-    await tester.longPress(dragRow);
+        expect(dragRowCellValue, 'column1 value 1');
 
-    await grid.gesture.moveTo(
-      tester.getCenter(targetRow),
-      timeStamp: const Duration(milliseconds: 10),
-    );
+        expect(targetRowCellValue, 'column1 value 2');
 
-    await grid.gesture.up();
+        final dragRow = find.text(dragRowCellValue);
 
-    await tester.pumpAndSettle();
+        final targetRow = find.text(targetRowCellValue);
 
-    expect(grid.stateManager.currentSelectingRows.length, 2);
+        await grid.gesture.down(tester.getCenter(dragRow));
 
-    expect(
-      existsSelectingRows.contains(grid.stateManager.currentSelectingRows[0]),
-      false,
-    );
+        await tester.longPress(dragRow);
 
-    expect(
-      existsSelectingRows.contains(grid.stateManager.currentSelectingRows[1]),
-      false,
-    );
+        await grid.gesture.moveTo(
+          tester.getCenter(targetRow),
+          timeStamp: const Duration(milliseconds: 10),
+        );
 
-    expect(
-      grid.stateManager.currentSelectingRows[0].cells['column1']!.value,
-      dragRowCellValue,
-    );
+        await grid.gesture.up();
 
-    expect(
-      grid.stateManager.currentSelectingRows[1].cells['column1']!.value,
-      targetRowCellValue,
-    );
-  });
+        await tester.pumpAndSettle();
+
+        expect(grid.stateManager.currentSelectingRows.length, 2);
+
+        expect(
+          existsSelectingRows.contains(
+            grid.stateManager.currentSelectingRows[0],
+          ),
+          false,
+        );
+
+        expect(
+          existsSelectingRows.contains(
+            grid.stateManager.currentSelectingRows[1],
+          ),
+          false,
+        );
+
+        expect(
+          grid.stateManager.currentSelectingRows[0].cells['column1']!.value,
+          dragRowCellValue,
+        );
+
+        expect(
+          grid.stateManager.currentSelectingRows[1].cells['column1']!.value,
+          targetRowCellValue,
+        );
+      });
 }

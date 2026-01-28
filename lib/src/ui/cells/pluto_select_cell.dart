@@ -51,10 +51,12 @@ class PlutoSelectCellState extends State<PlutoSelectCell>
         ? widget.stateManager.configuration.style.columnFilterHeight
         : 0;
 
-    final rowsHeight = widget.column.type.select.items.length *
+    final rowsHeight =
+        widget.column.type.select.items.length *
         widget.stateManager.rowTotalHeight;
 
-    popupHeight = widget.stateManager.configuration.style.columnHeight +
+    popupHeight =
+        widget.stateManager.configuration.style.columnHeight +
         columnFilterHeight +
         rowsHeight +
         PlutoGridSettings.gridInnerSpacing +
@@ -80,7 +82,7 @@ class PlutoSelectCellState extends State<PlutoSelectCell>
 
                 return widget.column.type.select.builder!(item);
               },
-      )
+      ),
     ];
 
     popupRows = widget.column.type.select.items.map((dynamic item) {

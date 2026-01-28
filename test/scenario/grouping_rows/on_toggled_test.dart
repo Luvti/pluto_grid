@@ -44,15 +44,30 @@ void main() {
     setUp(() {
       columns = [
         PlutoColumn(
-            title: 'column1', field: 'column1', type: PlutoColumnType.text()),
+          title: 'column1',
+          field: 'column1',
+          type: PlutoColumnType.text(),
+        ),
         PlutoColumn(
-            title: 'column2', field: 'column2', type: PlutoColumnType.text()),
+          title: 'column2',
+          field: 'column2',
+          type: PlutoColumnType.text(),
+        ),
         PlutoColumn(
-            title: 'column3', field: 'column3', type: PlutoColumnType.text()),
+          title: 'column3',
+          field: 'column3',
+          type: PlutoColumnType.text(),
+        ),
         PlutoColumn(
-            title: 'column4', field: 'column4', type: PlutoColumnType.text()),
+          title: 'column4',
+          field: 'column4',
+          type: PlutoColumnType.text(),
+        ),
         PlutoColumn(
-            title: 'column5', field: 'column5', type: PlutoColumnType.text()),
+          title: 'column5',
+          field: 'column5',
+          type: PlutoColumnType.text(),
+        ),
       ];
 
       rows = [
@@ -66,9 +81,21 @@ void main() {
             createRow('B42', 'b42-1', 'b42-2', 'b42-3', 'b42-4', columns),
             createGroup('B43', 'b43-1', 'b43-2', 'b43-3', 'b43-4', columns, [
               createRow(
-                  'B431', 'b431-1', 'b431-2', 'b431-3', 'b431-4', columns),
+                'B431',
+                'b431-1',
+                'b431-2',
+                'b431-3',
+                'b431-4',
+                columns,
+              ),
               createRow(
-                  'B432', 'b432-1', 'b432-2', 'b432-3', 'b432-4', columns),
+                'B432',
+                'b432-1',
+                'b432-2',
+                'b432-3',
+                'b432-4',
+                columns,
+              ),
             ]),
           ]),
         ]),

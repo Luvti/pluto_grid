@@ -29,15 +29,17 @@ void main() {
   });
 
   BoxDecoration getCellDecoration(Finder cell) {
-    final container = find
-        .ancestor(
-          of: cell,
-          matching: find.byType(DecoratedBox),
-        )
-        .first
-        .evaluate()
-        .first
-        .widget as DecoratedBox;
+    final container =
+        find
+                .ancestor(
+                  of: cell,
+                  matching: find.byType(DecoratedBox),
+                )
+                .first
+                .evaluate()
+                .first
+                .widget
+            as DecoratedBox;
 
     return container.decoration as BoxDecoration;
   }

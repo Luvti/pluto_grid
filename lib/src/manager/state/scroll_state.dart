@@ -95,7 +95,8 @@ mixin ScrollState implements IPlutoGridState {
 
     final double rowSize = rowTotalHeight;
 
-    final double screenOffset = scroll.verticalOffset +
+    final double screenOffset =
+        scroll.verticalOffset +
         columnRowContainerHeight -
         columnGroupHeight -
         columnHeight -
@@ -103,8 +104,9 @@ mixin ScrollState implements IPlutoGridState {
         columnFooterHeight -
         PlutoGridSettings.rowBorderWidth;
 
-    double offsetToMove =
-        direction.isUp ? (rowIdx! - 1) * rowSize : (rowIdx! + 1) * rowSize;
+    double offsetToMove = direction.isUp
+        ? (rowIdx! - 1) * rowSize
+        : (rowIdx! + 1) * rowSize;
 
     final bool inScrollStart = scroll.verticalOffset <= offsetToMove;
 

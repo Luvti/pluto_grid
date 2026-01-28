@@ -146,8 +146,9 @@ void main() {
         },
       );
 
-      final cellWidget =
-          PlutoWidgetTestHelper('Build and tap cell.', (tester) async {
+      final cellWidget = PlutoWidgetTestHelper('Build and tap cell.', (
+        tester,
+      ) async {
         await tester.pumpWidget(
           MaterialApp(
             home: Material(
@@ -182,8 +183,9 @@ void main() {
         expect(find.byType(PlutoGrid), findsNothing);
       });
 
-      cellWidget.test('팝업 호출 후 ESC 를 입력하고 다시 F2 키로 팝업을 호출하면 팝업이 호출 되어야 한다.',
-          (tester) async {
+      cellWidget.test('팝업 호출 후 ESC 를 입력하고 다시 F2 키로 팝업을 호출하면 팝업이 호출 되어야 한다.', (
+        tester,
+      ) async {
         await tester.sendKeyEvent(LogicalKeyboardKey.f2);
 
         expect(find.byType(PlutoGrid), findsOneWidget);
@@ -201,8 +203,7 @@ void main() {
         expect(find.byType(PlutoGrid), findsOneWidget);
       });
 
-      cellWidget.test(
-          '팝업 호출 후 방향키와 엔터키로 아래 아이템을 선택한 후 다시 팝업을 호출하면, '
+      cellWidget.test('팝업 호출 후 방향키와 엔터키로 아래 아이템을 선택한 후 다시 팝업을 호출하면, '
           '팝업이 호출 되어야 한다.', (tester) async {
         await tester.sendKeyEvent(LogicalKeyboardKey.f2);
 

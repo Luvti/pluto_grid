@@ -155,8 +155,8 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
     _cellEditingStatus = formattedValue != value.toString()
         ? _CellEditingStatus.changed
         : _initialCellValue.toString() == value.toString()
-            ? _CellEditingStatus.init
-            : _CellEditingStatus.updated;
+        ? _CellEditingStatus.init
+        : _CellEditingStatus.updated;
   }
 
   void _handleOnComplete() {
@@ -182,12 +182,13 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
       return KeyEventResult.handled;
     }
 
-    final skip = !(keyManager.isVertical ||
-        _moveHorizontal(keyManager) ||
-        keyManager.isEsc ||
-        keyManager.isTab ||
-        keyManager.isF3 ||
-        keyManager.isEnter);
+    final skip =
+        !(keyManager.isVertical ||
+            _moveHorizontal(keyManager) ||
+            keyManager.isEsc ||
+            keyManager.isTab ||
+            keyManager.isF3 ||
+            keyManager.isEnter);
 
     // 이동 및 엔터키, 수정불가 셀의 좌우 이동을 제외한 문자열 입력 등의 키 입력은 텍스트 필드로 전파 한다.
     if (skip) {

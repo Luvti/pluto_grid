@@ -28,29 +28,34 @@ void main() {
     EdgeInsets? padding,
     bool enabledRowGroups = false,
   }) {
-    return PlutoWidgetTestHelper('PlutoAggregateColumnFooter : ',
-        (tester) async {
+    return PlutoWidgetTestHelper('PlutoAggregateColumnFooter : ', (
+      tester,
+    ) async {
       stateManager = MockPlutoGridStateManager();
 
       subject = PublishSubject<PlutoNotifierEvent>();
 
       when(stateManager.streamNotifier).thenAnswer((_) => subject);
 
-      when(stateManager.configuration)
-          .thenReturn(const PlutoGridConfiguration());
+      when(
+        stateManager.configuration,
+      ).thenReturn(const PlutoGridConfiguration());
 
       when(stateManager.refRows).thenReturn(rows);
 
       when(stateManager.enabledRowGroups).thenReturn(enabledRowGroups);
 
-      when(stateManager.iterateAllMainRowGroup)
-          .thenReturn(rows.originalList.where((r) => r.isMain));
+      when(
+        stateManager.iterateAllMainRowGroup,
+      ).thenReturn(rows.originalList.where((r) => r.isMain));
 
-      when(stateManager.iterateFilteredMainRowGroup)
-          .thenReturn(rows.filterOrOriginalList.where((r) => r.isMain));
+      when(
+        stateManager.iterateFilteredMainRowGroup,
+      ).thenReturn(rows.filterOrOriginalList.where((r) => r.isMain));
 
-      when(stateManager.iterateMainRowGroup)
-          .thenReturn(rows.where((r) => r.isMain));
+      when(
+        stateManager.iterateMainRowGroup,
+      ).thenReturn(rows.where((r) => r.isMain));
 
       await tester.pumpWidget(
         MaterialApp(
@@ -137,11 +142,13 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ]),
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      ),
       type: PlutoAggregateColumnType.sum,
     ).test('행이 있는 경우 sum 값은 포멧에 맞게 6,000이 출력 되어야 한다.', (tester) async {
       final found = find.text('6,000');
@@ -151,11 +158,13 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ]),
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      ),
       type: PlutoAggregateColumnType.average,
     ).test('행이 있는 경우 average 값은 포멧에 맞게 2,000이 출력 되어야 한다.', (tester) async {
       final found = find.text('2,000');
@@ -165,11 +174,13 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ]),
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      ),
       type: PlutoAggregateColumnType.min,
     ).test('행이 있는 경우 min 값은 포멧에 맞게 1,000이 출력 되어야 한다.', (tester) async {
       final found = find.text('1,000');
@@ -179,11 +190,13 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ]),
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      ),
       type: PlutoAggregateColumnType.max,
     ).test('행이 있는 경우 max 값은 포멧에 맞게 3,000이 출력 되어야 한다.', (tester) async {
       final found = find.text('3,000');
@@ -193,11 +206,13 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ]),
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      ),
       type: PlutoAggregateColumnType.count,
     ).test('행이 있는 경우 count 값은 포멧에 맞게 3이 출력 되어야 한다.', (tester) async {
       final found = find.text('3');
@@ -207,11 +222,13 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ]),
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      ),
       type: PlutoAggregateColumnType.count,
       filter: (cell) => cell.value > 1000,
     ).test('filter 가 설정 된 경우 count 값은 필터 조건에 맞게 2이 출력 되어야 한다.', (tester) async {
@@ -222,11 +239,13 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ]),
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      ),
       type: PlutoAggregateColumnType.count,
       format: 'Total : #,###',
     ).test(
@@ -240,11 +259,13 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ]),
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      ),
       type: PlutoAggregateColumnType.sum,
       titleSpanBuilder: (text) {
         return [
@@ -265,12 +286,13 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ])
-        ..setFilter((element) => element.cells['column']!.value > 1000),
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      )..setFilter((element) => element.cells['column']!.value > 1000),
       type: PlutoAggregateColumnType.sum,
     ).test(
       '필터가 적용 된 경우 필터 된 결과만 집계 되어야 한다.',
@@ -281,12 +303,13 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ])
-        ..setFilterRange(FilteredListRange(0, 2)),
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      )..setFilterRange(FilteredListRange(0, 2)),
       type: PlutoAggregateColumnType.sum,
     ).test(
       '페이지네이션이 적용 된 경우 페이지네이션 된 결과만 집계 되어야 한다.',
@@ -297,12 +320,13 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ])
-        ..setFilterRange(FilteredListRange(0, 2)),
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      )..setFilterRange(FilteredListRange(0, 2)),
       type: PlutoAggregateColumnType.sum,
       iterateRowType: PlutoAggregateColumnIterateRowType.all,
     ).test(
@@ -314,13 +338,16 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ])
-        ..setFilter((element) => element.cells['column']!.value > 1000)
-        ..setFilterRange(FilteredListRange(0, 2)),
+      rows:
+          FilteredList<PlutoRow>(
+              initialList: [
+                PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
+                PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+                PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+              ],
+            )
+            ..setFilter((element) => element.cells['column']!.value > 1000)
+            ..setFilterRange(FilteredListRange(0, 2)),
       type: PlutoAggregateColumnType.sum,
       iterateRowType: PlutoAggregateColumnIterateRowType.filtered,
     ).test(
@@ -332,12 +359,13 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ])
-        ..setFilter((element) => element.cells['column']!.value > 1000),
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(cells: {'column': PlutoCell(value: 1000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      )..setFilter((element) => element.cells['column']!.value > 1000),
       type: PlutoAggregateColumnType.sum,
       iterateRowType: PlutoAggregateColumnIterateRowType.all,
     ).test(
@@ -359,19 +387,23 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(
             cells: {'column': PlutoCell(value: 1000)},
             type: PlutoRowType.group(
-                children: FilteredList(
-              initialList: [
-                PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-                PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-              ],
-            ))),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ]),
+              children: FilteredList(
+                initialList: [
+                  PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+                  PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+                ],
+              ),
+            ),
+          ),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      ),
       type: PlutoAggregateColumnType.sum,
       groupedRowType: PlutoAggregateColumnGroupedRowType.all,
       enabledRowGroups: true,
@@ -390,19 +422,23 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(
             cells: {'column': PlutoCell(value: 1000)},
             type: PlutoRowType.group(
-                children: FilteredList(
-              initialList: [
-                PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-                PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-              ],
-            ))),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ]),
+              children: FilteredList(
+                initialList: [
+                  PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+                  PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+                ],
+              ),
+            ),
+          ),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      ),
       type: PlutoAggregateColumnType.sum,
       groupedRowType: PlutoAggregateColumnGroupedRowType.expandedAll,
       enabledRowGroups: true,
@@ -421,8 +457,9 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(
             cells: {'column': PlutoCell(value: 1000)},
             type: PlutoRowType.group(
               children: FilteredList(
@@ -432,10 +469,12 @@ void main() {
                 ],
               ),
               expanded: true,
-            )),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ]),
+            ),
+          ),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      ),
       type: PlutoAggregateColumnType.sum,
       groupedRowType: PlutoAggregateColumnGroupedRowType.expandedAll,
       enabledRowGroups: true,
@@ -454,8 +493,9 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(
             cells: {'column': PlutoCell(value: 1000)},
             type: PlutoRowType.group(
               children: FilteredList(
@@ -465,10 +505,12 @@ void main() {
                 ],
               ),
               expanded: true,
-            )),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ]),
+            ),
+          ),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      ),
       type: PlutoAggregateColumnType.sum,
       groupedRowType: PlutoAggregateColumnGroupedRowType.rows,
       enabledRowGroups: true,
@@ -487,8 +529,9 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(
             cells: {'column': PlutoCell(value: 1000)},
             type: PlutoRowType.group(
               children: FilteredList(
@@ -498,10 +541,12 @@ void main() {
                 ],
               ),
               expanded: false,
-            )),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ]),
+            ),
+          ),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      ),
       type: PlutoAggregateColumnType.sum,
       groupedRowType: PlutoAggregateColumnGroupedRowType.expandedRows,
       enabledRowGroups: true,
@@ -520,8 +565,9 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(
             cells: {'column': PlutoCell(value: 1000)},
             type: PlutoRowType.group(
               children: FilteredList(
@@ -531,10 +577,12 @@ void main() {
                 ],
               ),
               expanded: true,
-            )),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ]),
+            ),
+          ),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      ),
       type: PlutoAggregateColumnType.sum,
       groupedRowType: PlutoAggregateColumnGroupedRowType.expandedRows,
       enabledRowGroups: true,
@@ -553,8 +601,9 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(
             cells: {'column': PlutoCell(value: 1000)},
             type: PlutoRowType.group(
               children: FilteredList(
@@ -564,11 +613,12 @@ void main() {
                 ],
               ),
               expanded: true,
-            )),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ])
-        ..setFilter((element) => element.cells['column']!.value > 1000),
+            ),
+          ),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      )..setFilter((element) => element.cells['column']!.value > 1000),
       type: PlutoAggregateColumnType.sum,
       groupedRowType: PlutoAggregateColumnGroupedRowType.all,
       enabledRowGroups: true,
@@ -581,8 +631,9 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(
             cells: {'column': PlutoCell(value: 1000)},
             type: PlutoRowType.group(
               children: FilteredList(
@@ -592,11 +643,12 @@ void main() {
                 ],
               ),
               expanded: true,
-            )),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ])
-        ..setFilterRange(FilteredListRange(0, 2)),
+            ),
+          ),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      )..setFilterRange(FilteredListRange(0, 2)),
       type: PlutoAggregateColumnType.sum,
       groupedRowType: PlutoAggregateColumnGroupedRowType.all,
       enabledRowGroups: true,
@@ -609,8 +661,9 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(
+      rows: FilteredList<PlutoRow>(
+        initialList: [
+          PlutoRow(
             cells: {'column': PlutoCell(value: 1000)},
             type: PlutoRowType.group(
               children: FilteredList(
@@ -620,11 +673,12 @@ void main() {
                 ],
               ),
               expanded: true,
-            )),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ])
-        ..setFilter((element) => element.cells['column']!.value > 1000),
+            ),
+          ),
+          PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+          PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+        ],
+      )..setFilter((element) => element.cells['column']!.value > 1000),
       type: PlutoAggregateColumnType.sum,
       iterateRowType: PlutoAggregateColumnIterateRowType.all,
       groupedRowType: PlutoAggregateColumnGroupedRowType.all,
@@ -638,23 +692,27 @@ void main() {
 
     buildWidget(
       column: columns.first,
-      rows: FilteredList<PlutoRow>(initialList: [
-        PlutoRow(
-            cells: {'column': PlutoCell(value: 1000)},
-            type: PlutoRowType.group(
-              children: FilteredList(
-                initialList: [
-                  PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-                  PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-                ],
-              ),
-              expanded: true,
-            )),
-        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
-        PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
-      ])
-        ..setFilter((element) => element.cells['column']!.value > 1000)
-        ..setFilterRange(FilteredListRange(0, 2)),
+      rows:
+          FilteredList<PlutoRow>(
+              initialList: [
+                PlutoRow(
+                  cells: {'column': PlutoCell(value: 1000)},
+                  type: PlutoRowType.group(
+                    children: FilteredList(
+                      initialList: [
+                        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+                        PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+                      ],
+                    ),
+                    expanded: true,
+                  ),
+                ),
+                PlutoRow(cells: {'column': PlutoCell(value: 2000)}),
+                PlutoRow(cells: {'column': PlutoCell(value: 3000)}),
+              ],
+            )
+            ..setFilter((element) => element.cells['column']!.value > 1000)
+            ..setFilterRange(FilteredListRange(0, 2)),
       type: PlutoAggregateColumnType.sum,
       iterateRowType: PlutoAggregateColumnIterateRowType.filtered,
       groupedRowType: PlutoAggregateColumnGroupedRowType.all,

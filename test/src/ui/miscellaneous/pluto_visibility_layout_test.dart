@@ -152,10 +152,12 @@ void main() {
           PlutoVisibilityLayoutId(id: 'id', child: createChildren()),
         ];
 
-        await tester.pumpWidget(buildWidget(
-          scrollController: scrollController,
-          children: children,
-        ));
+        await tester.pumpWidget(
+          buildWidget(
+            scrollController: scrollController,
+            children: children,
+          ),
+        );
 
         verify(scrollController.addListener(argThat(isA<Function>())));
       },
@@ -172,13 +174,16 @@ void main() {
           PlutoVisibilityLayoutId(id: 'id', child: createChildren()),
         ];
 
-        await tester.pumpWidget(buildWidget(
-          scrollController: scrollController,
-          children: children,
-        ));
+        await tester.pumpWidget(
+          buildWidget(
+            scrollController: scrollController,
+            children: children,
+          ),
+        );
 
-        final wrapperState = tester.state(find.byType(_TestWidgetWrapper))
-            as _TestWidgetWrapperState;
+        final wrapperState =
+            tester.state(find.byType(_TestWidgetWrapper))
+                as _TestWidgetWrapperState;
 
         wrapperState.setVisible(false);
 
@@ -199,10 +204,12 @@ void main() {
           PlutoVisibilityLayoutId(id: 'id', child: createChildren()),
         ];
 
-        await tester.pumpWidget(buildWidget(
-          scrollController: scrollController,
-          children: children,
-        ));
+        await tester.pumpWidget(
+          buildWidget(
+            scrollController: scrollController,
+            children: children,
+          ),
+        );
 
         final found = find.byType(_TestLayoutChild);
 
@@ -231,10 +238,12 @@ void main() {
           PlutoVisibilityLayoutId(id: 'id3', child: createChildren()),
         ];
 
-        await tester.pumpWidget(buildWidget(
-          scrollController: scrollController,
-          children: children,
-        ));
+        await tester.pumpWidget(
+          buildWidget(
+            scrollController: scrollController,
+            children: children,
+          ),
+        );
 
         final found = find.byType(_TestLayoutChild);
 

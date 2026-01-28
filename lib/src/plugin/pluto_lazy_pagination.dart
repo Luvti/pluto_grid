@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 /// Callback function to implement to add lazy pagination data.
-typedef PlutoLazyPaginationFetch = Future<PlutoLazyPaginationResponse> Function(
-    PlutoLazyPaginationRequest);
+typedef PlutoLazyPaginationFetch =
+    Future<PlutoLazyPaginationResponse> Function(PlutoLazyPaginationRequest);
 
 /// Request data for lazy pagination processing.
 class PlutoLazyPaginationRequest {
@@ -173,29 +173,29 @@ class _PlutoLazyPaginationState extends State<PlutoLazyPagination> {
 
     widget
         .fetch(
-      PlutoLazyPaginationRequest(
-        page: page,
-        sortColumn: stateManager.getSortedColumn,
-        filterRows: stateManager.filterRows,
-      ),
-    )
+          PlutoLazyPaginationRequest(
+            page: page,
+            sortColumn: stateManager.getSortedColumn,
+            filterRows: stateManager.filterRows,
+          ),
+        )
         .then((data) {
-      if(!mounted)return;
-      stateManager.scroll.bodyRowsVertical!.jumpTo(0);
+          if (!mounted) return;
+          stateManager.scroll.bodyRowsVertical!.jumpTo(0);
 
-      stateManager.refRows.clearFromOriginal();
-      stateManager.insertRows(0, data.rows);
+          stateManager.refRows.clearFromOriginal();
+          stateManager.insertRows(0, data.rows);
 
-      setState(() {
-        _page = page;
+          setState(() {
+            _page = page;
 
-        _totalPage = data.totalPage;
+            _totalPage = data.totalPage;
 
-        _isFetching = false;
-      });
+            _isFetching = false;
+          });
 
-      stateManager.setShowLoading(false);
-    });
+          stateManager.setShowLoading(false);
+        });
   }
 
   @override

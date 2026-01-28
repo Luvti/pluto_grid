@@ -215,10 +215,12 @@ void main() {
       },
     );
 
-    dualGrid(const PlutoDualGridDivider(
-      backgroundColor: Colors.deepOrange,
-      indicatorColor: Colors.indigoAccent,
-    )).test(
+    dualGrid(
+      const PlutoDualGridDivider(
+        backgroundColor: Colors.deepOrange,
+        indicatorColor: Colors.indigoAccent,
+      ),
+    ).test(
       'Divider 가변경 된 컬러로 렌더링 되어야 한다.',
       (tester) async {
         final findDivider = find.byType(PlutoDualGridDividerWidget);
@@ -237,9 +239,11 @@ void main() {
       },
     );
 
-    dualGrid(const PlutoDualGridDivider(
-      show: false,
-    )).test(
+    dualGrid(
+      const PlutoDualGridDivider(
+        show: false,
+      ),
+    ).test(
       'show 가 false 인 경우 Divider 가 렌더링 되지 않아야 한다.',
       (tester) async {
         final findDivider = find.byType(PlutoDualGridDividerWidget);

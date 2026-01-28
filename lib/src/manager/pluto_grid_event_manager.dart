@@ -48,12 +48,13 @@ class PlutoGridEventManager {
           ),
         );
 
-    final debounceStream =
-        _subject.stream.where((event) => event.type.isDebounce).transform(
-              DebounceStreamTransformer(
-                (s) => TimerStream<PlutoGridEvent>(s, s.duration as Duration),
-              ),
-            );
+    final debounceStream = _subject.stream
+        .where((event) => event.type.isDebounce)
+        .transform(
+          DebounceStreamTransformer(
+            (s) => TimerStream<PlutoGridEvent>(s, s.duration as Duration),
+          ),
+        );
 
     _subscription = MergeStream([
       normalStream,

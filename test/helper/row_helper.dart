@@ -46,9 +46,11 @@ class RowHelper {
   static PlutoCell cellOfDateColumn(PlutoColumn column, int rowIdx) {
     return PlutoCell(
       value: DateTime.now()
-          .add(Duration(
-            days: Random().nextInt(365),
-          ))
+          .add(
+            Duration(
+              days: Random().nextInt(365),
+            ),
+          )
           .toString(),
     );
   }

@@ -48,8 +48,11 @@ void main() {
       '선택 된 행이 없는 경우 빈 List 를 리턴 해야 한다.',
       (WidgetTester tester) async {
         // given
-        List<PlutoColumn> columns =
-            ColumnHelper.textColumn('body', count: 3, width: 150);
+        List<PlutoColumn> columns = ColumnHelper.textColumn(
+          'body',
+          count: 3,
+          width: 150,
+        );
 
         List<PlutoRow> rows = RowHelper.count(10, columns);
 
@@ -70,8 +73,11 @@ void main() {
       '선택 된 행이 있는 경우 선택 된 List 를 리턴 해야 한다.',
       (WidgetTester tester) async {
         // given
-        List<PlutoColumn> columns =
-            ColumnHelper.textColumn('body', count: 1, width: 150);
+        List<PlutoColumn> columns = ColumnHelper.textColumn(
+          'body',
+          count: 1,
+          width: 150,
+        );
 
         final checkedRows = RowHelper.count(3, columns, checked: true);
 
@@ -85,8 +91,10 @@ void main() {
         );
 
         // when
-        final keys =
-            stateManager.checkedRows.toList().map((e) => e.key).toList();
+        final keys = stateManager.checkedRows
+            .toList()
+            .map((e) => e.key)
+            .toList();
 
         // then
         expect(keys.length, 3);
@@ -102,8 +110,11 @@ void main() {
       '선택 된 행이 없는 경우 모든 List 를 리턴 해야 한다.',
       (WidgetTester tester) async {
         // given
-        List<PlutoColumn> columns =
-            ColumnHelper.textColumn('body', count: 3, width: 150);
+        List<PlutoColumn> columns = ColumnHelper.textColumn(
+          'body',
+          count: 3,
+          width: 150,
+        );
 
         List<PlutoRow> rows = RowHelper.count(10, columns);
 
@@ -124,8 +135,11 @@ void main() {
       '선택 된 행이 있는 경우 선택 된 List 를 제외하고 리턴 해야 한다.',
       (WidgetTester tester) async {
         // given
-        List<PlutoColumn> columns =
-            ColumnHelper.textColumn('body', count: 1, width: 150);
+        List<PlutoColumn> columns = ColumnHelper.textColumn(
+          'body',
+          count: 1,
+          width: 150,
+        );
 
         final checkedRows = RowHelper.count(3, columns, checked: true);
 
@@ -139,8 +153,10 @@ void main() {
         );
 
         // when
-        final keys =
-            stateManager.unCheckedRows.toList().map((e) => e.key).toList();
+        final keys = stateManager.unCheckedRows
+            .toList()
+            .map((e) => e.key)
+            .toList();
 
         // then
         expect(keys.length, 10);
@@ -156,8 +172,11 @@ void main() {
       '선택 된 행이 없는 경우 false 를 리턴 해야 한다.',
       (WidgetTester tester) async {
         // given
-        List<PlutoColumn> columns =
-            ColumnHelper.textColumn('body', count: 3, width: 150);
+        List<PlutoColumn> columns = ColumnHelper.textColumn(
+          'body',
+          count: 3,
+          width: 150,
+        );
 
         List<PlutoRow> rows = RowHelper.count(10, columns);
 
@@ -178,8 +197,11 @@ void main() {
       '선택 된 행이 있는 경우 true 를 리턴 해야 한다.',
       (WidgetTester tester) async {
         // given
-        List<PlutoColumn> columns =
-            ColumnHelper.textColumn('body', count: 1, width: 150);
+        List<PlutoColumn> columns = ColumnHelper.textColumn(
+          'body',
+          count: 1,
+          width: 150,
+        );
 
         final checkedRows = RowHelper.count(3, columns, checked: true);
 
@@ -204,8 +226,11 @@ void main() {
       '선택 된 행이 없는 경우 true 를 리턴 해야 한다.',
       (WidgetTester tester) async {
         // given
-        List<PlutoColumn> columns =
-            ColumnHelper.textColumn('body', count: 3, width: 150);
+        List<PlutoColumn> columns = ColumnHelper.textColumn(
+          'body',
+          count: 3,
+          width: 150,
+        );
 
         List<PlutoRow> rows = RowHelper.count(10, columns);
 
@@ -226,8 +251,11 @@ void main() {
       '선택 되지 않은 행이 하나라도 있는 경우 true 를 리턴해야 한다.',
       (WidgetTester tester) async {
         // given
-        List<PlutoColumn> columns =
-            ColumnHelper.textColumn('body', count: 1, width: 150);
+        List<PlutoColumn> columns = ColumnHelper.textColumn(
+          'body',
+          count: 1,
+          width: 150,
+        );
 
         final checkedRows = RowHelper.count(3, columns, checked: true);
 
@@ -252,8 +280,11 @@ void main() {
       '모든 행이 선택 된 경우 false 를 리턴해야 한다.',
       (WidgetTester tester) async {
         // given
-        List<PlutoColumn> columns =
-            ColumnHelper.textColumn('body', count: 1, width: 150);
+        List<PlutoColumn> columns = ColumnHelper.textColumn(
+          'body',
+          count: 1,
+          width: 150,
+        );
 
         final checkedRows = RowHelper.count(3, columns, checked: true);
 
@@ -274,15 +305,22 @@ void main() {
   });
 
   group('currentRowIdx', () {
-    testWidgets('currentCell 이 선택되지 않는 경우 null 을 리턴해야 한다.',
-        (WidgetTester tester) async {
+    testWidgets('currentCell 이 선택되지 않는 경우 null 을 리턴해야 한다.', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
-        ...ColumnHelper.textColumn('left',
-            count: 3, frozen: PlutoColumnFrozen.start),
+        ...ColumnHelper.textColumn(
+          'left',
+          count: 3,
+          frozen: PlutoColumnFrozen.start,
+        ),
         ...ColumnHelper.textColumn('body', count: 3, width: 150),
-        ...ColumnHelper.textColumn('right',
-            count: 3, frozen: PlutoColumnFrozen.end),
+        ...ColumnHelper.textColumn(
+          'right',
+          count: 3,
+          frozen: PlutoColumnFrozen.end,
+        ),
       ];
 
       List<PlutoRow> rows = RowHelper.count(10, columns);
@@ -301,15 +339,22 @@ void main() {
       expect(currentRowIdx, null);
     });
 
-    testWidgets('currentCell 이 선택 된 경우 선택 된 셀의 rowIdx 를 리턴해야 한다.',
-        (WidgetTester tester) async {
+    testWidgets('currentCell 이 선택 된 경우 선택 된 셀의 rowIdx 를 리턴해야 한다.', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
-        ...ColumnHelper.textColumn('left',
-            count: 3, frozen: PlutoColumnFrozen.start),
+        ...ColumnHelper.textColumn(
+          'left',
+          count: 3,
+          frozen: PlutoColumnFrozen.start,
+        ),
         ...ColumnHelper.textColumn('body', count: 3, width: 150),
-        ...ColumnHelper.textColumn('right',
-            count: 3, frozen: PlutoColumnFrozen.end),
+        ...ColumnHelper.textColumn(
+          'right',
+          count: 3,
+          frozen: PlutoColumnFrozen.end,
+        ),
       ];
 
       List<PlutoRow> rows = RowHelper.count(10, columns);
@@ -335,15 +380,22 @@ void main() {
   });
 
   group('currentRow', () {
-    testWidgets('currentCell 이 선택되지 않는 경우 null 을 리턴해야 한다.',
-        (WidgetTester tester) async {
+    testWidgets('currentCell 이 선택되지 않는 경우 null 을 리턴해야 한다.', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
-        ...ColumnHelper.textColumn('left',
-            count: 3, frozen: PlutoColumnFrozen.start),
+        ...ColumnHelper.textColumn(
+          'left',
+          count: 3,
+          frozen: PlutoColumnFrozen.start,
+        ),
         ...ColumnHelper.textColumn('body', count: 3, width: 150),
-        ...ColumnHelper.textColumn('right',
-            count: 3, frozen: PlutoColumnFrozen.end),
+        ...ColumnHelper.textColumn(
+          'right',
+          count: 3,
+          frozen: PlutoColumnFrozen.end,
+        ),
       ];
 
       List<PlutoRow> rows = RowHelper.count(10, columns);
@@ -362,15 +414,22 @@ void main() {
       expect(currentRow, null);
     });
 
-    testWidgets('currentCell 이 선택 된 경우 선택 된 row 를 리턴해야 한다.',
-        (WidgetTester tester) async {
+    testWidgets('currentCell 이 선택 된 경우 선택 된 row 를 리턴해야 한다.', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
-        ...ColumnHelper.textColumn('left',
-            count: 3, frozen: PlutoColumnFrozen.start),
+        ...ColumnHelper.textColumn(
+          'left',
+          count: 3,
+          frozen: PlutoColumnFrozen.start,
+        ),
         ...ColumnHelper.textColumn('body', count: 3, width: 150),
-        ...ColumnHelper.textColumn('right',
-            count: 3, frozen: PlutoColumnFrozen.end),
+        ...ColumnHelper.textColumn(
+          'right',
+          count: 3,
+          frozen: PlutoColumnFrozen.end,
+        ),
       ];
 
       List<PlutoRow> rows = RowHelper.count(10, columns);
@@ -428,8 +487,9 @@ void main() {
     buildRows().test(
       '0 번 row 보다 위인 offset 인 경우 null 을 리턴해야 한다.',
       (tester) async {
-        final rowIdx =
-            stateManager.getRowIdxByOffset(stateManager.rowTotalHeight * 0.7);
+        final rowIdx = stateManager.getRowIdxByOffset(
+          stateManager.rowTotalHeight * 0.7,
+        );
 
         expect(rowIdx, isNull);
       },
@@ -438,8 +498,9 @@ void main() {
     buildRows().test(
       '0 번 row 의 중간 offset.',
       (tester) async {
-        final rowIdx =
-            stateManager.getRowIdxByOffset(stateManager.rowTotalHeight * 1.5);
+        final rowIdx = stateManager.getRowIdxByOffset(
+          stateManager.rowTotalHeight * 1.5,
+        );
 
         expect(rowIdx, 0);
       },
@@ -448,8 +509,9 @@ void main() {
     buildRows().test(
       '1 번 row 의 중간 offset.',
       (tester) async {
-        final rowIdx =
-            stateManager.getRowIdxByOffset(stateManager.rowTotalHeight * 2.5);
+        final rowIdx = stateManager.getRowIdxByOffset(
+          stateManager.rowTotalHeight * 2.5,
+        );
 
         expect(rowIdx, 1);
       },
@@ -458,8 +520,9 @@ void main() {
     buildRows().test(
       '마지막 9번 row 의 중간 offset.',
       (tester) async {
-        final rowIdx =
-            stateManager.getRowIdxByOffset(stateManager.rowTotalHeight * 10.5);
+        final rowIdx = stateManager.getRowIdxByOffset(
+          stateManager.rowTotalHeight * 10.5,
+        );
 
         expect(rowIdx, 9);
       },
@@ -468,8 +531,9 @@ void main() {
     buildRows().test(
       '마지막 row 보다 아래 offset 을 전달 한 경우 null 을 리턴해야 한다.',
       (tester) async {
-        final rowIdx =
-            stateManager.getRowIdxByOffset(stateManager.rowTotalHeight * 11.5);
+        final rowIdx = stateManager.getRowIdxByOffset(
+          stateManager.rowTotalHeight * 11.5,
+        );
 
         expect(rowIdx, isNull);
       },
@@ -777,15 +841,24 @@ void main() {
         ];
 
         List<PlutoRow> rows = [
-          PlutoRow(sortIdx: 0, cells: {
-            'text0': PlutoCell(value: '3'),
-          }),
-          PlutoRow(sortIdx: 1, cells: {
-            'text0': PlutoCell(value: '1'),
-          }),
-          PlutoRow(sortIdx: 2, cells: {
-            'text0': PlutoCell(value: '2'),
-          }),
+          PlutoRow(
+            sortIdx: 0,
+            cells: {
+              'text0': PlutoCell(value: '3'),
+            },
+          ),
+          PlutoRow(
+            sortIdx: 1,
+            cells: {
+              'text0': PlutoCell(value: '1'),
+            },
+          ),
+          PlutoRow(
+            sortIdx: 2,
+            cells: {
+              'text0': PlutoCell(value: '2'),
+            },
+          ),
         ];
 
         PlutoGridStateManager stateManager = createStateManager(
@@ -803,15 +876,21 @@ void main() {
 
         // when
         final rowsToAdd = [
-          PlutoRow(cells: {
-            'text0': PlutoCell(value: 'a'),
-          }),
-          PlutoRow(cells: {
-            'text0': PlutoCell(value: 'b'),
-          }),
-          PlutoRow(cells: {
-            'text0': PlutoCell(value: 'c'),
-          }),
+          PlutoRow(
+            cells: {
+              'text0': PlutoCell(value: 'a'),
+            },
+          ),
+          PlutoRow(
+            cells: {
+              'text0': PlutoCell(value: 'b'),
+            },
+          ),
+          PlutoRow(
+            cells: {
+              'text0': PlutoCell(value: 'c'),
+            },
+          ),
         ];
 
         stateManager.insertRows(1, rowsToAdd);
@@ -903,8 +982,9 @@ void main() {
   });
 
   group('prependRows', () {
-    testWidgets('A new row must be added before the existing row.',
-        (WidgetTester tester) async {
+    testWidgets('A new row must be added before the existing row.', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
         ...ColumnHelper.textColumn('text', count: 3, width: 150),
@@ -930,8 +1010,9 @@ void main() {
       expect(stateManager.rows.length, 6);
     });
 
-    testWidgets('Row is not added when passing an empty array.',
-        (WidgetTester tester) async {
+    testWidgets('Row is not added when passing an empty array.', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
         ...ColumnHelper.textColumn('text', count: 3, width: 150),
@@ -953,8 +1034,7 @@ void main() {
       expect(stateManager.rows.length, 5);
     });
 
-    testWidgets(
-        'WHEN currentCell 이 있는 상태에서 '
+    testWidgets('WHEN currentCell 이 있는 상태에서 '
         'THEN '
         'currentRowIdx 와 currentCellPosition 이 '
         'rows 가 추가 된 만큼에 따라 업데이트 되어야 한다.', (WidgetTester tester) async {
@@ -976,7 +1056,9 @@ void main() {
       const int rowIdxBeforePrependRows = 0;
 
       stateManager.setCurrentCell(
-          rows.first.cells['text1'], rowIdxBeforePrependRows);
+        rows.first.cells['text1'],
+        rowIdxBeforePrependRows,
+      );
 
       expect(stateManager.currentRowIdx, rowIdxBeforePrependRows);
 
@@ -996,10 +1078,10 @@ void main() {
       expect(stateManager.currentCellPosition!.rowIdx, rowIdxAfterPrependRows);
     });
 
-    testWidgets(
-        'WHEN _currentSelectingPosition 이 있는 상태에서 '
-        'THEN currentSelectingPosition 이 업데이트 되어야 한다.',
-        (WidgetTester tester) async {
+    testWidgets('WHEN _currentSelectingPosition 이 있는 상태에서 '
+        'THEN currentSelectingPosition 이 업데이트 되어야 한다.', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
         ...ColumnHelper.textColumn('text', count: 3, width: 150),
@@ -1118,8 +1200,9 @@ void main() {
   });
 
   group('appendRows', () {
-    testWidgets('New rows must be added after the existing row.',
-        (WidgetTester tester) async {
+    testWidgets('New rows must be added after the existing row.', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
         ...ColumnHelper.textColumn('text', count: 3, width: 150),
@@ -1147,8 +1230,9 @@ void main() {
       expect(stateManager.rows.length, 7);
     });
 
-    testWidgets('Row is not added when passing an empty array.',
-        (WidgetTester tester) async {
+    testWidgets('Row is not added when passing an empty array.', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
         ...ColumnHelper.textColumn('text', count: 3, width: 150),
@@ -1190,14 +1274,17 @@ void main() {
           PlutoColumn(
             title: 'select',
             field: 'select',
-            type: PlutoColumnType.select(<String>['One', 'Two'],
-                defaultValue: 'Two'),
+            type: PlutoColumnType.select(<String>[
+              'One',
+              'Two',
+            ], defaultValue: 'Two'),
           ),
           PlutoColumn(
             title: 'date',
             field: 'date',
             type: PlutoColumnType.date(
-                defaultValue: DateTime.parse('2020-09-01')),
+              defaultValue: DateTime.parse('2020-09-01'),
+            ),
           ),
           PlutoColumn(
             title: 'time',
@@ -1281,8 +1368,9 @@ void main() {
   });
 
   group('removeCurrentRow', () {
-    testWidgets('Should not be removed rows, when currentRow is null.',
-        (WidgetTester tester) async {
+    testWidgets('Should not be removed rows, when currentRow is null.', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
         ...ColumnHelper.textColumn('text', count: 3, width: 150),
@@ -1304,8 +1392,9 @@ void main() {
       expect(stateManager.rows.length, 5);
     });
 
-    testWidgets('Should be removed currentRow, when currentRow is not null.',
-        (WidgetTester tester) async {
+    testWidgets('Should be removed currentRow, when currentRow is not null.', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
         ...ColumnHelper.textColumn('text', count: 3, width: 150),
@@ -1338,8 +1427,9 @@ void main() {
   });
 
   group('removeRows', () {
-    testWidgets('Should not be removed rows, when rows parameter is null.',
-        (WidgetTester tester) async {
+    testWidgets('Should not be removed rows, when rows parameter is null.', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
         ...ColumnHelper.textColumn('text', count: 3, width: 150),
@@ -1361,8 +1451,9 @@ void main() {
       expect(stateManager.rows.length, 5);
     });
 
-    testWidgets('Should be removed rows, when rows parameter is not null.',
-        (WidgetTester tester) async {
+    testWidgets('Should be removed rows, when rows parameter is not null.', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
         ...ColumnHelper.textColumn('text', count: 3, width: 150),
@@ -1383,8 +1474,9 @@ void main() {
       stateManager.removeRows(deleteRows);
 
       // then
-      final deleteRowKeys =
-          deleteRows.map((e) => e.key).toList(growable: false);
+      final deleteRowKeys = deleteRows
+          .map((e) => e.key)
+          .toList(growable: false);
 
       expect(stateManager.rows.length, 3);
       expect(deleteRowKeys.contains(stateManager.rows[0].key), false);
@@ -1811,8 +1903,11 @@ void main() {
       '전체 행이 checked true 로 변경 되어야 한다.',
       (WidgetTester tester) async {
         // given
-        List<PlutoColumn> columns =
-            ColumnHelper.textColumn('body', count: 1, width: 150);
+        List<PlutoColumn> columns = ColumnHelper.textColumn(
+          'body',
+          count: 1,
+          width: 150,
+        );
 
         List<PlutoRow> rows = [...RowHelper.count(10, columns)];
 
@@ -1832,7 +1927,9 @@ void main() {
 
         // then
         expect(
-            stateManager.rows.where((element) => element.checked!).length, 10);
+          stateManager.rows.where((element) => element.checked!).length,
+          10,
+        );
         verify(listener.noParamReturnVoid()).called(1);
       },
     );
@@ -1841,8 +1938,11 @@ void main() {
       '전체 행이 checked false 로 변경 되어야 한다.',
       (WidgetTester tester) async {
         // given
-        List<PlutoColumn> columns =
-            ColumnHelper.textColumn('body', count: 1, width: 150);
+        List<PlutoColumn> columns = ColumnHelper.textColumn(
+          'body',
+          count: 1,
+          width: 150,
+        );
 
         List<PlutoRow> rows = [...RowHelper.count(10, columns)];
 
@@ -1862,7 +1962,9 @@ void main() {
 
         // then
         expect(
-            stateManager.rows.where((element) => !element.checked!).length, 10);
+          stateManager.rows.where((element) => !element.checked!).length,
+          10,
+        );
         verify(listener.noParamReturnVoid()).called(1);
       },
     );
@@ -1871,8 +1973,11 @@ void main() {
       'notify 가 false 인 경우 notifyListener 가 호출 되지 않아야 한다.',
       (WidgetTester tester) async {
         // given
-        List<PlutoColumn> columns =
-            ColumnHelper.textColumn('body', count: 1, width: 150);
+        List<PlutoColumn> columns = ColumnHelper.textColumn(
+          'body',
+          count: 1,
+          width: 150,
+        );
 
         List<PlutoRow> rows = [...RowHelper.count(10, columns)];
 
@@ -1892,7 +1997,9 @@ void main() {
 
         // then
         expect(
-            stateManager.rows.where((element) => element.checked!).length, 10);
+          stateManager.rows.where((element) => element.checked!).length,
+          10,
+        );
         verifyNever(listener.noParamReturnVoid());
       },
     );

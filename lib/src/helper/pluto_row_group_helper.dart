@@ -25,8 +25,8 @@ class PlutoRowGroupHelper {
     Iterator<PlutoRow>? defaultChildrenFilter(PlutoRow row) {
       return row.type.isGroup
           ? iterateAll
-              ? row.type.group.children.originalList.iterator
-              : row.type.group.children.iterator
+                ? row.type.group.children.originalList.iterator
+                : row.type.group.children.iterator
           : null;
     }
 

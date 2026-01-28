@@ -55,15 +55,18 @@ void main() {
       (tester) async {
         when(stateManager.isDraggingRow).thenReturn(isDraggingRow);
         when(stateManager.isRowIdxDragTarget(any)).thenReturn(isDragTarget);
-        when(stateManager.isRowIdxTopDragTarget(any))
-            .thenReturn(isTopDragTarget);
-        when(stateManager.isRowIdxBottomDragTarget(any))
-            .thenReturn(isBottomDragTarget);
+        when(
+          stateManager.isRowIdxTopDragTarget(any),
+        ).thenReturn(isTopDragTarget);
+        when(
+          stateManager.isRowIdxBottomDragTarget(any),
+        ).thenReturn(isBottomDragTarget);
         when(stateManager.dragRows).thenReturn(dragRows);
         when(stateManager.isSelectedRow(any)).thenReturn(isSelectedRow);
         when(stateManager.isCurrentCell(any)).thenReturn(isCurrentCell);
-        when(stateManager.isSelectedCell(any, any, any))
-            .thenReturn(isSelectedCell);
+        when(
+          stateManager.isSelectedCell(any, any, any),
+        ).thenReturn(isSelectedCell);
 
         // given
         columns = ColumnHelper.textColumn('header', count: 3);
@@ -97,12 +100,9 @@ void main() {
   buildRowWidget(checked: true).test(
     'row 가 checked 가 true 일 때, rowColor 에 alphaBlend 가 적용 되어야 한다.',
     (tester) async {
-      final rowContainerWidget = find
-          .byType(DecoratedBox)
-          .first
-          .evaluate()
-          .first
-          .widget as DecoratedBox;
+      final rowContainerWidget =
+          find.byType(DecoratedBox).first.evaluate().first.widget
+              as DecoratedBox;
 
       final rowContainerDecoration =
           rowContainerWidget.decoration as BoxDecoration;
@@ -117,12 +117,9 @@ void main() {
   buildRowWidget(checked: false).test(
     'row 가 checked 가 false 일 때, rowColor 에 alphaBlend 가 적용 되지 않아야 한다.',
     (tester) async {
-      final rowContainerWidget = find
-          .byType(DecoratedBox)
-          .first
-          .evaluate()
-          .first
-          .widget as DecoratedBox;
+      final rowContainerWidget =
+          find.byType(DecoratedBox).first.evaluate().first.widget
+              as DecoratedBox;
 
       final rowContainerDecoration =
           rowContainerWidget.decoration as BoxDecoration;
@@ -138,12 +135,9 @@ void main() {
   ).test(
     'isDragTarget, isTopDragTarget 이 true 인 경우 border top 이 설정 되어야 한다.',
     (tester) async {
-      final rowContainerWidget = find
-          .byType(DecoratedBox)
-          .first
-          .evaluate()
-          .first
-          .widget as DecoratedBox;
+      final rowContainerWidget =
+          find.byType(DecoratedBox).first.evaluate().first.widget
+              as DecoratedBox;
 
       final rowContainerDecoration =
           rowContainerWidget.decoration as BoxDecoration;
@@ -161,12 +155,9 @@ void main() {
   ).test(
     'isDragTarget, isBottomDragTarget 이 true 인 경우 border bottom 이 설정 되어야 한다.',
     (tester) async {
-      final rowContainerWidget = find
-          .byType(DecoratedBox)
-          .first
-          .evaluate()
-          .first
-          .widget as DecoratedBox;
+      final rowContainerWidget =
+          find.byType(DecoratedBox).first.evaluate().first.widget
+              as DecoratedBox;
 
       final rowContainerDecoration =
           rowContainerWidget.decoration as BoxDecoration;

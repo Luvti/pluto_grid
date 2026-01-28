@@ -120,11 +120,15 @@ class PlutoTimeCellState extends State<PlutoTimeCell>
           ),
         ],
         rows: Iterable<int>.generate(24)
-            .map((hour) => PlutoRow(cells: {
+            .map(
+              (hour) => PlutoRow(
+                cells: {
                   'hour': PlutoCell(
                     value: hour.toString().padLeft(2, '0'),
                   ),
-                }))
+                },
+              ),
+            )
             .toList(growable: false),
         onLoaded: (PlutoGridOnLoadedEvent event) {
           final stateManager = event.stateManager;
@@ -166,11 +170,15 @@ class PlutoTimeCellState extends State<PlutoTimeCell>
           ),
         ],
         rows: Iterable<int>.generate(60)
-            .map((minute) => PlutoRow(cells: {
+            .map(
+              (minute) => PlutoRow(
+                cells: {
                   'minute': PlutoCell(
                     value: minute.toString().padLeft(2, '0'),
                   ),
-                }))
+                },
+              ),
+            )
             .toList(growable: false),
         onLoaded: (PlutoGridOnLoadedEvent event) {
           final stateManager = event.stateManager;
@@ -223,11 +231,11 @@ class PlutoTimeCellState extends State<PlutoTimeCell>
         border: !isCurrentCell
             ? null
             : !renderContext.stateManager.hasFocus
-                ? Border.all(
-                    color: widget.stateManager.style.activatedBorderColor,
-                    width: 1,
-                  )
-                : null,
+            ? Border.all(
+                color: widget.stateManager.style.activatedBorderColor,
+                width: 1,
+              )
+            : null,
       ),
       child: Padding(
         padding: const EdgeInsets.all(5),

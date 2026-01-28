@@ -147,8 +147,9 @@ void main() {
       });
     }
 
-    final renderText = buildCellWidgetWithRenderer(
-        (PlutoColumnRendererContext rendererContext) {
+    final renderText = buildCellWidgetWithRenderer((
+      PlutoColumnRendererContext rendererContext,
+    ) {
       return const Text('renderer value');
     });
 
@@ -159,8 +160,9 @@ void main() {
       },
     );
 
-    final renderTextWithCellValue = buildCellWidgetWithRenderer(
-        (PlutoColumnRendererContext rendererContext) {
+    final renderTextWithCellValue = buildCellWidgetWithRenderer((
+      PlutoColumnRendererContext rendererContext,
+    ) {
       return Text(rendererContext.cell.value.toString());
     });
 
@@ -242,12 +244,17 @@ void main() {
         // tester.tap triggers onDragStarted, onDragEnd.
         // It only needs to be called Update, so it is ignored.
 
-        verifyNever(eventManager!.addEvent(
-          argThat(
-              PlutoObjectMatcher<PlutoGridScrollUpdateEvent>(rule: (object) {
-            return true;
-          })),
-        ));
+        verifyNever(
+          eventManager!.addEvent(
+            argThat(
+              PlutoObjectMatcher<PlutoGridScrollUpdateEvent>(
+                rule: (object) {
+                  return true;
+                },
+              ),
+            ),
+          ),
+        );
       },
     );
 
@@ -264,16 +271,23 @@ void main() {
 
         verify(stateManager.setIsDraggingRow(true, notify: false)).called(1);
 
-        verify(stateManager.setDragRows(
-          [row],
-        )).called(1);
+        verify(
+          stateManager.setDragRows(
+            [row],
+          ),
+        ).called(1);
 
-        verify(eventManager!.addEvent(
-          argThat(
-              PlutoObjectMatcher<PlutoGridScrollUpdateEvent>(rule: (object) {
-            return true;
-          })),
-        )).called(greaterThan(1));
+        verify(
+          eventManager!.addEvent(
+            argThat(
+              PlutoObjectMatcher<PlutoGridScrollUpdateEvent>(
+                rule: (object) {
+                  return true;
+                },
+              ),
+            ),
+          ),
+        ).called(greaterThan(1));
 
         verify(stateManager.getRowIdxByOffset(any)).called(greaterThan(1));
 

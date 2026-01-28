@@ -123,50 +123,52 @@ class PlutoGridPopup {
 
     PlutoGridOnSelectedEvent? selected =
         await showDialog<PlutoGridOnSelectedEvent>(
-            context: context,
-            barrierDismissible: barrierDismissible ?? true,
-            builder: (BuildContext ctx) {
-              return Dialog(
-                shape: borderRadius == BorderRadius.zero
-                    ? null
-                    : RoundedRectangleBorder(borderRadius: borderRadius),
-                child: LayoutBuilder(
-                  builder: (ctx, size) {
-                    return SizedBox(
-                      width: (width ?? size.maxWidth) +
-                          PlutoGridSettings.gridInnerSpacing,
-                      height: height ?? size.maxHeight,
-                      child: Directionality(
-                        textDirection: textDirection,
-                        child: PlutoGrid(
-                          columns: setColumnConfig(),
-                          rows: rows,
-                          columnGroups: columnGroups,
-                          onLoaded: onLoaded,
-                          onChanged: onChanged,
-                          onSelected: (PlutoGridOnSelectedEvent event) {
-                            Navigator.pop(ctx, event);
-                          },
-                          onSorted: onSorted,
-                          onRowChecked: onRowChecked,
-                          onRowDoubleTap: onRowDoubleTap,
-                          onRowSecondaryTap: onRowSecondaryTap,
-                          onRowsMoved: onRowsMoved,
-                          onColumnsMoved: onColumnsMoved,
-                          createHeader: createHeader,
-                          createFooter: createFooter,
-                          noRowsWidget: noRowsWidget,
-                          rowColorCallback: rowColorCallback,
-                          columnMenuDelegate: columnMenuDelegate,
-                          configuration: configuration,
-                          mode: mode,
-                        ),
+          context: context,
+          barrierDismissible: barrierDismissible ?? true,
+          builder: (BuildContext ctx) {
+            return Dialog(
+              shape: borderRadius == BorderRadius.zero
+                  ? null
+                  : RoundedRectangleBorder(borderRadius: borderRadius),
+              child: LayoutBuilder(
+                builder: (ctx, size) {
+                  return SizedBox(
+                    width:
+                        (width ?? size.maxWidth) +
+                        PlutoGridSettings.gridInnerSpacing,
+                    height: height ?? size.maxHeight,
+                    child: Directionality(
+                      textDirection: textDirection,
+                      child: PlutoGrid(
+                        columns: setColumnConfig(),
+                        rows: rows,
+                        columnGroups: columnGroups,
+                        onLoaded: onLoaded,
+                        onChanged: onChanged,
+                        onSelected: (PlutoGridOnSelectedEvent event) {
+                          Navigator.pop(ctx, event);
+                        },
+                        onSorted: onSorted,
+                        onRowChecked: onRowChecked,
+                        onRowDoubleTap: onRowDoubleTap,
+                        onRowSecondaryTap: onRowSecondaryTap,
+                        onRowsMoved: onRowsMoved,
+                        onColumnsMoved: onColumnsMoved,
+                        createHeader: createHeader,
+                        createFooter: createFooter,
+                        noRowsWidget: noRowsWidget,
+                        rowColorCallback: rowColorCallback,
+                        columnMenuDelegate: columnMenuDelegate,
+                        configuration: configuration,
+                        mode: mode,
                       ),
-                    );
-                  },
-                ),
-              );
-            });
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        );
     if (onSelected != null && selected != null) {
       onSelected!(selected);
     }

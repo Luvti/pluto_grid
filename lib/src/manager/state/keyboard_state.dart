@@ -178,8 +178,9 @@ mixin KeyboardState implements IPlutoGridState {
 
     final columnIndexes = columnIndexesByShowFrozen;
 
-    final int columnIdx =
-        direction.isLeft ? columnIndexes.first : columnIndexes.last;
+    final int columnIdx = direction.isLeft
+        ? columnIndexes.first
+        : columnIndexes.last;
 
     final column = refColumns[columnIdx];
 
@@ -259,7 +260,8 @@ mixin KeyboardState implements IPlutoGridState {
 
     setCurrentSelectingPosition(
       cellPosition: PlutoGridCellPosition(
-        columnIdx: cellPosition!.columnIdx! +
+        columnIdx:
+            cellPosition!.columnIdx! +
             (direction.horizontal ? direction.offset : 0),
         rowIdx:
             cellPosition.rowIdx! + (direction.vertical ? direction.offset : 0),

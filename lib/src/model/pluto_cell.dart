@@ -8,9 +8,9 @@ class PlutoCell {
     this.filterValue,
     this.onChanged,
     Key? key,
-  })  : _key = key ?? UniqueKey(),
-        _value = value,
-        _originalValue = value;
+  }) : _key = key ?? UniqueKey(),
+       _value = value,
+       _originalValue = value;
 
   final Key _key;
 
@@ -112,8 +112,9 @@ class PlutoCell {
     _value = _column!.type.applyFormat(_value);
 
     if (_column!.type is PlutoColumnTypeWithNumberFormat) {
-      _value =
-          (_column!.type as PlutoColumnTypeWithNumberFormat).toNumber(_value);
+      _value = (_column!.type as PlutoColumnTypeWithNumberFormat).toNumber(
+        _value,
+      );
     }
 
     _needToApplyFormatOnInit = false;

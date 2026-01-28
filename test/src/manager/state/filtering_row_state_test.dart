@@ -235,7 +235,7 @@ void main() {
           FilterHelper.createFilterRow(
             columnField: column.field,
             filterValue: 'filter',
-          )
+          ),
         ]);
 
         expect(stateManager.hasFilter, isTrue);

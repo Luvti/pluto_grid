@@ -20,9 +20,9 @@ abstract class PlutoGridEvent {
     this.type = PlutoGridEventType.normal,
     this.duration,
   }) : assert(
-          type.isNormal || duration != null,
-          'If type is normal or type is not normal then duration is required.',
-        );
+         type.isNormal || duration != null,
+         'If type is normal or type is not normal then duration is required.',
+       );
 
   final PlutoGridEventType type;
 

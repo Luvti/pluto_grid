@@ -41,11 +41,17 @@ void main() {
 
     setUp(() {
       columns = [
-        ...ColumnHelper.textColumn('left',
-            count: 3, frozen: PlutoColumnFrozen.start),
+        ...ColumnHelper.textColumn(
+          'left',
+          count: 3,
+          frozen: PlutoColumnFrozen.start,
+        ),
         ...ColumnHelper.textColumn('body', count: 3, width: 150),
-        ...ColumnHelper.textColumn('right',
-            count: 3, frozen: PlutoColumnFrozen.end),
+        ...ColumnHelper.textColumn(
+          'right',
+          count: 3,
+          frozen: PlutoColumnFrozen.end,
+        ),
       ];
 
       rows = RowHelper.count(10, columns);

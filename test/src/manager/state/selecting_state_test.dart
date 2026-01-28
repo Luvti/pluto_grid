@@ -118,13 +118,13 @@ void main() {
   });
 
   group('currentSelectingText', () {
-    testWidgets(
-        'WHEN'
+    testWidgets('WHEN'
         'selectingMode.Row'
         'currentSelectingRows.length > 0'
         'THEN'
-        'The values of the selected rows should be returned.',
-        (WidgetTester tester) async {
+        'The values of the selected rows should be returned.', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
         ...ColumnHelper.textColumn('text', count: 3, width: 150),
@@ -161,133 +161,142 @@ void main() {
     });
 
     testWidgets(
-        'WHEN'
-        'selectingMode.Row'
-        'currentSelectingRows.length > 0'
-        'THEN'
-        'The value of the row selected with toggleSelectingRow should be returned.',
-        (WidgetTester tester) async {
-      // given
-      List<PlutoColumn> columns = [
-        ...ColumnHelper.textColumn('text', count: 3, width: 150),
-      ];
+      'WHEN'
+      'selectingMode.Row'
+      'currentSelectingRows.length > 0'
+      'THEN'
+      'The value of the row selected with toggleSelectingRow should be returned.',
+      (WidgetTester tester) async {
+        // given
+        List<PlutoColumn> columns = [
+          ...ColumnHelper.textColumn('text', count: 3, width: 150),
+        ];
 
-      List<PlutoRow> rows = RowHelper.count(5, columns);
+        List<PlutoRow> rows = RowHelper.count(5, columns);
 
-      PlutoGridStateManager stateManager = createStateManager(
-        columns: columns,
-        rows: rows,
-        gridFocusNode: null,
-        scroll: null,
-        layout: const BoxConstraints(maxHeight: 300, maxWidth: 50),
-      );
+        PlutoGridStateManager stateManager = createStateManager(
+          columns: columns,
+          rows: rows,
+          gridFocusNode: null,
+          scroll: null,
+          layout: const BoxConstraints(maxHeight: 300, maxWidth: 50),
+        );
 
-      stateManager.setSelectingMode(PlutoGridSelectingMode.row);
+        stateManager.setSelectingMode(PlutoGridSelectingMode.row);
 
-      stateManager.toggleSelectingRow(1);
-      stateManager.toggleSelectingRow(3);
+        stateManager.toggleSelectingRow(1);
+        stateManager.toggleSelectingRow(3);
 
-      // when
-      final currentSelectingText = stateManager.currentSelectingText;
+        // when
+        final currentSelectingText = stateManager.currentSelectingText;
 
-      final transformedSelectingText =
-          PlutoClipboardTransformation.stringToList(currentSelectingText);
+        final transformedSelectingText =
+            PlutoClipboardTransformation.stringToList(currentSelectingText);
 
-      // then
-      expect(transformedSelectingText[0][0], rows[1].cells['text0']!.value);
-      expect(transformedSelectingText[0][1], rows[1].cells['text1']!.value);
-      expect(transformedSelectingText[0][2], rows[1].cells['text2']!.value);
+        // then
+        expect(transformedSelectingText[0][0], rows[1].cells['text0']!.value);
+        expect(transformedSelectingText[0][1], rows[1].cells['text1']!.value);
+        expect(transformedSelectingText[0][2], rows[1].cells['text2']!.value);
 
-      expect(
-          transformedSelectingText[1][0], isNot(rows[2].cells['text0']!.value));
-      expect(
-          transformedSelectingText[1][1], isNot(rows[2].cells['text1']!.value));
-      expect(
-          transformedSelectingText[1][2], isNot(rows[2].cells['text2']!.value));
+        expect(
+          transformedSelectingText[1][0],
+          isNot(rows[2].cells['text0']!.value),
+        );
+        expect(
+          transformedSelectingText[1][1],
+          isNot(rows[2].cells['text1']!.value),
+        );
+        expect(
+          transformedSelectingText[1][2],
+          isNot(rows[2].cells['text2']!.value),
+        );
 
-      expect(transformedSelectingText[1][0], rows[3].cells['text0']!.value);
-      expect(transformedSelectingText[1][1], rows[3].cells['text1']!.value);
-      expect(transformedSelectingText[1][2], rows[3].cells['text2']!.value);
-    });
-
-    testWidgets(
-        'WHEN'
-        'selectingMode.Row'
-        'currentSelectingRows.length == 0'
-        'currentCellPosition == null'
-        'currentSelectingPosition == null'
-        'THEN'
-        'The values of the selected rows should be returned as an empty value.',
-        (WidgetTester tester) async {
-      // given
-      List<PlutoColumn> columns = [
-        ...ColumnHelper.textColumn('text', count: 3, width: 150),
-      ];
-
-      List<PlutoRow> rows = RowHelper.count(5, columns);
-
-      PlutoGridStateManager stateManager = createStateManager(
-        columns: columns,
-        rows: rows,
-        gridFocusNode: null,
-        scroll: null,
-        layout: const BoxConstraints(maxHeight: 300, maxWidth: 50),
-      );
-
-      stateManager.setSelectingMode(PlutoGridSelectingMode.row);
-
-      // when
-      final currentSelectingText = stateManager.currentSelectingText;
-
-      // then
-      expect(currentSelectingText, '');
-    });
+        expect(transformedSelectingText[1][0], rows[3].cells['text0']!.value);
+        expect(transformedSelectingText[1][1], rows[3].cells['text1']!.value);
+        expect(transformedSelectingText[1][2], rows[3].cells['text2']!.value);
+      },
+    );
 
     testWidgets(
-        'WHEN'
-        'selectingMode.Row'
-        'currentSelectingRows.length == 0'
-        'currentCellPosition != null'
-        'currentSelectingPosition == null'
-        'THEN'
-        'The values of the selected rows should be returned as an empty value.',
-        (WidgetTester tester) async {
-      // given
-      List<PlutoColumn> columns = [
-        ...ColumnHelper.textColumn('text', count: 3, width: 150),
-      ];
+      'WHEN'
+      'selectingMode.Row'
+      'currentSelectingRows.length == 0'
+      'currentCellPosition == null'
+      'currentSelectingPosition == null'
+      'THEN'
+      'The values of the selected rows should be returned as an empty value.',
+      (WidgetTester tester) async {
+        // given
+        List<PlutoColumn> columns = [
+          ...ColumnHelper.textColumn('text', count: 3, width: 150),
+        ];
 
-      List<PlutoRow> rows = RowHelper.count(5, columns);
+        List<PlutoRow> rows = RowHelper.count(5, columns);
 
-      PlutoGridStateManager stateManager = createStateManager(
-        columns: columns,
-        rows: rows,
-        gridFocusNode: null,
-        scroll: null,
-        layout: const BoxConstraints(maxHeight: 300, maxWidth: 50),
-      );
+        PlutoGridStateManager stateManager = createStateManager(
+          columns: columns,
+          rows: rows,
+          gridFocusNode: null,
+          scroll: null,
+          layout: const BoxConstraints(maxHeight: 300, maxWidth: 50),
+        );
 
-      stateManager.setSelectingMode(PlutoGridSelectingMode.row);
+        stateManager.setSelectingMode(PlutoGridSelectingMode.row);
 
-      final currentCell = rows[3].cells['text2']!;
+        // when
+        final currentSelectingText = stateManager.currentSelectingText;
 
-      stateManager.setCurrentCell(currentCell, 3);
-
-      // when
-      final currentSelectingText = stateManager.currentSelectingText;
-
-      // then
-      expect(currentSelectingText, currentCell.value);
-    });
+        // then
+        expect(currentSelectingText, '');
+      },
+    );
 
     testWidgets(
-        'WHEN'
+      'WHEN'
+      'selectingMode.Row'
+      'currentSelectingRows.length == 0'
+      'currentCellPosition != null'
+      'currentSelectingPosition == null'
+      'THEN'
+      'The values of the selected rows should be returned as an empty value.',
+      (WidgetTester tester) async {
+        // given
+        List<PlutoColumn> columns = [
+          ...ColumnHelper.textColumn('text', count: 3, width: 150),
+        ];
+
+        List<PlutoRow> rows = RowHelper.count(5, columns);
+
+        PlutoGridStateManager stateManager = createStateManager(
+          columns: columns,
+          rows: rows,
+          gridFocusNode: null,
+          scroll: null,
+          layout: const BoxConstraints(maxHeight: 300, maxWidth: 50),
+        );
+
+        stateManager.setSelectingMode(PlutoGridSelectingMode.row);
+
+        final currentCell = rows[3].cells['text2']!;
+
+        stateManager.setCurrentCell(currentCell, 3);
+
+        // when
+        final currentSelectingText = stateManager.currentSelectingText;
+
+        // then
+        expect(currentSelectingText, currentCell.value);
+      },
+    );
+
+    testWidgets('WHEN'
         'selectingMode.Row'
         'currentSelectingRows.length > 0'
         'has frozen column In a state of sufficient width'
         'THEN'
-        'The values of the selected rows should be returned.',
-        (WidgetTester tester) async {
+        'The values of the selected rows should be returned.', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
         ...ColumnHelper.textColumn(
@@ -341,14 +350,14 @@ void main() {
       expect(transformedSelectingText[1][4], rows[2].cells['right0']!.value);
     });
 
-    testWidgets(
-        'WHEN'
+    testWidgets('WHEN'
         'selectingMode.Row'
         'currentSelectingRows.length > 0'
         'has frozen column In a narrow area'
         'THEN'
-        'The values of the selected rows should be returned.',
-        (WidgetTester tester) async {
+        'The values of the selected rows should be returned.', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
         ...ColumnHelper.textColumn(
@@ -403,15 +412,15 @@ void main() {
       expect(transformedSelectingText[1][4], rows[2].cells['right0']!.value);
     });
 
-    testWidgets(
-        'WHEN'
+    testWidgets('WHEN'
         'selectingMode.Square'
         'currentSelectingRows.length == 0'
         'currentCellPosition != null'
         'currentSelectingPosition != null'
         'THEN'
-        'The values of the selected cells should be returned.',
-        (WidgetTester tester) async {
+        'The values of the selected cells should be returned.', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
         ...ColumnHelper.textColumn('text', count: 3, width: 150),
@@ -444,8 +453,10 @@ void main() {
       final currentSelectingText = stateManager.currentSelectingText;
 
       // then
-      expect(currentSelectingText,
-          'text1 value 3\ttext2 value 3\ntext1 value 4\ttext2 value 4');
+      expect(
+        currentSelectingText,
+        'text1 value 3\ttext2 value 3\ntext1 value 4\ttext2 value 4',
+      );
     });
   });
 
@@ -682,8 +693,7 @@ void main() {
   });
 
   group('setAllCurrentSelecting', () {
-    testWidgets(
-        'WHEN '
+    testWidgets('WHEN '
         'rows == null '
         'THEN'
         '', (WidgetTester tester) async {
@@ -709,8 +719,7 @@ void main() {
       expect(stateManager.currentSelectingRows.length, 0);
     });
 
-    testWidgets(
-        'WHEN '
+    testWidgets('WHEN '
         'rows.length < 1 '
         'THEN'
         '', (WidgetTester tester) async {
@@ -736,13 +745,13 @@ void main() {
       expect(stateManager.currentSelectingRows.length, 0);
     });
 
-    testWidgets(
-        'WHEN '
+    testWidgets('WHEN '
         'selectingMode.Square '
         'rows.length > 0 '
         'THEN '
-        '현재 셀은 처음 셀로, 선택 된 셀 위치는 마지막 셀 위치로 설정 되어야 한다.',
-        (WidgetTester tester) async {
+        '현재 셀은 처음 셀로, 선택 된 셀 위치는 마지막 셀 위치로 설정 되어야 한다.', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
         ...ColumnHelper.textColumn('text', count: 3, width: 150),
@@ -769,8 +778,7 @@ void main() {
       expect(stateManager.currentSelectingPosition!.columnIdx, 2);
     });
 
-    testWidgets(
-        'WHEN '
+    testWidgets('WHEN '
         'selectingMode.Row '
         'rows.length > 0 '
         'THEN '
@@ -802,8 +810,7 @@ void main() {
       expect(stateManager.currentSelectingRows.length, 5);
     });
 
-    testWidgets(
-        'WHEN'
+    testWidgets('WHEN'
         'selectingMode.None'
         'rows.length > 0'
         'THEN'
@@ -870,8 +877,9 @@ void main() {
         // 3, 4 번 Row 선택 됨.
         expect(stateManager.currentSelectingRows.length, 2);
 
-        final List<Key> keys =
-            stateManager.currentSelectingRows.map((e) => e.key).toList();
+        final List<Key> keys = stateManager.currentSelectingRows
+            .map((e) => e.key)
+            .toList();
 
         expect(keys.contains(rows[3].key), isTrue);
         expect(keys.contains(rows[4].key), isTrue);
@@ -1087,8 +1095,7 @@ void main() {
   });
 
   group('isSelectedCell', () {
-    testWidgets(
-        'WHEN'
+    testWidgets('WHEN'
         '아무것도 선택되지 않음.'
         'THEN'
         '모든 셀이 false.', (WidgetTester tester) async {
@@ -1125,8 +1132,7 @@ void main() {
       }
     });
 
-    testWidgets(
-        'WHEN '
+    testWidgets('WHEN '
         '현재 셀이 0번 Row, 0번 Column 이고 '
         '0번 Row, 1번 Column 이 선택 됨. '
         'THEN '
@@ -1184,8 +1190,7 @@ void main() {
       }
     });
 
-    testWidgets(
-        'WHEN '
+    testWidgets('WHEN '
         '현재 셀이 1번 Row, 1번 Column 이고 '
         '3번 Row, 2번 Column 이 선택 됨. '
         'THEN '
@@ -1268,8 +1273,9 @@ void main() {
           ),
         );
 
-        stateManager
-            .setLayout(const BoxConstraints(maxHeight: 500, maxWidth: 400));
+        stateManager.setLayout(
+          const BoxConstraints(maxHeight: 500, maxWidth: 400),
+        );
 
         stateManager.setCurrentCell(rows[1].cells['text1'], 1);
 

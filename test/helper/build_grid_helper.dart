@@ -77,14 +77,16 @@ class BuildGridHelper {
     String columnName = 'column',
   }) {
     // given
-    final safetyColumns = columns ??
+    final safetyColumns =
+        columns ??
         ColumnHelper.textColumn(
           columnName,
           count: numberOfColumns,
           start: startColumnIndex,
         );
 
-    final safetyRows = rows ??
+    final safetyRows =
+        rows ??
         RowHelper.count(
           numberOfRows,
           safetyColumns,
@@ -135,14 +137,16 @@ class BuildGridHelper {
     PlutoGridSelectingMode selectingMode = PlutoGridSelectingMode.none,
   }) {
     // given
-    final safetyColumns = columns ??
+    final safetyColumns =
+        columns ??
         ColumnHelper.textColumn(
           columnName,
           count: numberOfColumns,
           start: startColumnIndex,
         );
 
-    final safetyRows = rows ??
+    final safetyRows =
+        rows ??
         RowHelper.count(
           numberOfRows,
           safetyColumns,

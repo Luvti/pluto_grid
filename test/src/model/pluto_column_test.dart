@@ -305,9 +305,11 @@ void main() {
     test(
       'text 기본 값이 설정 되어야 한다.',
       () {
-        final PlutoColumnTypeText column = PlutoColumnType.text(
-          defaultValue: 'default',
-        ) as PlutoColumnTypeText;
+        final PlutoColumnTypeText column =
+            PlutoColumnType.text(
+                  defaultValue: 'default',
+                )
+                as PlutoColumnTypeText;
 
         expect(column.defaultValue, 'default');
       },
@@ -316,9 +318,11 @@ void main() {
     test(
       'number 기본 값이 설정 되어야 한다.',
       () {
-        final PlutoColumnTypeNumber column = PlutoColumnType.number(
-          defaultValue: 123,
-        ) as PlutoColumnTypeNumber;
+        final PlutoColumnTypeNumber column =
+            PlutoColumnType.number(
+                  defaultValue: 123,
+                )
+                as PlutoColumnTypeNumber;
 
         expect(column.defaultValue, 123);
       },
@@ -327,10 +331,12 @@ void main() {
     test(
       'select 기본 값이 설정 되어야 한다.',
       () {
-        final PlutoColumnTypeSelect column = PlutoColumnType.select(
-          <String>['One'],
-          defaultValue: 'One',
-        ) as PlutoColumnTypeSelect;
+        final PlutoColumnTypeSelect column =
+            PlutoColumnType.select(
+                  <String>['One'],
+                  defaultValue: 'One',
+                )
+                as PlutoColumnTypeSelect;
 
         expect(column.defaultValue, 'One');
       },
@@ -339,9 +345,11 @@ void main() {
     test(
       'date 기본 값이 설정 되어야 한다.',
       () {
-        final PlutoColumnTypeDate column = PlutoColumnType.date(
-          defaultValue: DateTime.parse('2020-01-01'),
-        ) as PlutoColumnTypeDate;
+        final PlutoColumnTypeDate column =
+            PlutoColumnType.date(
+                  defaultValue: DateTime.parse('2020-01-01'),
+                )
+                as PlutoColumnTypeDate;
 
         expect(column.defaultValue, DateTime.parse('2020-01-01'));
       },
@@ -350,9 +358,11 @@ void main() {
     test(
       'time 기본 값이 설정 되어야 한다.',
       () {
-        final PlutoColumnTypeTime column = PlutoColumnType.time(
-          defaultValue: '20:30',
-        ) as PlutoColumnTypeTime;
+        final PlutoColumnTypeTime column =
+            PlutoColumnType.time(
+                  defaultValue: '20:30',
+                )
+                as PlutoColumnTypeTime;
 
         expect(column.defaultValue, '20:30');
       },
@@ -509,9 +519,11 @@ void main() {
       test(
         'negative 가 false 이고 -123 인 경우 false',
         () {
-          final PlutoColumnTypeNumber numberColumn = PlutoColumnType.number(
-            negative: false,
-          ) as PlutoColumnTypeNumber;
+          final PlutoColumnTypeNumber numberColumn =
+              PlutoColumnType.number(
+                    negative: false,
+                  )
+                  as PlutoColumnTypeNumber;
           expect(numberColumn.isValid(-123), isFalse);
         },
       );
@@ -557,10 +569,11 @@ void main() {
         () {
           final PlutoColumnTypeSelect selectColumn =
               PlutoColumnType.select(<String>[
-            'A',
-            'B',
-            'C',
-          ]) as PlutoColumnTypeSelect;
+                    'A',
+                    'B',
+                    'C',
+                  ])
+                  as PlutoColumnTypeSelect;
           expect(selectColumn.isValid('A'), isTrue);
         },
       );
@@ -570,10 +583,11 @@ void main() {
         () {
           final PlutoColumnTypeSelect selectColumn =
               PlutoColumnType.select(<String>[
-            'A',
-            'B',
-            'C',
-          ]) as PlutoColumnTypeSelect;
+                    'A',
+                    'B',
+                    'C',
+                  ])
+                  as PlutoColumnTypeSelect;
           expect(selectColumn.isValid('D'), isFalse);
         },
       );
@@ -587,10 +601,11 @@ void main() {
           () {
             final PlutoColumnTypeSelect column =
                 PlutoColumnType.select(<String>[
-              'One',
-              'Two',
-              'Three',
-            ]) as PlutoColumnTypeSelect;
+                      'One',
+                      'Two',
+                      'Three',
+                    ])
+                    as PlutoColumnTypeSelect;
             expect(column.compare('Two', 'Three'), -1);
           },
         );
@@ -600,10 +615,11 @@ void main() {
           () {
             final PlutoColumnTypeSelect column =
                 PlutoColumnType.select(<String>[
-              'One',
-              'Two',
-              'Three',
-            ]) as PlutoColumnTypeSelect;
+                      'One',
+                      'Two',
+                      'Three',
+                    ])
+                    as PlutoColumnTypeSelect;
             expect(column.compare('Three', 'Two'), 1);
           },
         );
@@ -613,10 +629,11 @@ void main() {
           () {
             final PlutoColumnTypeSelect column =
                 PlutoColumnType.select(<String>[
-              'One',
-              'Two',
-              'Three',
-            ]) as PlutoColumnTypeSelect;
+                      'One',
+                      'Two',
+                      'Three',
+                    ])
+                    as PlutoColumnTypeSelect;
             expect(column.compare('Two', 'Two'), 0);
           },
         );
@@ -647,9 +664,11 @@ void main() {
       test(
         '시작일이 있는 경우 시작일 보다 작으면 false',
         () {
-          final PlutoColumnTypeDate dateColumn = PlutoColumnType.date(
-            startDate: DateTime.parse('2020-02-01'),
-          ) as PlutoColumnTypeDate;
+          final PlutoColumnTypeDate dateColumn =
+              PlutoColumnType.date(
+                    startDate: DateTime.parse('2020-02-01'),
+                  )
+                  as PlutoColumnTypeDate;
           expect(dateColumn.isValid('2020-01-01'), isFalse);
         },
       );
@@ -657,9 +676,11 @@ void main() {
       test(
         '시작일이 있는 경우 시작일과 같으면 true',
         () {
-          final PlutoColumnTypeDate dateColumn = PlutoColumnType.date(
-            startDate: DateTime.parse('2020-02-01'),
-          ) as PlutoColumnTypeDate;
+          final PlutoColumnTypeDate dateColumn =
+              PlutoColumnType.date(
+                    startDate: DateTime.parse('2020-02-01'),
+                  )
+                  as PlutoColumnTypeDate;
           expect(dateColumn.isValid('2020-02-01'), isTrue);
         },
       );
@@ -667,9 +688,11 @@ void main() {
       test(
         '시작일이 있는 경우 시작일보다 크면 true',
         () {
-          final PlutoColumnTypeDate dateColumn = PlutoColumnType.date(
-            startDate: DateTime.parse('2020-02-01'),
-          ) as PlutoColumnTypeDate;
+          final PlutoColumnTypeDate dateColumn =
+              PlutoColumnType.date(
+                    startDate: DateTime.parse('2020-02-01'),
+                  )
+                  as PlutoColumnTypeDate;
           expect(dateColumn.isValid('2020-02-03'), isTrue);
         },
       );
@@ -677,9 +700,11 @@ void main() {
       test(
         '마지막일이 있는 경우 마지막일보다 작으면 true',
         () {
-          final PlutoColumnTypeDate dateColumn = PlutoColumnType.date(
-            endDate: DateTime.parse('2020-02-01'),
-          ) as PlutoColumnTypeDate;
+          final PlutoColumnTypeDate dateColumn =
+              PlutoColumnType.date(
+                    endDate: DateTime.parse('2020-02-01'),
+                  )
+                  as PlutoColumnTypeDate;
           expect(dateColumn.isValid('2020-01-01'), isTrue);
         },
       );
@@ -687,9 +712,11 @@ void main() {
       test(
         '마지막일이 있는 경우 마지막일과 같으면 true',
         () {
-          final PlutoColumnTypeDate dateColumn = PlutoColumnType.date(
-            endDate: DateTime.parse('2020-02-01'),
-          ) as PlutoColumnTypeDate;
+          final PlutoColumnTypeDate dateColumn =
+              PlutoColumnType.date(
+                    endDate: DateTime.parse('2020-02-01'),
+                  )
+                  as PlutoColumnTypeDate;
           expect(dateColumn.isValid('2020-02-01'), isTrue);
         },
       );
@@ -697,9 +724,11 @@ void main() {
       test(
         '마지막일이 있는 경우 마지막일보다 크면 false',
         () {
-          final PlutoColumnTypeDate dateColumn = PlutoColumnType.date(
-            endDate: DateTime.parse('2020-02-01'),
-          ) as PlutoColumnTypeDate;
+          final PlutoColumnTypeDate dateColumn =
+              PlutoColumnType.date(
+                    endDate: DateTime.parse('2020-02-01'),
+                  )
+                  as PlutoColumnTypeDate;
           expect(dateColumn.isValid('2020-02-03'), isFalse);
         },
       );
@@ -707,10 +736,12 @@ void main() {
       test(
         '시작일과 마지막일이 둘다 있는 경우 범위에 있으면 true',
         () {
-          final PlutoColumnTypeDate dateColumn = PlutoColumnType.date(
-            startDate: DateTime.parse('2020-02-01'),
-            endDate: DateTime.parse('2020-02-05'),
-          ) as PlutoColumnTypeDate;
+          final PlutoColumnTypeDate dateColumn =
+              PlutoColumnType.date(
+                    startDate: DateTime.parse('2020-02-01'),
+                    endDate: DateTime.parse('2020-02-05'),
+                  )
+                  as PlutoColumnTypeDate;
           expect(dateColumn.isValid('2020-02-03'), isTrue);
         },
       );
@@ -718,10 +749,12 @@ void main() {
       test(
         '시작일과 마지막일이 둘다 있는 경우 범위보다 작으면 false',
         () {
-          final PlutoColumnTypeDate dateColumn = PlutoColumnType.date(
-            startDate: DateTime.parse('2020-02-01'),
-            endDate: DateTime.parse('2020-02-05'),
-          ) as PlutoColumnTypeDate;
+          final PlutoColumnTypeDate dateColumn =
+              PlutoColumnType.date(
+                    startDate: DateTime.parse('2020-02-01'),
+                    endDate: DateTime.parse('2020-02-05'),
+                  )
+                  as PlutoColumnTypeDate;
           expect(dateColumn.isValid('2020-01-03'), isFalse);
         },
       );
@@ -729,10 +762,12 @@ void main() {
       test(
         '시작일과 마지막일이 둘다 있는 경우 범위보다 크면 false',
         () {
-          final PlutoColumnTypeDate dateColumn = PlutoColumnType.date(
-            startDate: DateTime.parse('2020-02-01'),
-            endDate: DateTime.parse('2020-02-05'),
-          ) as PlutoColumnTypeDate;
+          final PlutoColumnTypeDate dateColumn =
+              PlutoColumnType.date(
+                    startDate: DateTime.parse('2020-02-01'),
+                    endDate: DateTime.parse('2020-02-05'),
+                  )
+                  as PlutoColumnTypeDate;
           expect(dateColumn.isValid('2020-02-06'), isFalse);
         },
       );
@@ -979,8 +1014,10 @@ void main() {
     });
 
     test('readOnly = false, checkReadOnly = true 이면 true 를 반환해야 한다.', () {
-      final column =
-          makeColumn(readOnly: false, checkReadOnly: (_, __) => true);
+      final column = makeColumn(
+        readOnly: false,
+        checkReadOnly: (_, __) => true,
+      );
 
       final row = makeRow(column);
 
@@ -990,8 +1027,10 @@ void main() {
     });
 
     test('readOnly = true, checkReadOnly = false 이면 false 를 반환해야 한다.', () {
-      final column =
-          makeColumn(readOnly: true, checkReadOnly: (_, __) => false);
+      final column = makeColumn(
+        readOnly: true,
+        checkReadOnly: (_, __) => false,
+      );
 
       final row = makeRow(column);
 

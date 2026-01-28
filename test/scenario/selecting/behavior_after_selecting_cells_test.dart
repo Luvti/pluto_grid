@@ -60,8 +60,10 @@ void main() {
           expect(stateManager.currentCellPosition!.rowIdx, rowIdx);
 
           expect(stateManager.currentSelectingPosition, isNotNull);
-          expect(stateManager.currentSelectingPosition!.columnIdx,
-              columnIdxToSelect);
+          expect(
+            stateManager.currentSelectingPosition!.columnIdx,
+            columnIdxToSelect,
+          );
           expect(stateManager.currentSelectingPosition!.rowIdx, rowIdxToSelect);
         },
       );
@@ -115,8 +117,10 @@ void main() {
         expect(stateManager.currentCellPosition!.columnIdx, currentColumnIdx);
         expect(stateManager.currentCellPosition!.rowIdx, currentRowIdx);
 
-        expect(stateManager.currentSelectingPosition!.columnIdx,
-            columnIdxToSelect);
+        expect(
+          stateManager.currentSelectingPosition!.columnIdx,
+          columnIdxToSelect,
+        );
         expect(stateManager.currentSelectingPosition!.rowIdx, rowIdxToSelect);
 
         final rowToInsert = stateManager.getNewRow();
@@ -147,8 +151,10 @@ void main() {
         expect(stateManager.currentCellPosition!.columnIdx, currentColumnIdx);
         expect(stateManager.currentCellPosition!.rowIdx, currentRowIdx);
 
-        expect(stateManager.currentSelectingPosition!.columnIdx,
-            columnIdxToSelect);
+        expect(
+          stateManager.currentSelectingPosition!.columnIdx,
+          columnIdxToSelect,
+        );
         expect(stateManager.currentSelectingPosition!.rowIdx, rowIdxToSelect);
 
         final rowToDelete = stateManager.rows.first;

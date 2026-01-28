@@ -48,10 +48,12 @@ void main() {
           home: Material(
             child: KeyboardListener(
               onKeyEvent: (event) {
-                keyManager.subject.add(PlutoKeyManagerEvent(
-                  focusNode: FocusNode(),
-                  event: event,
-                ));
+                keyManager.subject.add(
+                  PlutoKeyManagerEvent(
+                    focusNode: FocusNode(),
+                    event: event,
+                  ),
+                );
               },
               focusNode: keyboardFocusNode,
               child: const TextField(),
@@ -66,12 +68,14 @@ void main() {
       String? copied;
 
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-          SystemChannels.platform, (MethodCall methodCall) async {
-        if (methodCall.method == 'Clipboard.setData') {
-          copied = (await methodCall.arguments['text']).toString();
-        }
-        return null;
-      });
+        SystemChannels.platform,
+        (MethodCall methodCall) async {
+          if (methodCall.method == 'Clipboard.setData') {
+            copied = (await methodCall.arguments['text']).toString();
+          }
+          return null;
+        },
+      );
 
       // when
       keyboardFocusNode.requestFocus();
@@ -100,10 +104,12 @@ void main() {
           home: Material(
             child: KeyboardListener(
               onKeyEvent: (event) {
-                keyManager.subject.add(PlutoKeyManagerEvent(
-                  focusNode: FocusNode(),
-                  event: event,
-                ));
+                keyManager.subject.add(
+                  PlutoKeyManagerEvent(
+                    focusNode: FocusNode(),
+                    event: event,
+                  ),
+                );
               },
               focusNode: keyboardFocusNode,
               child: const TextField(),
@@ -120,12 +126,14 @@ void main() {
       String? copied;
 
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-          SystemChannels.platform, (MethodCall methodCall) async {
-        if (methodCall.method == 'Clipboard.setData') {
-          copied = (await methodCall.arguments['text']).toString();
-        }
-        return null;
-      });
+        SystemChannels.platform,
+        (MethodCall methodCall) async {
+          if (methodCall.method == 'Clipboard.setData') {
+            copied = (await methodCall.arguments['text']).toString();
+          }
+          return null;
+        },
+      );
 
       // when
       await tester.sendKeyDownEvent(LogicalKeyboardKey.control);
@@ -152,10 +160,12 @@ void main() {
           home: Material(
             child: KeyboardListener(
               onKeyEvent: (event) {
-                keyManager.subject.add(PlutoKeyManagerEvent(
-                  focusNode: FocusNode(),
-                  event: event,
-                ));
+                keyManager.subject.add(
+                  PlutoKeyManagerEvent(
+                    focusNode: FocusNode(),
+                    event: event,
+                  ),
+                );
               },
               focusNode: keyboardFocusNode,
               child: const TextField(),
@@ -168,12 +178,14 @@ void main() {
       when(stateManager.isEditing).thenReturn(false);
 
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-          SystemChannels.platform, (MethodCall methodCall) async {
-        if (methodCall.method == 'Clipboard.getData') {
-          return const <String, dynamic>{'text': 'pasted'};
-        }
-        return null;
-      });
+        SystemChannels.platform,
+        (MethodCall methodCall) async {
+          if (methodCall.method == 'Clipboard.getData') {
+            return const <String, dynamic>{'text': 'pasted'};
+          }
+          return null;
+        },
+      );
 
       // when
       keyboardFocusNode.requestFocus();
@@ -185,9 +197,11 @@ void main() {
       // then
       expect(stateManager.currentCell, isNotNull);
       expect(stateManager.isEditing, false);
-      verify(stateManager.pasteCellValue([
-        ['pasted']
-      ])).called(1);
+      verify(
+        stateManager.pasteCellValue([
+          ['pasted'],
+        ]),
+      ).called(1);
     },
   );
 
@@ -206,10 +220,12 @@ void main() {
           home: Material(
             child: KeyboardListener(
               onKeyEvent: (event) {
-                keyManager.subject.add(PlutoKeyManagerEvent(
-                  focusNode: FocusNode(),
-                  event: event,
-                ));
+                keyManager.subject.add(
+                  PlutoKeyManagerEvent(
+                    focusNode: FocusNode(),
+                    event: event,
+                  ),
+                );
               },
               focusNode: keyboardFocusNode,
               child: const TextField(),
@@ -222,12 +238,14 @@ void main() {
       when(stateManager.isEditing).thenReturn(false);
 
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-          SystemChannels.platform, (MethodCall methodCall) async {
-        if (methodCall.method == 'Clipboard.getData') {
-          return const <String, dynamic>{'text': 'pasted'};
-        }
-        return null;
-      });
+        SystemChannels.platform,
+        (MethodCall methodCall) async {
+          if (methodCall.method == 'Clipboard.getData') {
+            return const <String, dynamic>{'text': 'pasted'};
+          }
+          return null;
+        },
+      );
 
       // when
       keyboardFocusNode.requestFocus();
@@ -239,9 +257,11 @@ void main() {
       // then
       expect(stateManager.currentCell, null);
       expect(stateManager.isEditing, false);
-      verifyNever(stateManager.pasteCellValue([
-        ['pasted']
-      ]));
+      verifyNever(
+        stateManager.pasteCellValue([
+          ['pasted'],
+        ]),
+      );
     },
   );
 
@@ -260,10 +280,12 @@ void main() {
           home: Material(
             child: KeyboardListener(
               onKeyEvent: (event) {
-                keyManager.subject.add(PlutoKeyManagerEvent(
-                  focusNode: FocusNode(),
-                  event: event,
-                ));
+                keyManager.subject.add(
+                  PlutoKeyManagerEvent(
+                    focusNode: FocusNode(),
+                    event: event,
+                  ),
+                );
               },
               focusNode: keyboardFocusNode,
               child: const TextField(),
@@ -276,12 +298,14 @@ void main() {
       when(stateManager.isEditing).thenReturn(true);
 
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-          SystemChannels.platform, (MethodCall methodCall) async {
-        if (methodCall.method == 'Clipboard.getData') {
-          return const <String, dynamic>{'text': 'pasted'};
-        }
-        return null;
-      });
+        SystemChannels.platform,
+        (MethodCall methodCall) async {
+          if (methodCall.method == 'Clipboard.getData') {
+            return const <String, dynamic>{'text': 'pasted'};
+          }
+          return null;
+        },
+      );
 
       // when
       keyboardFocusNode.requestFocus();
@@ -293,15 +317,18 @@ void main() {
       // then
       expect(stateManager.currentCell, isNotNull);
       expect(stateManager.isEditing, true);
-      verifyNever(stateManager.pasteCellValue([
-        ['pasted']
-      ]));
+      verifyNever(
+        stateManager.pasteCellValue([
+          ['pasted'],
+        ]),
+      );
     },
   );
 
   group('_handleHomeEnd', () {
-    final withKeyboardListener =
-        PlutoWidgetTestHelper('키 입력 테스트', (tester) async {
+    final withKeyboardListener = PlutoWidgetTestHelper('키 입력 테스트', (
+      tester,
+    ) async {
       final PlutoGridKeyManager keyManager = PlutoGridKeyManager(
         stateManager: stateManager,
       );
@@ -313,10 +340,12 @@ void main() {
           home: Material(
             child: KeyboardListener(
               onKeyEvent: (event) {
-                keyManager.subject.add(PlutoKeyManagerEvent(
-                  focusNode: FocusNode(),
-                  event: event,
-                ));
+                keyManager.subject.add(
+                  PlutoKeyManagerEvent(
+                    focusNode: FocusNode(),
+                    event: event,
+                  ),
+                );
               },
               focusNode: keyboardFocusNode,
               child: const TextField(),
@@ -336,9 +365,9 @@ void main() {
       await tester.sendKeyUpEvent(LogicalKeyboardKey.home);
 
       // then
-      verify(stateManager
-              .moveCurrentCellToEdgeOfColumns(PlutoMoveDirection.left))
-          .called(1);
+      verify(
+        stateManager.moveCurrentCellToEdgeOfColumns(PlutoMoveDirection.left),
+      ).called(1);
     });
 
     withKeyboardListener.test('home + shift', (tester) async {
@@ -348,9 +377,9 @@ void main() {
       await tester.sendKeyUpEvent(LogicalKeyboardKey.shift);
 
       // then
-      verify(stateManager
-              .moveSelectingCellToEdgeOfColumns(PlutoMoveDirection.left))
-          .called(1);
+      verify(
+        stateManager.moveSelectingCellToEdgeOfColumns(PlutoMoveDirection.left),
+      ).called(1);
     });
 
     withKeyboardListener.test('home + ctrl', (tester) async {
@@ -360,8 +389,9 @@ void main() {
       await tester.sendKeyUpEvent(LogicalKeyboardKey.control);
 
       // then
-      verify(stateManager.moveCurrentCellToEdgeOfRows(PlutoMoveDirection.up))
-          .called(1);
+      verify(
+        stateManager.moveCurrentCellToEdgeOfRows(PlutoMoveDirection.up),
+      ).called(1);
     });
 
     withKeyboardListener.test('home + ctrl + shift', (tester) async {
@@ -373,8 +403,9 @@ void main() {
       await tester.sendKeyUpEvent(LogicalKeyboardKey.shift);
 
       // then
-      verify(stateManager.moveSelectingCellToEdgeOfRows(PlutoMoveDirection.up))
-          .called(1);
+      verify(
+        stateManager.moveSelectingCellToEdgeOfRows(PlutoMoveDirection.up),
+      ).called(1);
     });
 
     withKeyboardListener.test('end', (tester) async {
@@ -382,9 +413,9 @@ void main() {
       await tester.sendKeyUpEvent(LogicalKeyboardKey.end);
 
       // then
-      verify(stateManager
-              .moveCurrentCellToEdgeOfColumns(PlutoMoveDirection.right))
-          .called(1);
+      verify(
+        stateManager.moveCurrentCellToEdgeOfColumns(PlutoMoveDirection.right),
+      ).called(1);
     });
 
     withKeyboardListener.test('end + shift', (tester) async {
@@ -394,9 +425,9 @@ void main() {
       await tester.sendKeyUpEvent(LogicalKeyboardKey.shift);
 
       // then
-      verify(stateManager
-              .moveSelectingCellToEdgeOfColumns(PlutoMoveDirection.right))
-          .called(1);
+      verify(
+        stateManager.moveSelectingCellToEdgeOfColumns(PlutoMoveDirection.right),
+      ).called(1);
     });
 
     withKeyboardListener.test('end + ctrl', (tester) async {
@@ -406,8 +437,9 @@ void main() {
       await tester.sendKeyUpEvent(LogicalKeyboardKey.control);
 
       // then
-      verify(stateManager.moveCurrentCellToEdgeOfRows(PlutoMoveDirection.down))
-          .called(1);
+      verify(
+        stateManager.moveCurrentCellToEdgeOfRows(PlutoMoveDirection.down),
+      ).called(1);
     });
 
     withKeyboardListener.test('end + ctrl + shift', (tester) async {
@@ -419,15 +451,16 @@ void main() {
       await tester.sendKeyUpEvent(LogicalKeyboardKey.shift);
 
       // then
-      verify(stateManager
-              .moveSelectingCellToEdgeOfRows(PlutoMoveDirection.down))
-          .called(1);
+      verify(
+        stateManager.moveSelectingCellToEdgeOfRows(PlutoMoveDirection.down),
+      ).called(1);
     });
   });
 
   group('_handlePageUpDown', () {
-    final withKeyboardListener =
-        PlutoWidgetTestHelper('키 입력 테스트', (tester) async {
+    final withKeyboardListener = PlutoWidgetTestHelper('키 입력 테스트', (
+      tester,
+    ) async {
       final PlutoGridKeyManager keyManager = PlutoGridKeyManager(
         stateManager: stateManager,
       );
@@ -442,10 +475,12 @@ void main() {
           home: Material(
             child: KeyboardListener(
               onKeyEvent: (event) {
-                keyManager.subject.add(PlutoKeyManagerEvent(
-                  focusNode: FocusNode(),
-                  event: event,
-                ));
+                keyManager.subject.add(
+                  PlutoKeyManagerEvent(
+                    focusNode: FocusNode(),
+                    event: event,
+                  ),
+                );
               },
               focusNode: keyboardFocusNode,
               child: const TextField(),
@@ -465,8 +500,9 @@ void main() {
       await tester.sendKeyUpEvent(LogicalKeyboardKey.pageUp);
 
       // then
-      verify(stateManager.moveCurrentCellByRowIdx(-5, PlutoMoveDirection.up))
-          .called(1);
+      verify(
+        stateManager.moveCurrentCellByRowIdx(-5, PlutoMoveDirection.up),
+      ).called(1);
     });
 
     withKeyboardListener.test('pageUp + shift', (tester) async {
@@ -476,8 +512,9 @@ void main() {
       await tester.sendKeyUpEvent(LogicalKeyboardKey.shift);
 
       // then
-      verify(stateManager.moveSelectingCellByRowIdx(-5, PlutoMoveDirection.up))
-          .called(1);
+      verify(
+        stateManager.moveSelectingCellByRowIdx(-5, PlutoMoveDirection.up),
+      ).called(1);
     });
 
     withKeyboardListener.test('pageDown', (tester) async {
@@ -485,8 +522,9 @@ void main() {
       await tester.sendKeyUpEvent(LogicalKeyboardKey.pageDown);
 
       // then
-      verify(stateManager.moveCurrentCellByRowIdx(5, PlutoMoveDirection.down))
-          .called(1);
+      verify(
+        stateManager.moveCurrentCellByRowIdx(5, PlutoMoveDirection.down),
+      ).called(1);
     });
 
     withKeyboardListener.test('pageDown + shift', (tester) async {
@@ -496,8 +534,9 @@ void main() {
       await tester.sendKeyUpEvent(LogicalKeyboardKey.shift);
 
       // then
-      verify(stateManager.moveSelectingCellByRowIdx(5, PlutoMoveDirection.down))
-          .called(1);
+      verify(
+        stateManager.moveSelectingCellByRowIdx(5, PlutoMoveDirection.down),
+      ).called(1);
     });
   });
 }

@@ -33,9 +33,11 @@ void main() {
 
         when(stateManager.keepFocus).thenReturn(true);
 
-        when(stateManager.keyManager).thenReturn(PlutoGridKeyManager(
-          stateManager: stateManager,
-        ));
+        when(stateManager.keyManager).thenReturn(
+          PlutoGridKeyManager(
+            stateManager: stateManager,
+          ),
+        );
 
         final PlutoColumn column = PlutoColumn(
           title: 'column title',

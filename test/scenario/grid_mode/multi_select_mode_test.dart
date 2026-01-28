@@ -106,12 +106,17 @@ void main() {
 
       verify(
         mock.oneParamReturnVoid(
-            argThat(PlutoObjectMatcher<PlutoGridOnSelectedEvent>(rule: (event) {
-          final selectedKeys = event.selectedRows!.map((e) => e.key);
+          argThat(
+            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(
+              rule: (event) {
+                final selectedKeys = event.selectedRows!.map((e) => e.key);
 
-          return event.selectedRows?.length == 1 &&
-              selectedKeys.contains(stateManager.refRows[0].key);
-        }))),
+                return event.selectedRows?.length == 1 &&
+                    selectedKeys.contains(stateManager.refRows[0].key);
+              },
+            ),
+          ),
+        ),
       ).called(1);
 
       await tester.tap(find.text('column0 value 2'));
@@ -119,13 +124,18 @@ void main() {
 
       verify(
         mock.oneParamReturnVoid(
-            argThat(PlutoObjectMatcher<PlutoGridOnSelectedEvent>(rule: (event) {
-          final selectedKeys = event.selectedRows!.map((e) => e.key);
+          argThat(
+            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(
+              rule: (event) {
+                final selectedKeys = event.selectedRows!.map((e) => e.key);
 
-          return event.selectedRows?.length == 2 &&
-              selectedKeys.contains(stateManager.refRows[0].key) &&
-              selectedKeys.contains(stateManager.refRows[2].key);
-        }))),
+                return event.selectedRows?.length == 2 &&
+                    selectedKeys.contains(stateManager.refRows[0].key) &&
+                    selectedKeys.contains(stateManager.refRows[2].key);
+              },
+            ),
+          ),
+        ),
       ).called(1);
 
       await tester.tap(find.text('column0 value 4'));
@@ -133,14 +143,19 @@ void main() {
 
       verify(
         mock.oneParamReturnVoid(
-            argThat(PlutoObjectMatcher<PlutoGridOnSelectedEvent>(rule: (event) {
-          final selectedKeys = event.selectedRows!.map((e) => e.key);
+          argThat(
+            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(
+              rule: (event) {
+                final selectedKeys = event.selectedRows!.map((e) => e.key);
 
-          return event.selectedRows?.length == 3 &&
-              selectedKeys.contains(stateManager.refRows[0].key) &&
-              selectedKeys.contains(stateManager.refRows[2].key) &&
-              selectedKeys.contains(stateManager.refRows[4].key);
-        }))),
+                return event.selectedRows?.length == 3 &&
+                    selectedKeys.contains(stateManager.refRows[0].key) &&
+                    selectedKeys.contains(stateManager.refRows[2].key) &&
+                    selectedKeys.contains(stateManager.refRows[4].key);
+              },
+            ),
+          ),
+        ),
       ).called(1);
 
       expect(stateManager.currentSelectingRows.length, 3);
@@ -165,13 +180,18 @@ void main() {
 
       verify(
         mock.oneParamReturnVoid(
-            argThat(PlutoObjectMatcher<PlutoGridOnSelectedEvent>(rule: (event) {
-          final selectedKeys = event.selectedRows!.map((e) => e.key);
+          argThat(
+            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(
+              rule: (event) {
+                final selectedKeys = event.selectedRows!.map((e) => e.key);
 
-          return event.selectedRows?.length == 2 &&
-              selectedKeys.contains(stateManager.refRows[2].key) &&
-              selectedKeys.contains(stateManager.refRows[4].key);
-        }))),
+                return event.selectedRows?.length == 2 &&
+                    selectedKeys.contains(stateManager.refRows[2].key) &&
+                    selectedKeys.contains(stateManager.refRows[4].key);
+              },
+            ),
+          ),
+        ),
       ).called(1);
 
       expect(stateManager.currentSelectingRows.length, 2);
@@ -183,12 +203,17 @@ void main() {
 
       verify(
         mock.oneParamReturnVoid(
-            argThat(PlutoObjectMatcher<PlutoGridOnSelectedEvent>(rule: (event) {
-          final selectedKeys = event.selectedRows!.map((e) => e.key);
+          argThat(
+            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(
+              rule: (event) {
+                final selectedKeys = event.selectedRows!.map((e) => e.key);
 
-          return event.selectedRows?.length == 1 &&
-              selectedKeys.contains(stateManager.refRows[4].key);
-        }))),
+                return event.selectedRows?.length == 1 &&
+                    selectedKeys.contains(stateManager.refRows[4].key);
+              },
+            ),
+          ),
+        ),
       ).called(1);
 
       expect(stateManager.currentSelectingRows.length, 1);
@@ -213,15 +238,20 @@ void main() {
 
       verify(
         mock.oneParamReturnVoid(
-            argThat(PlutoObjectMatcher<PlutoGridOnSelectedEvent>(rule: (event) {
-          final selectedKeys = event.selectedRows!.map((e) => e.key);
+          argThat(
+            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(
+              rule: (event) {
+                final selectedKeys = event.selectedRows!.map((e) => e.key);
 
-          return event.selectedRows?.length == 4 &&
-              selectedKeys.contains(stateManager.refRows[0].key) &&
-              selectedKeys.contains(stateManager.refRows[1].key) &&
-              selectedKeys.contains(stateManager.refRows[2].key) &&
-              selectedKeys.contains(stateManager.refRows[3].key);
-        }))),
+                return event.selectedRows?.length == 4 &&
+                    selectedKeys.contains(stateManager.refRows[0].key) &&
+                    selectedKeys.contains(stateManager.refRows[1].key) &&
+                    selectedKeys.contains(stateManager.refRows[2].key) &&
+                    selectedKeys.contains(stateManager.refRows[3].key);
+              },
+            ),
+          ),
+        ),
       ).called(1);
 
       expect(stateManager.currentSelectingRows.length, 4);
@@ -239,14 +269,19 @@ void main() {
 
       verify(
         mock.oneParamReturnVoid(
-            argThat(PlutoObjectMatcher<PlutoGridOnSelectedEvent>(rule: (event) {
-          final selectedKeys = event.selectedRows!.map((e) => e.key);
+          argThat(
+            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(
+              rule: (event) {
+                final selectedKeys = event.selectedRows!.map((e) => e.key);
 
-          return event.selectedRows?.length == 3 &&
-              selectedKeys.contains(stateManager.refRows[0].key) &&
-              selectedKeys.contains(stateManager.refRows[1].key) &&
-              selectedKeys.contains(stateManager.refRows[2].key);
-        }))),
+                return event.selectedRows?.length == 3 &&
+                    selectedKeys.contains(stateManager.refRows[0].key) &&
+                    selectedKeys.contains(stateManager.refRows[1].key) &&
+                    selectedKeys.contains(stateManager.refRows[2].key);
+              },
+            ),
+          ),
+        ),
       ).called(1);
 
       expect(stateManager.currentSelectingRows.length, 3);
@@ -264,12 +299,17 @@ void main() {
 
       verify(
         mock.oneParamReturnVoid(
-            argThat(PlutoObjectMatcher<PlutoGridOnSelectedEvent>(rule: (event) {
-          final selectedKeys = event.selectedRows!.map((e) => e.key);
+          argThat(
+            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(
+              rule: (event) {
+                final selectedKeys = event.selectedRows!.map((e) => e.key);
 
-          return event.selectedRows?.length == 1 &&
-              selectedKeys.contains(stateManager.refRows[3].key);
-        }))),
+                return event.selectedRows?.length == 1 &&
+                    selectedKeys.contains(stateManager.refRows[3].key);
+              },
+            ),
+          ),
+        ),
       ).called(1);
 
       expect(stateManager.currentSelectingRows.length, 1);
@@ -291,14 +331,19 @@ void main() {
 
       verify(
         mock.oneParamReturnVoid(
-            argThat(PlutoObjectMatcher<PlutoGridOnSelectedEvent>(rule: (event) {
-          final selectedKeys = event.selectedRows!.map((e) => e.key);
+          argThat(
+            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(
+              rule: (event) {
+                final selectedKeys = event.selectedRows!.map((e) => e.key);
 
-          return event.selectedRows?.length == 3 &&
-              selectedKeys.contains(stateManager.refRows[1].key) &&
-              selectedKeys.contains(stateManager.refRows[3].key) &&
-              selectedKeys.contains(stateManager.refRows[5].key);
-        }))),
+                return event.selectedRows?.length == 3 &&
+                    selectedKeys.contains(stateManager.refRows[1].key) &&
+                    selectedKeys.contains(stateManager.refRows[3].key) &&
+                    selectedKeys.contains(stateManager.refRows[5].key);
+              },
+            ),
+          ),
+        ),
       ).called(1);
 
       expect(stateManager.currentSelectingRows.length, 3);
@@ -308,9 +353,14 @@ void main() {
 
       verify(
         mock.oneParamReturnVoid(
-            argThat(PlutoObjectMatcher<PlutoGridOnSelectedEvent>(rule: (event) {
-          return event.selectedRows == null;
-        }))),
+          argThat(
+            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(
+              rule: (event) {
+                return event.selectedRows == null;
+              },
+            ),
+          ),
+        ),
       ).called(1);
 
       expect(stateManager.currentSelectingRows.length, 0);
@@ -333,15 +383,20 @@ void main() {
 
       verify(
         mock.oneParamReturnVoid(
-            argThat(PlutoObjectMatcher<PlutoGridOnSelectedEvent>(rule: (event) {
-          final selectedKeys = event.selectedRows!.map((e) => e.key);
+          argThat(
+            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(
+              rule: (event) {
+                final selectedKeys = event.selectedRows!.map((e) => e.key);
 
-          return event.selectedRows?.length == 4 &&
-              selectedKeys.contains(stateManager.refRows[2].key) &&
-              selectedKeys.contains(stateManager.refRows[3].key) &&
-              selectedKeys.contains(stateManager.refRows[4].key) &&
-              selectedKeys.contains(stateManager.refRows[5].key);
-        }))),
+                return event.selectedRows?.length == 4 &&
+                    selectedKeys.contains(stateManager.refRows[2].key) &&
+                    selectedKeys.contains(stateManager.refRows[3].key) &&
+                    selectedKeys.contains(stateManager.refRows[4].key) &&
+                    selectedKeys.contains(stateManager.refRows[5].key);
+              },
+            ),
+          ),
+        ),
       ).called(1);
     },
   );

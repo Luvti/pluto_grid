@@ -53,8 +53,9 @@ void main() {
           );
 
           stateManager.setEventManager(eventManager);
-          stateManager
-              .setLayout(BoxConstraints(maxWidth: maxWidth, maxHeight: 500));
+          stateManager.setLayout(
+            BoxConstraints(maxWidth: maxWidth, maxHeight: 500),
+          );
           stateManager.setGridGlobalOffset(Offset.zero);
         },
       );

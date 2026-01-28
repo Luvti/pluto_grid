@@ -211,21 +211,30 @@ mixin RowGroupState implements IPlutoGridState {
 
   @override
   Iterable<PlutoRow> get iterateRowGroup sync* {
-    for (final PlutoRow row in _iterateRowGroup(iterateMainRowGroup, iterateAll: false)) {
+    for (final PlutoRow row in _iterateRowGroup(
+      iterateMainRowGroup,
+      iterateAll: false,
+    )) {
       yield row;
     }
   }
 
   @override
   Iterable<PlutoRow> get iterateRowAndGroup sync* {
-    for (final PlutoRow row in _iterateRowAndGroup(iterateMainRowGroup, iterateAll: false)) {
+    for (final PlutoRow row in _iterateRowAndGroup(
+      iterateMainRowGroup,
+      iterateAll: false,
+    )) {
       yield row;
     }
   }
 
   @override
   Iterable<PlutoRow> get iterateRow sync* {
-    for (final PlutoRow row in _iterateRow(iterateMainRowGroup, iterateAll: false)) {
+    for (final PlutoRow row in _iterateRow(
+      iterateMainRowGroup,
+      iterateAll: false,
+    )) {
       yield row;
     }
   }
@@ -262,23 +271,30 @@ mixin RowGroupState implements IPlutoGridState {
   }) {
     assert(enabledRowGroups);
 
-    if (!rowGroup.type.isGroup || rowGroup.type.group.children.originalList.isEmpty) {
+    if (!rowGroup.type.isGroup ||
+        rowGroup.type.group.children.originalList.isEmpty) {
       return;
     }
 
     if (rowGroup.type.group.expanded) {
       final Set<Key> removeKeys = <Key>{};
 
-      for (final PlutoRow child in _iterateRowAndGroup(rowGroup.type.group.children)) {
+      for (final PlutoRow child in _iterateRowAndGroup(
+        rowGroup.type.group.children,
+      )) {
         removeKeys.add(child.key);
       }
 
-      refRows.removeWhereFromOriginal((PlutoRow e) => removeKeys.contains(e.key));
+      refRows.removeWhereFromOriginal(
+        (PlutoRow e) => removeKeys.contains(e.key),
+      );
     } else {
       final Iterable<PlutoRow> children = PlutoRowGroupHelper.iterateWithFilter(
         rowGroup.type.group.children,
         filter: (PlutoRow r) => true,
-        childrenFilter: (PlutoRow r) => r.type.isGroup && r.type.group.expanded ? r.type.group.children.iterator : null,
+        childrenFilter: (PlutoRow r) => r.type.isGroup && r.type.group.expanded
+            ? r.type.group.children.iterator
+            : null,
       );
 
       final int idx = refRows.indexOf(rowGroup);
@@ -359,7 +375,9 @@ mixin RowGroupState implements IPlutoGridState {
     bool findByTargetKey(PlutoRow e) => e.key == target?.key;
 
     bool hasChildrenGroup(PlutoRow found) {
-      return found.type.isGroup && found.type.group.children.originalList.isNotEmpty && found.type.group.children.originalList.first.type.isGroup;
+      return found.type.isGroup &&
+          found.type.group.children.originalList.isNotEmpty &&
+          found.type.group.children.originalList.first.type.isGroup;
     }
 
     void updateSortIdx({
@@ -434,11 +452,14 @@ mixin RowGroupState implements IPlutoGridState {
       assert(row.type.isGroup);
       updateAddedChildren(found, row.type.group.children.originalList);
 
-      final int insertIdx = found.type.group.children.indexWhere(findByTargetKey);
+      final int insertIdx = found.type.group.children.indexWhere(
+        findByTargetKey,
+      );
       if (insertIdx > -1 && !append) {
         final int length = row.type.group.children.length;
         for (int i = 0; i < length; i += 1) {
-          row.type.group.children[i].sortIdx = found.type.group.children[insertIdx].sortIdx + i;
+          row.type.group.children[i].sortIdx =
+              found.type.group.children[insertIdx].sortIdx + i;
         }
         updateSortIdx(
           rows: found.type.group.children,
@@ -481,7 +502,8 @@ mixin RowGroupState implements IPlutoGridState {
     }
 
     void addAllGroupTree() {
-      final FilteredList<PlutoRow> targetParent = target?.parent?.type.group.children ?? refRows;
+      final FilteredList<PlutoRow> targetParent =
+          target?.parent?.type.group.children ?? refRows;
 
       if (target?.parent == null) {
         grouped.forEach(updateAddedRow);
@@ -536,7 +558,9 @@ mixin RowGroupState implements IPlutoGridState {
 
     assert(enabledRowGroups);
 
-    bool removeEmptyGroup(PlutoRow row) => rowGroupDelegate!.type.isByColumn && row.type.group.children.originalList.isEmpty;
+    bool removeEmptyGroup(PlutoRow row) =>
+        rowGroupDelegate!.type.isByColumn &&
+        row.type.group.children.originalList.isEmpty;
 
     _ensureRowGroups(() {
       bool removeAll(PlutoRow row) {
@@ -563,13 +587,16 @@ mixin RowGroupState implements IPlutoGridState {
       return;
     }
 
-    final PlutoRowGroupByColumnDelegate delegate = rowGroupDelegate as PlutoRowGroupByColumnDelegate;
+    final PlutoRowGroupByColumnDelegate delegate =
+        rowGroupDelegate as PlutoRowGroupByColumnDelegate;
 
     final Set<Key> removeKeys = Set.from(columns.map((PlutoColumn e) => e.key));
 
     isNotRemoved(e) => !removeKeys.contains(e.key);
 
-    final List<PlutoColumn> remaining = delegate.columns.where(isNotRemoved).toList(growable: false);
+    final List<PlutoColumn> remaining = delegate.columns
+        .where(isNotRemoved)
+        .toList(growable: false);
 
     if (remaining.length == delegate.columns.length) {
       return;
@@ -585,11 +612,13 @@ mixin RowGroupState implements IPlutoGridState {
   @override
   @protected
   void updateRowGroupByHideColumn(List<PlutoColumn> columns) {
-    if (rowGroupDelegate?.type.isByColumn != true || rowGroupDelegate?.showFirstExpandableIcon == true) {
+    if (rowGroupDelegate?.type.isByColumn != true ||
+        rowGroupDelegate?.showFirstExpandableIcon == true) {
       return;
     }
 
-    final PlutoRowGroupByColumnDelegate delegate = rowGroupDelegate as PlutoRowGroupByColumnDelegate;
+    final PlutoRowGroupByColumnDelegate delegate =
+        rowGroupDelegate as PlutoRowGroupByColumnDelegate;
 
     final Set<Key> updateKeys = Set.from(columns.map((PlutoColumn e) => e.key));
 
@@ -617,7 +646,9 @@ mixin RowGroupState implements IPlutoGridState {
   }
 
   void _restoreExpandedRowGroup({bool resetCurrentState = false}) {
-    final Iterable<PlutoRow> expandedRows = refRows.filterOrOriginalList.where(isExpandedGroupedRow).toList(growable: false);
+    final Iterable<PlutoRow> expandedRows = refRows.filterOrOriginalList
+        .where(isExpandedGroupedRow)
+        .toList(growable: false);
 
     bool toResetPage = false;
 
@@ -630,7 +661,9 @@ mixin RowGroupState implements IPlutoGridState {
       final Iterable<PlutoRow> children = PlutoRowGroupHelper.iterateWithFilter(
         rowGroup.type.group.children,
         filter: (PlutoRow r) => true,
-        childrenFilter: (PlutoRow r) => r.type.isGroup && r.type.group.expanded ? r.type.group.children.iterator : null,
+        childrenFilter: (PlutoRow r) => r.type.isGroup && r.type.group.expanded
+            ? r.type.group.children.iterator
+            : null,
       );
 
       final int idx = refRows.filterOrOriginalList.indexOf(rowGroup);
@@ -653,11 +686,15 @@ mixin RowGroupState implements IPlutoGridState {
 
     assert(rowGroupDelegate is PlutoRowGroupByColumnDelegate);
 
-    final PlutoRowGroupByColumnDelegate delegate = rowGroupDelegate as PlutoRowGroupByColumnDelegate;
+    final PlutoRowGroupByColumnDelegate delegate =
+        rowGroupDelegate as PlutoRowGroupByColumnDelegate;
 
     final int depth = target.depth;
 
-    final Iterable<PlutoColumn> groupedColumn = delegate.columns.getRange(0, depth);
+    final Iterable<PlutoColumn> groupedColumn = delegate.columns.getRange(
+      0,
+      depth,
+    );
 
     for (final PlutoRow row in rows) {
       for (final PlutoColumn column in groupedColumn) {
@@ -671,7 +708,9 @@ mixin RowGroupState implements IPlutoGridState {
 
     List<PlutoRow> rows;
 
-    final Iterable<PlutoRow> previousRows = _previousEnabledRowGroups ? _iterateRow(iterateAllMainRowGroup) : refRows.originalList;
+    final Iterable<PlutoRow> previousRows = _previousEnabledRowGroups
+        ? _iterateRow(iterateAllMainRowGroup)
+        : refRows.originalList;
 
     if (enabledRowGroups == true) {
       rows = rowGroupDelegate!.toGroup(rows: previousRows);
@@ -702,7 +741,11 @@ mixin RowGroupState implements IPlutoGridState {
   }) sync* {
     bool isNotGroup(PlutoRow e) => !e.type.isGroup;
 
-    for (final PlutoRow row in PlutoRowGroupHelper.iterateWithFilter(rows, filter: isNotGroup, iterateAll: iterateAll)) {
+    for (final PlutoRow row in PlutoRowGroupHelper.iterateWithFilter(
+      rows,
+      filter: isNotGroup,
+      iterateAll: iterateAll,
+    )) {
       yield row;
     }
   }
@@ -713,7 +756,11 @@ mixin RowGroupState implements IPlutoGridState {
   }) sync* {
     bool isGroup(PlutoRow e) => e.type.isGroup;
 
-    for (final PlutoRow row in PlutoRowGroupHelper.iterateWithFilter(rows, filter: isGroup, iterateAll: iterateAll)) {
+    for (final PlutoRow row in PlutoRowGroupHelper.iterateWithFilter(
+      rows,
+      filter: isGroup,
+      iterateAll: iterateAll,
+    )) {
       yield row;
     }
   }
@@ -722,7 +769,10 @@ mixin RowGroupState implements IPlutoGridState {
     Iterable<PlutoRow> rows, {
     bool iterateAll = true,
   }) sync* {
-    for (final PlutoRow row in PlutoRowGroupHelper.iterateWithFilter(rows, iterateAll: iterateAll)) {
+    for (final PlutoRow row in PlutoRowGroupHelper.iterateWithFilter(
+      rows,
+      iterateAll: iterateAll,
+    )) {
       yield row;
     }
   }

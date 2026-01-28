@@ -28,10 +28,11 @@ enum PlutoRowGroupDelegateType {
 ///
 /// If [expanded] is true, the group row is expanded, if false, it is collapsed.
 /// {@endtemplate}
-typedef PlutoRowGroupOnToggled = void Function({
-  required PlutoRow row,
-  required bool expanded,
-});
+typedef PlutoRowGroupOnToggled =
+    void Function({
+      required PlutoRow row,
+      required bool expanded,
+    });
 
 /// Abstract class that defines a base interface for grouping rows.
 ///
@@ -295,8 +296,9 @@ class PlutoRowGroupByColumnDelegate extends PlutoRowGroupDelegate {
     final List<PlutoRow> groups = [];
     final List<List<PlutoRow>> groupStack = [];
     final List<PlutoRow> parentStack = [];
-    final List<String> groupFields =
-        visibleColumns.map((e) => e.field).toList();
+    final List<String> groupFields = visibleColumns
+        .map((e) => e.field)
+        .toList();
     final List<String> groupKeyStack = [];
     final maxDepth = groupFields.length;
 
@@ -447,14 +449,17 @@ class PlutoRowGroupByColumnDelegate extends PlutoRowGroupDelegate {
     );
 
     for (var e in sampleRow.cells.entries) {
-      cells[e.key] = PlutoCell(
-        value: visibleColumns.firstWhereOrNull((c) => c.field == e.key) != null
-            ? e.value.value
-            : null,
-        key: ValueKey('${groupKey}_${e.key}_cell'),
-      )
-        ..setColumn(e.value.column)
-        ..setRow(row);
+      cells[e.key] =
+          PlutoCell(
+              value:
+                  visibleColumns.firstWhereOrNull((c) => c.field == e.key) !=
+                      null
+                  ? e.value.value
+                  : null,
+              key: ValueKey('${groupKey}_${e.key}_cell'),
+            )
+            ..setColumn(e.value.column)
+            ..setRow(row);
     }
 
     return row;

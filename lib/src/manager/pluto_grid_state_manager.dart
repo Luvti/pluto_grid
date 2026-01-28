@@ -95,17 +95,17 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
     PlutoChangeNotifierFilterResolver? notifierFilterResolver,
     PlutoGridConfiguration configuration = const PlutoGridConfiguration(),
     PlutoGridMode? mode,
-  })  : refColumns = FilteredList(initialList: columns),
-        refRows = FilteredList(initialList: rows),
-        refColumnGroups = FilteredList<PlutoColumnGroup>(
-          initialList: columnGroups,
-        ),
-        columnMenuDelegate =
-            columnMenuDelegate ?? const PlutoColumnMenuDelegateDefault(),
-        notifierFilterResolver = notifierFilterResolver ??
-            const PlutoNotifierFilterResolverDefault(),
-        columnsMap = Map.fromEntries(columns.map((e) => MapEntry(e.field, e))),
-        gridKey = GlobalKey() {
+  }) : refColumns = FilteredList(initialList: columns),
+       refRows = FilteredList(initialList: rows),
+       refColumnGroups = FilteredList<PlutoColumnGroup>(
+         initialList: columnGroups,
+       ),
+       columnMenuDelegate =
+           columnMenuDelegate ?? const PlutoColumnMenuDelegateDefault(),
+       notifierFilterResolver =
+           notifierFilterResolver ?? const PlutoNotifierFilterResolverDefault(),
+       columnsMap = Map.fromEntries(columns.map((e) => MapEntry(e.field, e))),
+       gridKey = GlobalKey() {
     setConfiguration(configuration);
     setGridMode(mode ?? PlutoGridMode.normal);
     _initialize();
@@ -115,8 +115,12 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
   final Widget Function(Widget rowWidget)? rowWrapper;
 
   @override
-  final Widget Function(Widget editCellWidget, PlutoCell cell,
-      TextEditingController controller)? editCellWrapper;
+  final Widget Function(
+    Widget editCellWidget,
+    PlutoCell cell,
+    TextEditingController controller,
+  )?
+  editCellWrapper;
 
   @override
   final FilteredList<PlutoColumn> refColumns;
@@ -192,7 +196,8 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
     BuildContext context, {
     PlutoColumn? calledColumn,
     void Function()? onClosed,
-  })? showFilterPopupCustom;
+  })?
+  showFilterPopupCustom;
 
   void _initialize() {
     PlutoGridStateManager.initializeRows(

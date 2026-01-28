@@ -94,11 +94,13 @@ void main() {
 
       final mock = MockMethods();
 
-      await tester.pumpWidget(buildGrid(
-        columns: columns,
-        rows: rows,
-        onChanged: mock.oneParamReturnVoid,
-      ));
+      await tester.pumpWidget(
+        buildGrid(
+          columns: columns,
+          rows: rows,
+          onChanged: mock.oneParamReturnVoid,
+        ),
+      );
 
       final cellWidget = find.text('12,345.01');
 
@@ -132,11 +134,13 @@ void main() {
 
       final mock = MockMethods();
 
-      await tester.pumpWidget(buildGrid(
-        columns: columns,
-        rows: rows,
-        onChanged: mock.oneParamReturnVoid,
-      ));
+      await tester.pumpWidget(
+        buildGrid(
+          columns: columns,
+          rows: rows,
+          onChanged: mock.oneParamReturnVoid,
+        ),
+      );
 
       final cellWidget = find.text('12,345.01');
 
@@ -224,11 +228,13 @@ void main() {
 
       final mock = MockMethods();
 
-      await tester.pumpWidget(buildGrid(
-        columns: columns,
-        rows: rows,
-        onChanged: mock.oneParamReturnVoid,
-      ));
+      await tester.pumpWidget(
+        buildGrid(
+          columns: columns,
+          rows: rows,
+          onChanged: mock.oneParamReturnVoid,
+        ),
+      );
 
       final cellWidget = find.text('12.345,01');
 
@@ -262,11 +268,13 @@ void main() {
 
       final mock = MockMethods();
 
-      await tester.pumpWidget(buildGrid(
-        columns: columns,
-        rows: rows,
-        onChanged: mock.oneParamReturnVoid,
-      ));
+      await tester.pumpWidget(
+        buildGrid(
+          columns: columns,
+          rows: rows,
+          onChanged: mock.oneParamReturnVoid,
+        ),
+      );
 
       final cellWidget = find.text('12.345,01');
 

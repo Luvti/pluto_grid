@@ -81,12 +81,13 @@ class _GridLoading extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 text ?? 'Loading',
-                style: textStyle ??
+                style:
+                    textStyle ??
                     const TextStyle(
                       color: Colors.black,
                       fontSize: 14,
                     ),
-              )
+              ),
             ],
           ),
         ),

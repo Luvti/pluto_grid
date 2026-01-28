@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 /// A callback function to implement when the scroll reaches the end.
-typedef PlutoInfinityScrollRowsFetch = Future<PlutoInfinityScrollRowsResponse>
-    Function(PlutoInfinityScrollRowsRequest);
+typedef PlutoInfinityScrollRowsFetch =
+    Future<PlutoInfinityScrollRowsResponse> Function(
+      PlutoInfinityScrollRowsRequest,
+    );
 
 /// Request data to get data when scrolling has reached the end.
 class PlutoInfinityScrollRowsRequest {

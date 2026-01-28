@@ -83,19 +83,21 @@ void main() {
     );
   });
 
-  test('fields 가 [column1] 이고 children 이 [PlutoColumnGroup] 이면 에러가 발생 되어야 한다.',
-      () {
-    expect(
-      () => PlutoColumnGroup(
-        title: 'column group',
-        fields: ['column1'],
-        children: [
-          PlutoColumnGroup(title: 'sub group', fields: ['column2'])
-        ],
-      ),
-      throwsAssertionError,
-    );
-  });
+  test(
+    'fields 가 [column1] 이고 children 이 [PlutoColumnGroup] 이면 에러가 발생 되어야 한다.',
+    () {
+      expect(
+        () => PlutoColumnGroup(
+          title: 'column group',
+          fields: ['column1'],
+          children: [
+            PlutoColumnGroup(title: 'sub group', fields: ['column2']),
+          ],
+        ),
+        throwsAssertionError,
+      );
+    },
+  );
 
   test('fields 가 [column1] 이고 children 이 null 이면 에러가 발생 되지 않아야 한다.', () {
     expect(

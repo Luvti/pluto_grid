@@ -87,9 +87,12 @@ void main() {
       const field = 'DUMMY_FIELD';
 
       final children = [
-        PlutoColumnGroup(title: 'title', children: [
-          PlutoColumnGroup(title: 'title', fields: ['DUMMY_FIELD']),
-        ]),
+        PlutoColumnGroup(
+          title: 'title',
+          children: [
+            PlutoColumnGroup(title: 'title', fields: ['DUMMY_FIELD']),
+          ],
+        ),
       ];
 
       final columnGroup = PlutoColumnGroup(

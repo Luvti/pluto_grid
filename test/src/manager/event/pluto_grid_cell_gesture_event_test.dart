@@ -22,19 +22,19 @@ void main() {
     PlutoCell? cell,
     PlutoColumn? column,
     int? rowIdx,
-  }) =>
-      PlutoGridCellGestureEvent(
-        gestureType: gestureType,
-        offset: offset ?? Offset.zero,
-        cell: cell ?? PlutoCell(value: 'value'),
-        column: column ??
-            PlutoColumn(
-              title: 'column',
-              field: 'column',
-              type: PlutoColumnType.text(),
-            ),
-        rowIdx: rowIdx ?? 0,
-      );
+  }) => PlutoGridCellGestureEvent(
+    gestureType: gestureType,
+    offset: offset ?? Offset.zero,
+    cell: cell ?? PlutoCell(value: 'value'),
+    column:
+        column ??
+        PlutoColumn(
+          title: 'column',
+          field: 'column',
+          type: PlutoColumnType.text(),
+        ),
+    rowIdx: rowIdx ?? 0,
+  );
 
   setUp(() {
     stateManager = MockPlutoGridStateManager();
@@ -191,10 +191,11 @@ void main() {
         // then
         verify(
           stateManager.setCurrentSelectingPosition(
-              cellPosition: const PlutoGridCellPosition(
-            columnIdx: columnIdx,
-            rowIdx: rowIdx,
-          )),
+            cellPosition: const PlutoGridCellPosition(
+              columnIdx: columnIdx,
+              rowIdx: rowIdx,
+            ),
+          ),
         ).called(1);
         // 호출 되지 않아야 할 메소드
         verifyNever(stateManager.setKeepFocus(true));
@@ -233,9 +234,11 @@ void main() {
         ).called(1);
         // 호출 되지 않아야 할 메소드
         verifyNever(stateManager.setKeepFocus(true));
-        verifyNever(stateManager.setCurrentSelectingPosition(
-          cellPosition: anyNamed('cellPosition'),
-        ));
+        verifyNever(
+          stateManager.setCurrentSelectingPosition(
+            cellPosition: anyNamed('cellPosition'),
+          ),
+        );
       },
     );
 
@@ -422,10 +425,17 @@ void main() {
 
         // then
         verify(stateManager.setCurrentSelectingPositionWithOffset(offset));
-        verify(eventManager.addEvent(argThat(
-            PlutoObjectMatcher<PlutoGridScrollUpdateEvent>(rule: (event) {
-          return event.offset == offset;
-        }))));
+        verify(
+          eventManager.addEvent(
+            argThat(
+              PlutoObjectMatcher<PlutoGridScrollUpdateEvent>(
+                rule: (event) {
+                  return event.offset == offset;
+                },
+              ),
+            ),
+          ),
+        );
       },
     );
   });

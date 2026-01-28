@@ -27,11 +27,13 @@ void main() {
             createFooter: createFooter,
             onLoaded: (PlutoGridOnLoadedEvent event) {
               stateManager = event.stateManager;
-              stateManager.setRowGroup(PlutoRowGroupTreeDelegate(
-                resolveColumnDepth: (column) =>
-                    int.parse(column.field.replaceAll('column', '')) - 1,
-                showText: (cell) => true,
-              ));
+              stateManager.setRowGroup(
+                PlutoRowGroupTreeDelegate(
+                  resolveColumnDepth: (column) =>
+                      int.parse(column.field.replaceAll('column', '')) - 1,
+                  showText: (cell) => true,
+                ),
+              );
             },
           ),
         ),
@@ -49,15 +51,30 @@ void main() {
     setUp(() {
       columns = [
         PlutoColumn(
-            title: 'column1', field: 'column1', type: PlutoColumnType.text()),
+          title: 'column1',
+          field: 'column1',
+          type: PlutoColumnType.text(),
+        ),
         PlutoColumn(
-            title: 'column2', field: 'column2', type: PlutoColumnType.text()),
+          title: 'column2',
+          field: 'column2',
+          type: PlutoColumnType.text(),
+        ),
         PlutoColumn(
-            title: 'column3', field: 'column3', type: PlutoColumnType.text()),
+          title: 'column3',
+          field: 'column3',
+          type: PlutoColumnType.text(),
+        ),
         PlutoColumn(
-            title: 'column4', field: 'column4', type: PlutoColumnType.text()),
+          title: 'column4',
+          field: 'column4',
+          type: PlutoColumnType.text(),
+        ),
         PlutoColumn(
-            title: 'column5', field: 'column5', type: PlutoColumnType.text()),
+          title: 'column5',
+          field: 'column5',
+          type: PlutoColumnType.text(),
+        ),
       ];
 
       rows = [
@@ -71,9 +88,21 @@ void main() {
             createRow('B42', 'b42-1', 'b42-2', 'b42-3', 'b42-4', columns),
             createGroup('B43', 'b43-1', 'b43-2', 'b43-3', 'b43-4', columns, [
               createRow(
-                  'B431', 'b431-1', 'b431-2', 'b431-3', 'b431-4', columns),
+                'B431',
+                'b431-1',
+                'b431-2',
+                'b431-3',
+                'b431-4',
+                columns,
+              ),
               createRow(
-                  'B432', 'b432-1', 'b432-2', 'b432-3', 'b432-4', columns),
+                'B432',
+                'b432-1',
+                'b432-2',
+                'b432-3',
+                'b432-4',
+                columns,
+              ),
             ]),
           ]),
         ]),
@@ -158,8 +187,9 @@ void main() {
       expect(A1.dy, greaterThan(B1.dy));
     });
 
-    testWidgets('B 를 expand 후 column1 을 descending 정렬하면 순서가 바뀌어야 한다.',
-        (tester) async {
+    testWidgets('B 를 expand 후 column1 을 descending 정렬하면 순서가 바뀌어야 한다.', (
+      tester,
+    ) async {
       await buildGrid(tester: tester, columns: columns, rows: rows);
 
       final GROUP_B_TOGGLE_BTN = find
@@ -199,66 +229,66 @@ void main() {
     });
 
     testWidgets(
-        'column1 을 descending 정렬후 B 를 expand 하면 B1~4 도 정렬 되어 출력 되어야 한다.',
-        (tester) async {
-      await buildGrid(tester: tester, columns: columns, rows: rows);
+      'column1 을 descending 정렬후 B 를 expand 하면 B1~4 도 정렬 되어 출력 되어야 한다.',
+      (tester) async {
+        await buildGrid(tester: tester, columns: columns, rows: rows);
 
-      await tester.tap(find.text('column1'));
-      await tester.tap(find.text('column1'));
-      await tester.pumpAndSettle();
+        await tester.tap(find.text('column1'));
+        await tester.tap(find.text('column1'));
+        await tester.pumpAndSettle();
 
-      {
-        final A = tester.getTopLeft(find.text('A'));
-        final B = tester.getTopLeft(find.text('B'));
-        final C = tester.getTopLeft(find.text('C'));
-        final D = tester.getTopLeft(find.text('D'));
-        final E = tester.getTopLeft(find.text('E'));
+        {
+          final A = tester.getTopLeft(find.text('A'));
+          final B = tester.getTopLeft(find.text('B'));
+          final C = tester.getTopLeft(find.text('C'));
+          final D = tester.getTopLeft(find.text('D'));
+          final E = tester.getTopLeft(find.text('E'));
 
-        expect(E.dy, lessThan(D.dy));
-        expect(D.dy, greaterThan(E.dy));
-        expect(C.dy, greaterThan(D.dy));
-        expect(B.dy, greaterThan(C.dy));
-        expect(A.dy, greaterThan(B.dy));
-      }
+          expect(E.dy, lessThan(D.dy));
+          expect(D.dy, greaterThan(E.dy));
+          expect(C.dy, greaterThan(D.dy));
+          expect(B.dy, greaterThan(C.dy));
+          expect(A.dy, greaterThan(B.dy));
+        }
 
-      final GROUP_B_TOGGLE_BTN = find
-          .descendant(
-            of: find.ancestor(
-              of: find.text('B'),
-              matching: find.byType(PlutoDefaultCell),
-            ),
-            matching: find.byType(IconButton),
-          )
-          .first;
-      await tester.tap(GROUP_B_TOGGLE_BTN);
+        final GROUP_B_TOGGLE_BTN = find
+            .descendant(
+              of: find.ancestor(
+                of: find.text('B'),
+                matching: find.byType(PlutoDefaultCell),
+              ),
+              matching: find.byType(IconButton),
+            )
+            .first;
+        await tester.tap(GROUP_B_TOGGLE_BTN);
 
-      await tester.pumpAndSettle();
+        await tester.pumpAndSettle();
 
-      {
-        final A = tester.getTopLeft(find.text('A'));
-        final B = tester.getTopLeft(find.text('B'));
-        final B1 = tester.getTopLeft(find.text('B1'));
-        final B2 = tester.getTopLeft(find.text('B2'));
-        final B3 = tester.getTopLeft(find.text('B3'));
-        final B4 = tester.getTopLeft(find.text('B4'));
-        final C = tester.getTopLeft(find.text('C'));
-        final D = tester.getTopLeft(find.text('D'));
-        final E = tester.getTopLeft(find.text('E'));
+        {
+          final A = tester.getTopLeft(find.text('A'));
+          final B = tester.getTopLeft(find.text('B'));
+          final B1 = tester.getTopLeft(find.text('B1'));
+          final B2 = tester.getTopLeft(find.text('B2'));
+          final B3 = tester.getTopLeft(find.text('B3'));
+          final B4 = tester.getTopLeft(find.text('B4'));
+          final C = tester.getTopLeft(find.text('C'));
+          final D = tester.getTopLeft(find.text('D'));
+          final E = tester.getTopLeft(find.text('E'));
 
-        expect(E.dy, lessThan(D.dy));
-        expect(D.dy, lessThan(C.dy));
-        expect(C.dy, lessThan(B.dy));
-        expect(B.dy, lessThan(B4.dy));
-        expect(B4.dy, lessThan(B3.dy));
-        expect(B3.dy, lessThan(B2.dy));
-        expect(B2.dy, lessThan(B1.dy));
-        expect(B1.dy, lessThan(A.dy));
-        expect(A.dy, greaterThan(B1.dy));
-      }
-    });
+          expect(E.dy, lessThan(D.dy));
+          expect(D.dy, lessThan(C.dy));
+          expect(C.dy, lessThan(B.dy));
+          expect(B.dy, lessThan(B4.dy));
+          expect(B4.dy, lessThan(B3.dy));
+          expect(B3.dy, lessThan(B2.dy));
+          expect(B2.dy, lessThan(B1.dy));
+          expect(B1.dy, lessThan(A.dy));
+          expect(A.dy, greaterThan(B1.dy));
+        }
+      },
+    );
 
-    testWidgets(
-        'column1 을 b 로 필터링 후 column1 을 descending 정렬후, '
+    testWidgets('column1 을 b 로 필터링 후 column1 을 descending 정렬후, '
         '필터를 풀면 순서가 바뀌어야 한다.', (tester) async {
       await buildGrid(tester: tester, columns: columns, rows: rows);
 
@@ -266,11 +296,12 @@ void main() {
       await tester.pumpAndSettle();
 
       final COLUMN1_FILTER = find.descendant(
-          of: find.ancestor(
-            of: find.text('column1'),
-            matching: find.byType(PlutoBaseColumn),
-          ),
-          matching: find.byType(TextField));
+        of: find.ancestor(
+          of: find.text('column1'),
+          matching: find.byType(PlutoBaseColumn),
+        ),
+        matching: find.byType(TextField),
+      );
       await tester.tap(COLUMN1_FILTER);
       await tester.tap(COLUMN1_FILTER);
       await tester.enterText(COLUMN1_FILTER, 'b');

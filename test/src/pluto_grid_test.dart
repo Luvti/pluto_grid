@@ -114,8 +114,9 @@ void main() {
     },
   );
 
-  testWidgets('createFooter 를 설정 한 경우 footer 가 출력 되어야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('createFooter 를 설정 한 경우 footer 가 출력 되어야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     final columns = ColumnHelper.textColumn('header');
     final rows = RowHelper.count(3, columns);
@@ -143,62 +144,64 @@ void main() {
   });
 
   testWidgets(
-      'header 에 PlutoPagination 을 설정 한 경우 PlutoPagination 가 렌더링 되어야 한다.',
-      (WidgetTester tester) async {
-    // given
-    final columns = ColumnHelper.textColumn('header');
-    final rows = RowHelper.count(3, columns);
+    'header 에 PlutoPagination 을 설정 한 경우 PlutoPagination 가 렌더링 되어야 한다.',
+    (WidgetTester tester) async {
+      // given
+      final columns = ColumnHelper.textColumn('header');
+      final rows = RowHelper.count(3, columns);
 
-    // when
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Material(
-          child: PlutoGrid(
-            columns: columns,
-            rows: rows,
-            createHeader: (stateManager) {
-              return PlutoPagination(stateManager);
-            },
+      // when
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Material(
+            child: PlutoGrid(
+              columns: columns,
+              rows: rows,
+              createHeader: (stateManager) {
+                return PlutoPagination(stateManager);
+              },
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
 
-    // then
-    final found = find.byType(PlutoPagination);
-    expect(found, findsOneWidget);
-  });
+      // then
+      final found = find.byType(PlutoPagination);
+      expect(found, findsOneWidget);
+    },
+  );
 
   testWidgets(
-      'footer 에 PlutoPagination 을 설정 한 경우 PlutoPagination 가 렌더링 되어야 한다.',
-      (WidgetTester tester) async {
-    // given
-    final columns = ColumnHelper.textColumn('header');
-    final rows = RowHelper.count(3, columns);
+    'footer 에 PlutoPagination 을 설정 한 경우 PlutoPagination 가 렌더링 되어야 한다.',
+    (WidgetTester tester) async {
+      // given
+      final columns = ColumnHelper.textColumn('header');
+      final rows = RowHelper.count(3, columns);
 
-    // when
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Material(
-          child: PlutoGrid(
-            columns: columns,
-            rows: rows,
-            createFooter: (stateManager) {
-              return PlutoPagination(stateManager);
-            },
+      // when
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Material(
+            child: PlutoGrid(
+              columns: columns,
+              rows: rows,
+              createFooter: (stateManager) {
+                return PlutoPagination(stateManager);
+              },
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
 
-    // then
-    final found = find.byType(PlutoPagination);
-    expect(found, findsOneWidget);
-  });
+      // then
+      final found = find.byType(PlutoPagination);
+      expect(found, findsOneWidget);
+    },
+  );
 
   testWidgets('cell 값이 출력 되어야 한다.', (WidgetTester tester) async {
     // given
@@ -274,8 +277,9 @@ void main() {
     expect(rows[2].cells['header0']!.value, 'header0 value 2');
   });
 
-  testWidgets('셀 값 변경 후 헤더를 탭하면 변경 된 값에 맞게 정렬 되어야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('셀 값 변경 후 헤더를 탭하면 변경 된 값에 맞게 정렬 되어야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     final columns = ColumnHelper.textColumn('header');
     final rows = RowHelper.count(3, columns);
@@ -303,13 +307,15 @@ void main() {
 
     // 셀 선택
     await tester.tap(
-        find.descendant(of: firstCell, matching: find.byType(GestureDetector)));
+      find.descendant(of: firstCell, matching: find.byType(GestureDetector)),
+    );
 
     expect(stateManager!.isEditing, false);
 
     // 수정 상태로 변경
     await tester.tap(
-        find.descendant(of: firstCell, matching: find.byType(GestureDetector)));
+      find.descendant(of: firstCell, matching: find.byType(GestureDetector)),
+    );
 
     // 수정 상태 확인
     expect(stateManager!.isEditing, true);
@@ -322,8 +328,10 @@ void main() {
     //     find.descendant(of: firstCell, matching: find.byType(TextField)),
     //     'cell value4');
     // (2)
-    stateManager!
-        .changeCellValue(stateManager!.currentCell!, 'header0 value 4');
+    stateManager!.changeCellValue(
+      stateManager!.currentCell!,
+      'header0 value 4',
+    );
 
     // 다음 행으로 이동
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
@@ -356,8 +364,7 @@ void main() {
     expect(rows[2].cells['header0']!.value, 'header0 value 2');
   });
 
-  testWidgets(
-      'WHEN selecting a specific cell without grid header'
+  testWidgets('WHEN selecting a specific cell without grid header'
       'THEN That cell should be selected.', (WidgetTester tester) async {
     // given
     final columns = [
@@ -389,10 +396,12 @@ void main() {
 
     // select first cell
     await tester.tap(
-        find.descendant(of: firstCell, matching: find.byType(GestureDetector)));
+      find.descendant(of: firstCell, matching: find.byType(GestureDetector)),
+    );
 
-    Offset selectedCellOffset =
-        tester.getCenter(find.byKey(rows[7].cells['header3']!.key));
+    Offset selectedCellOffset = tester.getCenter(
+      find.byKey(rows[7].cells['header3']!.key),
+    );
 
     stateManager!.setCurrentSelectingPositionWithOffset(selectedCellOffset);
 
@@ -401,8 +410,7 @@ void main() {
     expect(stateManager!.currentSelectingPosition!.columnIdx, 3);
   });
 
-  testWidgets(
-      'WHEN selecting a specific cell with grid header'
+  testWidgets('WHEN selecting a specific cell with grid header'
       'THEN That cell should be selected.', (WidgetTester tester) async {
     // given
     final columns = [
@@ -435,10 +443,12 @@ void main() {
 
     // select first cell
     await tester.tap(
-        find.descendant(of: firstCell, matching: find.byType(GestureDetector)));
+      find.descendant(of: firstCell, matching: find.byType(GestureDetector)),
+    );
 
-    Offset selectedCellOffset =
-        tester.getCenter(find.byKey(rows[5].cells['header3']!.key));
+    Offset selectedCellOffset = tester.getCenter(
+      find.byKey(rows[5].cells['header3']!.key),
+    );
 
     stateManager!.setCurrentSelectingPositionWithOffset(selectedCellOffset);
 
@@ -448,11 +458,11 @@ void main() {
   });
 
   group('applyColumnRowOnInit', () {
-    testWidgets(
-        'number column'
+    testWidgets('number column'
         'WHEN applyFormatOnInit value of Column is true(default value)'
-        'THEN cell value of the column should be changed to format.',
-        (WidgetTester tester) async {
+        'THEN cell value of the column should be changed to format.', (
+      WidgetTester tester,
+    ) async {
       // given
       final columns = [
         PlutoColumn(
@@ -499,11 +509,11 @@ void main() {
       expect(stateManager!.rows[5].cells['header']!.value, 12);
     });
 
-    testWidgets(
-        'number column'
+    testWidgets('number column'
         'WHEN applyFormatOnInit value of Column is false'
-        'THEN cell value of the column should not be changed to format.',
-        (WidgetTester tester) async {
+        'THEN cell value of the column should not be changed to format.', (
+      WidgetTester tester,
+    ) async {
       // given
       final columns = [
         PlutoColumn(
@@ -551,57 +561,58 @@ void main() {
     });
 
     testWidgets(
-        'number column'
-        'WHEN format allows prime numbers'
-        'THEN cell value should be displayed as a decimal number according to the number of digits in the format.',
-        (WidgetTester tester) async {
-      // given
-      final columns = [
-        PlutoColumn(
-          title: 'header',
-          field: 'header',
-          type: PlutoColumnType.number(format: '#,###.#####'),
-        ),
-      ];
+      'number column'
+      'WHEN format allows prime numbers'
+      'THEN cell value should be displayed as a decimal number according to the number of digits in the format.',
+      (WidgetTester tester) async {
+        // given
+        final columns = [
+          PlutoColumn(
+            title: 'header',
+            field: 'header',
+            type: PlutoColumnType.number(format: '#,###.#####'),
+          ),
+        ];
 
-      final rows = [
-        PlutoRow(cells: {'header': PlutoCell(value: 1234567)}),
-        PlutoRow(cells: {'header': PlutoCell(value: 1234567.1234)}),
-        PlutoRow(cells: {'header': PlutoCell(value: 1234567.12345)}),
-        PlutoRow(cells: {'header': PlutoCell(value: 1234567.123456)}),
-      ];
+        final rows = [
+          PlutoRow(cells: {'header': PlutoCell(value: 1234567)}),
+          PlutoRow(cells: {'header': PlutoCell(value: 1234567.1234)}),
+          PlutoRow(cells: {'header': PlutoCell(value: 1234567.12345)}),
+          PlutoRow(cells: {'header': PlutoCell(value: 1234567.123456)}),
+        ];
 
-      PlutoGridStateManager? stateManager;
+        PlutoGridStateManager? stateManager;
 
-      // when
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Material(
-            child: PlutoGrid(
-              columns: columns,
-              rows: rows,
-              onLoaded: (PlutoGridOnLoadedEvent event) {
-                stateManager = event.stateManager;
-              },
+        // when
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Material(
+              child: PlutoGrid(
+                columns: columns,
+                rows: rows,
+                onLoaded: (PlutoGridOnLoadedEvent event) {
+                  stateManager = event.stateManager;
+                },
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      await tester.pumpAndSettle();
+        await tester.pumpAndSettle();
 
-      // then
-      expect(stateManager!.rows[0].cells['header']!.value, 1234567);
-      expect(stateManager!.rows[1].cells['header']!.value, 1234567.1234);
-      expect(stateManager!.rows[2].cells['header']!.value, 1234567.12345);
-      expect(stateManager!.rows[3].cells['header']!.value, 1234567.12346);
-    });
+        // then
+        expect(stateManager!.rows[0].cells['header']!.value, 1234567);
+        expect(stateManager!.rows[1].cells['header']!.value, 1234567.1234);
+        expect(stateManager!.rows[2].cells['header']!.value, 1234567.12345);
+        expect(stateManager!.rows[3].cells['header']!.value, 1234567.12346);
+      },
+    );
 
-    testWidgets(
-        'number column'
+    testWidgets('number column'
         'WHEN negative is false'
-        'THEN negative numbers should not be displayed in the cell value.',
-        (WidgetTester tester) async {
+        'THEN negative numbers should not be displayed in the cell value.', (
+      WidgetTester tester,
+    ) async {
       // given
       final columns = [
         PlutoColumn(
@@ -648,8 +659,7 @@ void main() {
       expect(stateManager!.rows[5].cells['header']!.value, 0);
     });
 
-    testWidgets(
-        'WHEN Row does not have sortIdx'
+    testWidgets('WHEN Row does not have sortIdx'
         'THEN sortIdx must be set in Row', (WidgetTester tester) async {
       // given
       final columns = [
@@ -691,8 +701,7 @@ void main() {
       expect(stateManager!.rows[4].sortIdx, 4);
     });
 
-    testWidgets(
-        'WHEN Row has sortIdx'
+    testWidgets('WHEN Row has sortIdx'
         'THEN sortIdx is reset.', (WidgetTester tester) async {
       // given
       final columns = [
@@ -736,8 +745,7 @@ void main() {
   });
 
   group('moveColumn', () {
-    testWidgets(
-        '고정 컬럼이 없는 상태에서 '
+    testWidgets('고정 컬럼이 없는 상태에서 '
         '0번 컬럼을 2번 컬럼으로 이동.', (WidgetTester tester) async {
       // given
       List<PlutoColumn> columns = [
@@ -774,8 +782,7 @@ void main() {
       expect(columns[2].title, 'body0');
     });
 
-    testWidgets(
-        '고정 컬럼이 없는 상태에서 '
+    testWidgets('고정 컬럼이 없는 상태에서 '
         '9번 컬럼을 0번 컬럼으로 이동.', (WidgetTester tester) async {
       // given
       List<PlutoColumn> columns = [
@@ -819,8 +826,9 @@ void main() {
       expect(columns[9].title, 'body8');
     });
 
-    testWidgets('넓이가 충분하지 않은 상태에서 고정 컬럼으로 설정하면 설정 되지 않아야 한다.',
-        (WidgetTester tester) async {
+    testWidgets('넓이가 충분하지 않은 상태에서 고정 컬럼으로 설정하면 설정 되지 않아야 한다.', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
         ...ColumnHelper.textColumn('body', count: 10, width: 100),
@@ -848,8 +856,9 @@ void main() {
         ),
       );
 
-      stateManager!
-          .setLayout(const BoxConstraints(maxWidth: 50, maxHeight: 300));
+      stateManager!.setLayout(
+        const BoxConstraints(maxWidth: 50, maxHeight: 300),
+      );
 
       // when
       stateManager!.toggleFrozenColumn(columns[3], PlutoColumnFrozen.start);
@@ -871,8 +880,9 @@ void main() {
     });
   });
 
-  testWidgets('editing 상태에서 shift + 우측 방향키 입력 시 셀이 선택 되지 않아야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('editing 상태에서 shift + 우측 방향키 입력 시 셀이 선택 되지 않아야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     final columns = [
       ColumnHelper.textColumn('headerL', frozen: PlutoColumnFrozen.start).first,
@@ -929,8 +939,9 @@ void main() {
     expect(stateManager!.currentCellPosition!.rowIdx, 1);
   });
 
-  testWidgets('editing 상태에서 shift + 좌측 방향키 입력 시 셀이 선택 되지 않아야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('editing 상태에서 shift + 좌측 방향키 입력 시 셀이 선택 되지 않아야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     final columns = [
       ColumnHelper.textColumn('headerL', frozen: PlutoColumnFrozen.start).first,
@@ -987,8 +998,9 @@ void main() {
     expect(stateManager!.currentCellPosition!.rowIdx, 1);
   });
 
-  testWidgets('editing 상태에서 shift + 위쪽 방향키 입력 시 셀이 선택 되지 않아야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('editing 상태에서 shift + 위쪽 방향키 입력 시 셀이 선택 되지 않아야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     final columns = [
       ColumnHelper.textColumn('headerL', frozen: PlutoColumnFrozen.start).first,
@@ -1045,8 +1057,9 @@ void main() {
     expect(stateManager!.currentCellPosition!.rowIdx, 1);
   });
 
-  testWidgets('editing 상태에서 shift + 아래쪽 방향키 입력 시 셀이 선택 되지 않아야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('editing 상태에서 shift + 아래쪽 방향키 입력 시 셀이 선택 되지 않아야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     final columns = [
       ColumnHelper.textColumn('headerL', frozen: PlutoColumnFrozen.start).first,
@@ -1103,8 +1116,9 @@ void main() {
     expect(stateManager!.currentCellPosition!.rowIdx, 1);
   });
 
-  testWidgets('editing 상태가 아니면, shift + 우측 방향키 입력 시 셀이 선택 되어야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('editing 상태가 아니면, shift + 우측 방향키 입력 시 셀이 선택 되어야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     final columns = [
       ColumnHelper.textColumn('headerL', frozen: PlutoColumnFrozen.start).first,
@@ -1158,8 +1172,9 @@ void main() {
     expect(stateManager!.currentCellPosition!.rowIdx, 1);
   });
 
-  testWidgets('editing 상태가 아니면, shift + 좌측 방향키 입력 시 셀이 선택 되어야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('editing 상태가 아니면, shift + 좌측 방향키 입력 시 셀이 선택 되어야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     final columns = [
       ColumnHelper.textColumn('headerL', frozen: PlutoColumnFrozen.start).first,
@@ -1211,8 +1226,9 @@ void main() {
     expect(stateManager!.currentCellPosition!.rowIdx, 1);
   });
 
-  testWidgets('editing 상태가 아니면, shift + 위쪽 방향키 입력 시 셀이 선택 되어야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('editing 상태가 아니면, shift + 위쪽 방향키 입력 시 셀이 선택 되어야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     final columns = [
       ColumnHelper.textColumn('headerL', frozen: PlutoColumnFrozen.start).first,
@@ -1264,8 +1280,9 @@ void main() {
     expect(stateManager!.currentCellPosition!.rowIdx, 1);
   });
 
-  testWidgets('editing 상태가 아니면, shift + 아래쪽 방향키 입력 시 셀이 선택 되어야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('editing 상태가 아니면, shift + 아래쪽 방향키 입력 시 셀이 선택 되어야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     final columns = [
       ColumnHelper.textColumn('headerL', frozen: PlutoColumnFrozen.start).first,
@@ -1346,70 +1363,73 @@ void main() {
   });
 
   testWidgets(
-      'showLoading 을 rows 레벨로 호출 하면 LinearProgressIndicator 위젯이 나타나야 한다.',
-      (tester) async {
-    final columns = ColumnHelper.textColumn('column', count: 10);
-    final rows = RowHelper.count(10, columns);
+    'showLoading 을 rows 레벨로 호출 하면 LinearProgressIndicator 위젯이 나타나야 한다.',
+    (tester) async {
+      final columns = ColumnHelper.textColumn('column', count: 10);
+      final rows = RowHelper.count(10, columns);
 
-    late final PlutoGridStateManager stateManager;
+      late final PlutoGridStateManager stateManager;
 
-    // when
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Material(
-          child: PlutoGrid(
-            columns: columns,
-            rows: rows,
-            onLoaded: (PlutoGridOnLoadedEvent event) {
-              stateManager = event.stateManager;
-            },
+      // when
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Material(
+            child: PlutoGrid(
+              columns: columns,
+              rows: rows,
+              onLoaded: (PlutoGridOnLoadedEvent event) {
+                stateManager = event.stateManager;
+              },
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    stateManager.setShowLoading(true, level: PlutoGridLoadingLevel.rows);
+      stateManager.setShowLoading(true, level: PlutoGridLoadingLevel.rows);
 
-    await tester.pump();
+      await tester.pump();
 
-    expect(find.byType(LinearProgressIndicator), findsOneWidget);
-  });
+      expect(find.byType(LinearProgressIndicator), findsOneWidget);
+    },
+  );
 
   testWidgets(
-      'showLoading 을 rowsBottomCircular 레벨로 호출 하면 CircularProgressIndicator 위젯이 나타나야 한다.',
-      (tester) async {
-    final columns = ColumnHelper.textColumn('column', count: 10);
-    final rows = RowHelper.count(10, columns);
+    'showLoading 을 rowsBottomCircular 레벨로 호출 하면 CircularProgressIndicator 위젯이 나타나야 한다.',
+    (tester) async {
+      final columns = ColumnHelper.textColumn('column', count: 10);
+      final rows = RowHelper.count(10, columns);
 
-    late final PlutoGridStateManager stateManager;
+      late final PlutoGridStateManager stateManager;
 
-    // when
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Material(
-          child: PlutoGrid(
-            columns: columns,
-            rows: rows,
-            onLoaded: (PlutoGridOnLoadedEvent event) {
-              stateManager = event.stateManager;
-            },
+      // when
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Material(
+            child: PlutoGrid(
+              columns: columns,
+              rows: rows,
+              onLoaded: (PlutoGridOnLoadedEvent event) {
+                stateManager = event.stateManager;
+              },
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    stateManager.setShowLoading(
-      true,
-      level: PlutoGridLoadingLevel.rowsBottomCircular,
-    );
+      stateManager.setShowLoading(
+        true,
+        level: PlutoGridLoadingLevel.rowsBottomCircular,
+      );
 
-    await tester.pump();
+      await tester.pump();
 
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
-  });
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    },
+  );
 
-  testWidgets('showLoading 을 호출 하지 않으면 Loading 위젯이 나타나지 않아야 한다.',
-      (tester) async {
+  testWidgets('showLoading 을 호출 하지 않으면 Loading 위젯이 나타나지 않아야 한다.', (
+    tester,
+  ) async {
     final columns = ColumnHelper.textColumn('column', count: 10);
     final rows = RowHelper.count(10, columns);
 
@@ -1430,8 +1450,9 @@ void main() {
     expect(find.byType(PlutoLoading), findsNothing);
   });
 
-  testWidgets('select 모드에서 첫번째 숨김 컬럼이 있는 경우 두번째 컬럼이 현재 컬럼으로 첫 셀이 선택 되어야 한다.',
-      (tester) async {
+  testWidgets('select 모드에서 첫번째 숨김 컬럼이 있는 경우 두번째 컬럼이 현재 컬럼으로 첫 셀이 선택 되어야 한다.', (
+    tester,
+  ) async {
     final columns = ColumnHelper.textColumn('column', count: 10);
     final rows = RowHelper.count(10, columns);
     late final PlutoGridStateManager stateManager;
@@ -1458,8 +1479,9 @@ void main() {
     expect(stateManager.currentCell!.value, 'column1 value 0');
   });
 
-  testWidgets('normal 모드에서 readOnly 모드로 변경 하면 셀이 편집 불가 상태가 되어야 한다.',
-      (tester) async {
+  testWidgets('normal 모드에서 readOnly 모드로 변경 하면 셀이 편집 불가 상태가 되어야 한다.', (
+    tester,
+  ) async {
     final columns = ColumnHelper.textColumn('column', count: 10);
     final rows = RowHelper.count(10, columns);
     late final PlutoGridStateManager stateManager;
@@ -1538,15 +1560,20 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pump();
 
-    verify(mock.oneParamReturnVoid(
-        PlutoObjectMatcher<PlutoGridOnChangedEvent>(rule: (e) {
-      return e.row == rows[2] &&
-          e.column == columns[1] &&
-          e.rowIdx == 2 &&
-          e.columnIdx == 1 &&
-          e.value == 'text' &&
-          e.oldValue == 'column1 value 2';
-    }))).called(1);
+    verify(
+      mock.oneParamReturnVoid(
+        PlutoObjectMatcher<PlutoGridOnChangedEvent>(
+          rule: (e) {
+            return e.row == rows[2] &&
+                e.column == columns[1] &&
+                e.rowIdx == 2 &&
+                e.columnIdx == 1 &&
+                e.value == 'text' &&
+                e.oldValue == 'column1 value 2';
+          },
+        ),
+      ),
+    ).called(1);
   });
 
   testWidgets('컬럼을 좌측 고정 하면 onColumnsMoved 콜백이 호출 되어야 한다.', (tester) async {
@@ -1573,10 +1600,15 @@ void main() {
     stateManager.toggleFrozenColumn(columns[1], PlutoColumnFrozen.start);
     await tester.pump();
 
-    verify(mock.oneParamReturnVoid(
-        PlutoObjectMatcher<PlutoGridOnColumnsMovedEvent>(rule: (e) {
-      return e.idx == 1 && e.visualIdx == 0 && e.columns.length == 1;
-    }))).called(1);
+    verify(
+      mock.oneParamReturnVoid(
+        PlutoObjectMatcher<PlutoGridOnColumnsMovedEvent>(
+          rule: (e) {
+            return e.idx == 1 && e.visualIdx == 0 && e.columns.length == 1;
+          },
+        ),
+      ),
+    ).called(1);
   });
 
   testWidgets('컬럼을 우측 고정 하면 onColumnsMoved 콜백이 호출 되어야 한다.', (tester) async {
@@ -1603,10 +1635,15 @@ void main() {
     stateManager.toggleFrozenColumn(columns[1], PlutoColumnFrozen.end);
     await tester.pump();
 
-    verify(mock.oneParamReturnVoid(
-        PlutoObjectMatcher<PlutoGridOnColumnsMovedEvent>(rule: (e) {
-      return e.idx == 1 && e.visualIdx == 9 && e.columns.length == 1;
-    }))).called(1);
+    verify(
+      mock.oneParamReturnVoid(
+        PlutoObjectMatcher<PlutoGridOnColumnsMovedEvent>(
+          rule: (e) {
+            return e.idx == 1 && e.visualIdx == 9 && e.columns.length == 1;
+          },
+        ),
+      ),
+    ).called(1);
   });
 
   testWidgets('컬럼을 드래그하여 이동하면 onColumnsMoved 콜백이 호출 되어야 한다.', (tester) async {
@@ -1634,10 +1671,15 @@ void main() {
 
     await tester.pumpAndSettle(const Duration(milliseconds: 300));
 
-    verify(mock.oneParamReturnVoid(
-        PlutoObjectMatcher<PlutoGridOnColumnsMovedEvent>(rule: (e) {
-      return e.idx == 3 && e.visualIdx == 3 && e.columns.length == 1;
-    }))).called(1);
+    verify(
+      mock.oneParamReturnVoid(
+        PlutoObjectMatcher<PlutoGridOnColumnsMovedEvent>(
+          rule: (e) {
+            return e.idx == 3 && e.visualIdx == 3 && e.columns.length == 1;
+          },
+        ),
+      ),
+    ).called(1);
   });
 
   group('noRowsWidget', () {

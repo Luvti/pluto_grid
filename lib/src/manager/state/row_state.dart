@@ -110,25 +110,28 @@ mixin RowState implements IPlutoGridState {
   List<PlutoRow> get rows => <PlutoRow>[...refRows];
 
   @override
-  List<PlutoRow> get checkedRows =>
-      refRows.where((PlutoRow row) => row.checked ?? false).toList(
-            growable: false,
-          );
+  List<PlutoRow> get checkedRows => refRows
+      .where((PlutoRow row) => row.checked ?? false)
+      .toList(
+        growable: false,
+      );
 
   @override
   List<PlutoRow> get checkedRowsViaSelect =>
       checkedRows.where((row) => row.checkedViaSelect).toList(growable: false);
 
   @override
-  List<PlutoRow> get unCheckedRows =>
-      refRows.where((PlutoRow row) => !(row.checked ?? false)).toList(
-            growable: false,
-          );
+  List<PlutoRow> get unCheckedRows => refRows
+      .where((PlutoRow row) => !(row.checked ?? false))
+      .toList(
+        growable: false,
+      );
 
   @override
   bool get hasCheckedRow =>
-      refRows
-          .firstWhereOrNull((PlutoRow element) => element.checked ?? false) !=
+      refRows.firstWhereOrNull(
+        (PlutoRow element) => element.checked ?? false,
+      ) !=
       null;
 
   @override
@@ -376,7 +379,9 @@ mixin RowState implements IPlutoGridState {
 
     if (hasCurrentSelectingPosition) {
       selectingCellKey = refRows
-          .originalList[currentSelectingPosition!.rowIdx!].cells.entries
+          .originalList[currentSelectingPosition!.rowIdx!]
+          .cells
+          .entries
           .elementAt(currentSelectingPosition!.columnIdx!)
           .value
           .key;
@@ -394,8 +399,9 @@ mixin RowState implements IPlutoGridState {
 
     setCurrentSelectingPositionByCellKey(selectingCellKey, notify: false);
 
-    currentSelectingRows
-        .removeWhere((PlutoRow row) => removeKeys.contains(row.key));
+    currentSelectingRows.removeWhere(
+      (PlutoRow row) => removeKeys.contains(row.key),
+    );
 
     notifyListeners(notify, removeRows.hashCode);
   }

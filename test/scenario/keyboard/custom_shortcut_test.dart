@@ -61,9 +61,11 @@ void main() {
     (tester) async {
       final testAction = _TestAction(mock.noParamReturnVoid);
 
-      final shortcut = PlutoGridShortcut(actions: {
-        LogicalKeySet(LogicalKeyboardKey.enter): testAction,
-      });
+      final shortcut = PlutoGridShortcut(
+        actions: {
+          LogicalKeySet(LogicalKeyboardKey.enter): testAction,
+        },
+      );
 
       await buildGrid(tester, shortcut: shortcut);
 
@@ -79,12 +81,14 @@ void main() {
       String? copied;
 
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-          SystemChannels.platform, (MethodCall methodCall) async {
-        if (methodCall.method == 'Clipboard.setData') {
-          copied = (await methodCall.arguments['text']).toString();
-        }
-        return null;
-      });
+        SystemChannels.platform,
+        (MethodCall methodCall) async {
+          if (methodCall.method == 'Clipboard.setData') {
+            copied = (await methodCall.arguments['text']).toString();
+          }
+          return null;
+        },
+      );
 
       const shortcut = PlutoGridShortcut();
 
@@ -108,12 +112,14 @@ void main() {
       String? copied;
 
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-          SystemChannels.platform, (MethodCall methodCall) async {
-        if (methodCall.method == 'Clipboard.setData') {
-          copied = (await methodCall.arguments['text']).toString();
-        }
-        return null;
-      });
+        SystemChannels.platform,
+        (MethodCall methodCall) async {
+          if (methodCall.method == 'Clipboard.setData') {
+            copied = (await methodCall.arguments['text']).toString();
+          }
+          return null;
+        },
+      );
 
       final testAction = _TestAction(mock.noParamReturnVoid);
 

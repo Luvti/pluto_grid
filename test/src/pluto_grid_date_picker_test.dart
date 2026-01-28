@@ -167,7 +167,8 @@ void main() {
       double rowsHeight = 6 * PlutoGridSettings.rowTotalHeight;
 
       // itemHeight * 2 = Header Height + Column Height
-      double popupHeight = (PlutoGridSettings.rowTotalHeight * 2) +
+      double popupHeight =
+          (PlutoGridSettings.rowTotalHeight * 2) +
           rowsHeight +
           PlutoGridSettings.totalShadowLineWidth +
           PlutoGridSettings.gridInnerSpacing;
@@ -380,10 +381,15 @@ void main() {
       await tester.pump();
 
       verify(
-        mockListener.oneParamReturnVoid(argThat(
-            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(rule: (object) {
-          return object.cell!.value == '2022-06-11';
-        }))),
+        mockListener.oneParamReturnVoid(
+          argThat(
+            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(
+              rule: (object) {
+                return object.cell!.value == '2022-06-11';
+              },
+            ),
+          ),
+        ),
       ).called(1);
     },
   );

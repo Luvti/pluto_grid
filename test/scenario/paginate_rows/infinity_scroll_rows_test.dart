@@ -104,21 +104,24 @@ void main() {
       final bool isLast =
           fetchedRows.isEmpty || tempList.last.key == fetchedRows.last.key;
 
-      return Future.value(PlutoInfinityScrollRowsResponse(
-        isLast: isLast,
-        rows: fetchedRows.toList(),
-      ));
+      return Future.value(
+        PlutoInfinityScrollRowsResponse(
+          isLast: isLast,
+          rows: fetchedRows.toList(),
+        ),
+      );
     };
   }
 
   Finder findFilterTextField(String columnTitle) {
     return find.descendant(
       of: find.descendant(
-          of: find.ancestor(
-            of: find.text(columnTitle),
-            matching: find.byType(PlutoBaseColumn),
-          ),
-          matching: find.byType(PlutoColumnFilter)),
+        of: find.ancestor(
+          of: find.text(columnTitle),
+          matching: find.byType(PlutoBaseColumn),
+        ),
+        matching: find.byType(PlutoColumnFilter),
+      ),
       matching: find.byType(TextField),
     );
   }
@@ -172,8 +175,9 @@ void main() {
     expect(find.byType(PlutoBaseRow), findsNothing);
   });
 
-  testWidgets('fetchWithSorting 를 true 로 설정하면 sortOnlyEvent 의 값도 변경 되어야 한다.',
-      (tester) async {
+  testWidgets('fetchWithSorting 를 true 로 설정하면 sortOnlyEvent 의 값도 변경 되어야 한다.', (
+    tester,
+  ) async {
     final dummyRows = RowHelper.count(90, columns);
     final fetch = makeFetch(dummyRows: dummyRows);
 
@@ -188,23 +192,23 @@ void main() {
   });
 
   testWidgets(
-      'fetchWithFiltering 를 true 로 설정하면 filterOnlyEvent 의 값도 변경 되어야 한다.',
-      (tester) async {
-    final dummyRows = RowHelper.count(90, columns);
-    final fetch = makeFetch(dummyRows: dummyRows);
+    'fetchWithFiltering 를 true 로 설정하면 filterOnlyEvent 의 값도 변경 되어야 한다.',
+    (tester) async {
+      final dummyRows = RowHelper.count(90, columns);
+      final fetch = makeFetch(dummyRows: dummyRows);
 
-    await buildGrid(
-      tester,
-      fetch: fetch,
-      initialFetch: false,
-      fetchWithFiltering: true,
-    );
+      await buildGrid(
+        tester,
+        fetch: fetch,
+        initialFetch: false,
+        fetchWithFiltering: true,
+      );
 
-    expect(stateManager.filterOnlyEvent, true);
-  });
+      expect(stateManager.filterOnlyEvent, true);
+    },
+  );
 
-  testWidgets(
-      'initialFetch 가 false 이고 PlutoGrid 에 20개의 행을 전달한 경우, '
+  testWidgets('initialFetch 가 false 이고 PlutoGrid 에 20개의 행을 전달한 경우, '
       '20개 행이 렌더링 되어야 한다.', (tester) async {
     final dummyRows = RowHelper.count(90, columns);
     final fetch = makeFetch(dummyRows: dummyRows);
@@ -248,8 +252,7 @@ void main() {
     expect(find.text('column0 value 35'), findsOneWidget);
   });
 
-  testWidgets(
-      'PageDown 버튼으로 가장 아래로 이동하면, '
+  testWidgets('PageDown 버튼으로 가장 아래로 이동하면, '
       '20개 행이 더 렌더링 되어야 한다.', (tester) async {
     final dummyRows = RowHelper.count(90, columns);
     final fetch = makeFetch(dummyRows: dummyRows);
@@ -272,8 +275,7 @@ void main() {
     expect(find.text('column0 value 30'), findsOneWidget);
   });
 
-  testWidgets(
-      '40 개 이상의 행을 렌더링 한 후 컬럼 정렬을 하면, '
+  testWidgets('40 개 이상의 행을 렌더링 한 후 컬럼 정렬을 하면, '
       '새로 정렬된 20개 행이 렌더링 되어야 한다.', (tester) async {
     final dummyRows = RowHelper.count(90, columns);
     final fetch = makeFetch(dummyRows: dummyRows);
@@ -294,8 +296,7 @@ void main() {
     expect(stateManager.refRows.length, 20);
   });
 
-  testWidgets(
-      '40 개 이상의 행을 렌더링 한 후 column0 의 필터링 값을 설정하면, '
+  testWidgets('40 개 이상의 행을 렌더링 한 후 column0 의 필터링 값을 설정하면, '
       '필터링이 적용된 새로운 행이 렌더링 되어야 한다.', (tester) async {
     final dummyRows = RowHelper.count(90, columns);
     final fetch = makeFetch(dummyRows: dummyRows);
@@ -316,8 +317,7 @@ void main() {
     expect(stateManager.refRows.length, 20);
   });
 
-  testWidgets(
-      '필터링이 적용된 상태에서, '
+  testWidgets('필터링이 적용된 상태에서, '
       '필터링 아이콘이 렌더링 되어야 한다.', (tester) async {
     final dummyRows = RowHelper.count(90, columns);
     final fetch = makeFetch(dummyRows: dummyRows);
@@ -334,8 +334,7 @@ void main() {
     expect(find.byIcon(Icons.filter_alt_outlined), findsOneWidget);
   });
 
-  testWidgets(
-      '마지막 페이지까지 스크롤을 하면, '
+  testWidgets('마지막 페이지까지 스크롤을 하면, '
       '총 90 개의 행이 렌더링 되어야 한다.', (tester) async {
     final dummyRows = RowHelper.count(90, columns);
     final fetch = makeFetch(dummyRows: dummyRows);

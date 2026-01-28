@@ -106,8 +106,8 @@ class _ColumnGroupTitle extends StatelessWidget {
       columnGroup.group.titleSpan == null ? columnGroup.group.title : null;
 
   List<InlineSpan> get _children => [
-        if (columnGroup.group.titleSpan != null) columnGroup.group.titleSpan!,
-      ];
+    if (columnGroup.group.titleSpan != null) columnGroup.group.titleSpan!,
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -208,8 +208,9 @@ class _ColumnGroup extends StatelessWidget {
           columns: columnGroup.columns,
           textDirection: stateManager.textDirection,
         ),
-        children:
-            columnGroup.columns.map(_makeFieldWidget).toList(growable: false),
+        children: columnGroup.columns
+            .map(_makeFieldWidget)
+            .toList(growable: false),
       );
     }
 
@@ -220,8 +221,9 @@ class _ColumnGroup extends StatelessWidget {
         depth: depth,
         textDirection: stateManager.textDirection,
       ),
-      children:
-          _separateLinkedGroup.map(_makeChildWidget).toList(growable: false),
+      children: _separateLinkedGroup
+          .map(_makeChildWidget)
+          .toList(growable: false),
     );
   }
 }

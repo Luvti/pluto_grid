@@ -110,10 +110,10 @@ void main() {
     expect(find.byType(PlutoGridColumnIcon), findsOneWidget);
   });
 
-  testWidgets(
-      'enableSorting 가 기본값 true 인 상태에서 '
-      'title 을 탭하면 toggleSortColumn 함수가 호출 되어야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('enableSorting 가 기본값 true 인 상태에서 '
+      'title 을 탭하면 toggleSortColumn 함수가 호출 되어야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     final PlutoColumn column = PlutoColumn(
       title: 'header',
@@ -132,8 +132,7 @@ void main() {
     verify(stateManager.toggleSortColumn(captureAny)).called(1);
   });
 
-  testWidgets(
-      'enableSorting 가 false 인 상태에서 '
+  testWidgets('enableSorting 가 false 인 상태에서 '
       'GestureDetector 위젯이 없어야 한다.', (WidgetTester tester) async {
     // given
     final PlutoColumn column = PlutoColumn(
@@ -156,8 +155,7 @@ void main() {
     verifyNever(stateManager.toggleSortColumn(captureAny));
   });
 
-  testWidgets(
-      'WHEN Column 이 enableDraggable false'
+  testWidgets('WHEN Column 이 enableDraggable false'
       'THEN Draggable 이 노출 되지 않아야 한다.', (WidgetTester tester) async {
     // given
     final PlutoColumn column = PlutoColumn(
@@ -178,8 +176,7 @@ void main() {
     expect(draggable, findsNothing);
   });
 
-  testWidgets(
-      'WHEN Column 이 enableDraggable true'
+  testWidgets('WHEN Column 이 enableDraggable true'
       'THEN Draggable 이 노출 되어야 한다.', (WidgetTester tester) async {
     // given
     final PlutoColumn column = PlutoColumn(
@@ -363,8 +360,9 @@ void main() {
     );
 
     final tapColumn = PlutoWidgetTestHelper('Tap column.', (tester) async {
-      when(stateManager.refColumns)
-          .thenReturn(FilteredList(initialList: [column]));
+      when(
+        stateManager.refColumns,
+      ).thenReturn(FilteredList(initialList: [column]));
 
       await tester.pumpWidget(
         buildApp(column: column),
@@ -383,39 +381,49 @@ void main() {
       expect(find.text('Auto fit'), findsOneWidget);
     });
 
-    tapColumn.test('Freeze to start 를 탭하면 toggleFrozenColumn 이 호출 되어야 한다.',
-        (tester) async {
+    tapColumn.test('Freeze to start 를 탭하면 toggleFrozenColumn 이 호출 되어야 한다.', (
+      tester,
+    ) async {
       await tester.tap(find.text('Freeze to start'));
 
-      verify(stateManager.toggleFrozenColumn(
-        column,
-        PlutoColumnFrozen.start,
-      )).called(1);
+      verify(
+        stateManager.toggleFrozenColumn(
+          column,
+          PlutoColumnFrozen.start,
+        ),
+      ).called(1);
     });
 
-    tapColumn.test('Freeze to end 를 탭하면 toggleFrozenColumn 이 호출 되어야 한다.',
-        (tester) async {
+    tapColumn.test('Freeze to end 를 탭하면 toggleFrozenColumn 이 호출 되어야 한다.', (
+      tester,
+    ) async {
       await tester.tap(find.text('Freeze to end'));
 
-      verify(stateManager.toggleFrozenColumn(
-        column,
-        PlutoColumnFrozen.end,
-      )).called(1);
+      verify(
+        stateManager.toggleFrozenColumn(
+          column,
+          PlutoColumnFrozen.end,
+        ),
+      ).called(1);
     });
 
     tapColumn.test('Auto fit 를 탭하면 autoFitColumn 이 호출 되어야 한다.', (tester) async {
       when(stateManager.rows).thenReturn([
-        PlutoRow(cells: {
-          'column_field_name': PlutoCell(value: 'cell value'),
-        }),
+        PlutoRow(
+          cells: {
+            'column_field_name': PlutoCell(value: 'cell value'),
+          },
+        ),
       ]);
 
       await tester.tap(find.text('Auto fit'));
 
-      verify(stateManager.autoFitColumn(
-        argThat(isA<BuildContext>()),
-        column,
-      )).called(1);
+      verify(
+        stateManager.autoFitColumn(
+          argThat(isA<BuildContext>()),
+          column,
+        ),
+      ).called(1);
     });
   });
 
@@ -428,8 +436,9 @@ void main() {
     );
 
     final tapColumn = PlutoWidgetTestHelper('Tap column.', (tester) async {
-      when(stateManager.refColumns)
-          .thenReturn(FilteredList(initialList: [column]));
+      when(
+        stateManager.refColumns,
+      ).thenReturn(FilteredList(initialList: [column]));
 
       await tester.pumpWidget(
         buildApp(column: column),
@@ -449,14 +458,17 @@ void main() {
       expect(find.text('Auto fit'), findsOneWidget);
     });
 
-    tapColumn.test('Unfreeze 를 탭하면 toggleFrozenColumn 이 호출 되어야 한다.',
-        (tester) async {
+    tapColumn.test('Unfreeze 를 탭하면 toggleFrozenColumn 이 호출 되어야 한다.', (
+      tester,
+    ) async {
       await tester.tap(find.text('Unfreeze'));
 
-      verify(stateManager.toggleFrozenColumn(
-        column,
-        PlutoColumnFrozen.none,
-      )).called(1);
+      verify(
+        stateManager.toggleFrozenColumn(
+          column,
+          PlutoColumnFrozen.none,
+        ),
+      ).called(1);
     });
 
     tapColumn.test('Auto fit 를 탭하면 autoFitColumn 이 호출 되어야 한다.', (tester) async {
@@ -464,10 +476,12 @@ void main() {
 
       await tester.tap(find.text('Auto fit'));
 
-      verify(stateManager.autoFitColumn(
-        argThat(isA<BuildContext>()),
-        column,
-      )).called(1);
+      verify(
+        stateManager.autoFitColumn(
+          argThat(isA<BuildContext>()),
+          column,
+        ),
+      ).called(1);
     });
   });
 
@@ -480,8 +494,9 @@ void main() {
     );
 
     final tapColumn = PlutoWidgetTestHelper('Tap column.', (tester) async {
-      when(stateManager.refColumns)
-          .thenReturn(FilteredList(initialList: [column]));
+      when(
+        stateManager.refColumns,
+      ).thenReturn(FilteredList(initialList: [column]));
 
       await tester.pumpWidget(
         buildApp(column: column),
@@ -501,14 +516,17 @@ void main() {
       expect(find.text('Auto fit'), findsOneWidget);
     });
 
-    tapColumn.test('Unfreeze 를 탭하면 toggleFrozenColumn 이 호출 되어야 한다.',
-        (tester) async {
+    tapColumn.test('Unfreeze 를 탭하면 toggleFrozenColumn 이 호출 되어야 한다.', (
+      tester,
+    ) async {
       await tester.tap(find.text('Unfreeze'));
 
-      verify(stateManager.toggleFrozenColumn(
-        column,
-        PlutoColumnFrozen.none,
-      )).called(1);
+      verify(
+        stateManager.toggleFrozenColumn(
+          column,
+          PlutoColumnFrozen.none,
+        ),
+      ).called(1);
     });
 
     tapColumn.test('Auto fit 를 탭하면 autoFitColumn 이 호출 되어야 한다.', (tester) async {
@@ -516,10 +534,12 @@ void main() {
 
       await tester.tap(find.text('Auto fit'));
 
-      verify(stateManager.autoFitColumn(
-        argThat(isA<BuildContext>()),
-        column,
-      )).called(1);
+      verify(
+        stateManager.autoFitColumn(
+          argThat(isA<BuildContext>()),
+          column,
+        ),
+      ).called(1);
     });
   });
 
@@ -545,10 +565,12 @@ void main() {
           const Offset(50.0, 0.0),
         );
 
-        verifyNever(stateManager.moveColumn(
-          column: column,
-          targetColumn: column,
-        ));
+        verifyNever(
+          stateManager.moveColumn(
+            column: column,
+            targetColumn: column,
+          ),
+        );
       },
     );
   });
@@ -580,10 +602,12 @@ void main() {
     ).test(
       'resizeColumn 이 30 이상으로 호출 되어야 한다.',
       (tester) async {
-        verify(stateManager.resizeColumn(
-          column,
-          argThat(greaterThanOrEqualTo(30)),
-        ));
+        verify(
+          stateManager.resizeColumn(
+            column,
+            argThat(greaterThanOrEqualTo(30)),
+          ),
+        );
       },
     );
 
@@ -592,10 +616,12 @@ void main() {
     ).test(
       'resizeColumn 이 -30 이하로 호출 되어야 한다.',
       (tester) async {
-        verify(stateManager.resizeColumn(
-          column,
-          argThat(lessThanOrEqualTo(-30)),
-        ));
+        verify(
+          stateManager.resizeColumn(
+            column,
+            argThat(lessThanOrEqualTo(-30)),
+          ),
+        );
       },
     );
   });
@@ -611,7 +637,8 @@ void main() {
 
         await tester.pumpWidget(
           buildApp(
-            column: column ??
+            column:
+                column ??
                 PlutoColumn(
                   title: 'column title',
                   field: 'column_field_name',
@@ -623,12 +650,14 @@ void main() {
       });
     }
 
-    aColumnWithConfiguration(const PlutoGridConfiguration(
-      style: PlutoGridStyleConfig(
-        enableColumnBorderVertical: true,
-        borderColor: Colors.deepOrange,
+    aColumnWithConfiguration(
+      const PlutoGridConfiguration(
+        style: PlutoGridStyleConfig(
+          enableColumnBorderVertical: true,
+          borderColor: Colors.deepOrange,
+        ),
       ),
-    )).test(
+    ).test(
       'if enableColumnBorder is true, should be set the border.',
       (tester) async {
         expect(
@@ -652,12 +681,14 @@ void main() {
       },
     );
 
-    aColumnWithConfiguration(const PlutoGridConfiguration(
-      style: PlutoGridStyleConfig(
-        enableColumnBorderVertical: false,
-        borderColor: Colors.deepOrange,
+    aColumnWithConfiguration(
+      const PlutoGridConfiguration(
+        style: PlutoGridStyleConfig(
+          enableColumnBorderVertical: false,
+          borderColor: Colors.deepOrange,
+        ),
       ),
-    )).test(
+    ).test(
       'if enableColumnBorder is false, should not be set the border.',
       (tester) async {
         expect(

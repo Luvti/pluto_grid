@@ -95,14 +95,19 @@ void main() {
       // then
       await tester.enterText(find.byType(TextField), 'abc');
 
-      verify(eventManager!.addEvent(
-        argThat(PlutoObjectMatcher<PlutoGridChangeColumnFilterEvent>(
-            rule: (object) {
-          return object.column.field == column.field &&
-              object.filterType.runtimeType == PlutoFilterTypeContains &&
-              object.filterValue == 'abc';
-        })),
-      )).called(1);
+      verify(
+        eventManager!.addEvent(
+          argThat(
+            PlutoObjectMatcher<PlutoGridChangeColumnFilterEvent>(
+              rule: (object) {
+                return object.column.field == column.field &&
+                    object.filterType.runtimeType == PlutoFilterTypeContains &&
+                    object.filterValue == 'abc';
+              },
+            ),
+          ),
+        ),
+      ).called(1);
     },
   );
 

@@ -483,14 +483,18 @@ void main() {
           expect(list.length, 3);
 
           expect(
-              () => list.removeAt(3), throwsA(const TypeMatcher<RangeError>()));
+            () => list.removeAt(3),
+            throwsA(const TypeMatcher<RangeError>()),
+          );
 
           list.setFilter(null);
 
           expect(list.length, 8);
 
           expect(
-              () => list.removeAt(8), throwsA(const TypeMatcher<RangeError>()));
+            () => list.removeAt(8),
+            throwsA(const TypeMatcher<RangeError>()),
+          );
         },
       );
     });

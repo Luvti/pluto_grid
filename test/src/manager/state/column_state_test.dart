@@ -45,8 +45,9 @@ void main() {
     )..setEventManager(eventManager);
   }
 
-  testWidgets('columnIndexes - columns 에 맞는 index list 가 리턴 되어야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('columnIndexes - columns 에 맞는 index list 가 리턴 되어야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     PlutoGridStateManager stateManager = getStateManager(
       columns: [
@@ -67,8 +68,9 @@ void main() {
     expect(result, [0, 1, 2]);
   });
 
-  testWidgets('columnIndexesForShowFrozen - 고정 컬럼 순서에 맞게 리턴 되어야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('columnIndexesForShowFrozen - 고정 컬럼 순서에 맞게 리턴 되어야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     PlutoGridStateManager stateManager = getStateManager(
       columns: [
@@ -99,8 +101,9 @@ void main() {
     expect(result, [2, 1, 0]);
   });
 
-  testWidgets('columnsWidth - 컬럼 넓이 합계를 리턴 해야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('columnsWidth - 컬럼 넓이 합계를 리턴 해야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     PlutoGridStateManager stateManager = getStateManager(
       columns: [
@@ -135,8 +138,9 @@ void main() {
     expect(result, 600);
   });
 
-  testWidgets('leftFrozenColumns - 왼쪽 고정 컬럼 리스트만 리턴 되어야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('leftFrozenColumns - 왼쪽 고정 컬럼 리스트만 리턴 되어야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     PlutoGridStateManager stateManager = getStateManager(
       columns: [
@@ -168,8 +172,9 @@ void main() {
     expect(result[1].title, 'left2');
   });
 
-  testWidgets('leftFrozenColumnIndexes - 왼쪽 고정 컬럼 인덱스 리스트만 리턴 되어야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('leftFrozenColumnIndexes - 왼쪽 고정 컬럼 인덱스 리스트만 리턴 되어야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     PlutoGridStateManager stateManager = getStateManager(
       columns: [
@@ -200,8 +205,9 @@ void main() {
     expect(result[0], 2);
   });
 
-  testWidgets('leftFrozenColumnsWidth - 왼쪽 고정 컬럼 넓이 합계를 리턴해야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('leftFrozenColumnsWidth - 왼쪽 고정 컬럼 넓이 합계를 리턴해야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     PlutoGridStateManager stateManager = getStateManager(
       columns: [
@@ -238,8 +244,9 @@ void main() {
     expect(result, 300);
   });
 
-  testWidgets('rightFrozenColumns - 오른쪽 고정 컬럼 리스트만 리턴 되어야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('rightFrozenColumns - 오른쪽 고정 컬럼 리스트만 리턴 되어야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     PlutoGridStateManager stateManager = getStateManager(
       columns: [
@@ -270,8 +277,9 @@ void main() {
     expect(result[0].title, 'right1');
   });
 
-  testWidgets('rightFrozenColumnIndexes - 오른쪽 고정 컬럼 인덱스 리스트만 리턴 되어야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('rightFrozenColumnIndexes - 오른쪽 고정 컬럼 인덱스 리스트만 리턴 되어야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     PlutoGridStateManager stateManager = getStateManager(
       columns: [
@@ -303,8 +311,9 @@ void main() {
     expect(result[1], 2);
   });
 
-  testWidgets('rightFrozenColumnsWidth - 오른쪽 고정 컬럼 넓이 합계를 리턴해야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('rightFrozenColumnsWidth - 오른쪽 고정 컬럼 넓이 합계를 리턴해야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     PlutoGridStateManager stateManager = getStateManager(
       columns: [
@@ -348,16 +357,23 @@ void main() {
     expect(result, 240);
   });
 
-  testWidgets('bodyColumns - body 컬럼 리스트만 리턴 되어야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('bodyColumns - body 컬럼 리스트만 리턴 되어야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     PlutoGridStateManager stateManager = getStateManager(
       columns: [
-        ...ColumnHelper.textColumn('left',
-            count: 3, frozen: PlutoColumnFrozen.start),
+        ...ColumnHelper.textColumn(
+          'left',
+          count: 3,
+          frozen: PlutoColumnFrozen.start,
+        ),
         ...ColumnHelper.textColumn('body', count: 3),
-        ...ColumnHelper.textColumn('right',
-            count: 3, frozen: PlutoColumnFrozen.end),
+        ...ColumnHelper.textColumn(
+          'right',
+          count: 3,
+          frozen: PlutoColumnFrozen.end,
+        ),
       ],
       rows: [],
       gridFocusNode: null,
@@ -376,16 +392,23 @@ void main() {
     expect(result[2].title, 'body2');
   });
 
-  testWidgets('bodyColumnIndexes - body 컬럼 인덱스 리스트만 리턴 되어야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('bodyColumnIndexes - body 컬럼 인덱스 리스트만 리턴 되어야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     PlutoGridStateManager stateManager = getStateManager(
       columns: [
-        ...ColumnHelper.textColumn('left',
-            count: 3, frozen: PlutoColumnFrozen.start),
+        ...ColumnHelper.textColumn(
+          'left',
+          count: 3,
+          frozen: PlutoColumnFrozen.start,
+        ),
         ...ColumnHelper.textColumn('body', count: 3),
-        ...ColumnHelper.textColumn('right',
-            count: 3, frozen: PlutoColumnFrozen.end),
+        ...ColumnHelper.textColumn(
+          'right',
+          count: 3,
+          frozen: PlutoColumnFrozen.end,
+        ),
       ],
       rows: [],
       gridFocusNode: null,
@@ -402,16 +425,23 @@ void main() {
     expect(result[2], 5);
   });
 
-  testWidgets('bodyColumnsWidth - body 컬럼 넓이 합계를 리턴해야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('bodyColumnsWidth - body 컬럼 넓이 합계를 리턴해야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     PlutoGridStateManager stateManager = getStateManager(
       columns: [
-        ...ColumnHelper.textColumn('left',
-            count: 3, frozen: PlutoColumnFrozen.start),
+        ...ColumnHelper.textColumn(
+          'left',
+          count: 3,
+          frozen: PlutoColumnFrozen.start,
+        ),
         ...ColumnHelper.textColumn('body', count: 3, width: 150),
-        ...ColumnHelper.textColumn('right',
-            count: 3, frozen: PlutoColumnFrozen.end),
+        ...ColumnHelper.textColumn(
+          'right',
+          count: 3,
+          frozen: PlutoColumnFrozen.end,
+        ),
       ],
       rows: [],
       gridFocusNode: null,
@@ -425,16 +455,23 @@ void main() {
     expect(result, 450);
   });
 
-  testWidgets('currentColumn - currentColumnField 값이 없는 경우 null 을 리턴해야 한다.',
-      (WidgetTester tester) async {
+  testWidgets('currentColumn - currentColumnField 값이 없는 경우 null 을 리턴해야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     PlutoGridStateManager stateManager = getStateManager(
       columns: [
-        ...ColumnHelper.textColumn('left',
-            count: 3, frozen: PlutoColumnFrozen.start),
+        ...ColumnHelper.textColumn(
+          'left',
+          count: 3,
+          frozen: PlutoColumnFrozen.start,
+        ),
         ...ColumnHelper.textColumn('body', count: 3, width: 150),
-        ...ColumnHelper.textColumn('right',
-            count: 3, frozen: PlutoColumnFrozen.end),
+        ...ColumnHelper.textColumn(
+          'right',
+          count: 3,
+          frozen: PlutoColumnFrozen.end,
+        ),
       ],
       rows: [],
       gridFocusNode: null,
@@ -448,51 +485,66 @@ void main() {
     expect(currentColumn, null);
   });
 
-  testWidgets('currentColumn - currentCell 이 선택 된 경우 currentColumn 을 리턴해야 한다.',
-      (WidgetTester tester) async {
+  testWidgets(
+    'currentColumn - currentCell 이 선택 된 경우 currentColumn 을 리턴해야 한다.',
+    (WidgetTester tester) async {
+      // given
+      List<PlutoColumn> columns = [
+        ...ColumnHelper.textColumn(
+          'left',
+          count: 3,
+          frozen: PlutoColumnFrozen.start,
+        ),
+        ...ColumnHelper.textColumn('body', count: 3, width: 150),
+        ...ColumnHelper.textColumn(
+          'right',
+          count: 3,
+          frozen: PlutoColumnFrozen.end,
+        ),
+      ];
+
+      List<PlutoRow> rows = RowHelper.count(10, columns);
+
+      PlutoGridStateManager stateManager = getStateManager(
+        columns: columns,
+        rows: rows,
+        gridFocusNode: null,
+        scroll: scroll,
+      );
+
+      stateManager.setLayout(
+        const BoxConstraints(maxWidth: 1000, maxHeight: 600),
+      );
+
+      // when
+      String selectColumnField = 'body2';
+      stateManager.setCurrentCell(rows[2].cells[selectColumnField], 2);
+
+      PlutoColumn currentColumn = stateManager.currentColumn!;
+
+      // when
+      expect(currentColumn, isNot(null));
+      expect(currentColumn.field, selectColumnField);
+      expect(currentColumn.width, 150);
+    },
+  );
+
+  testWidgets('currentColumnField - currentCell 이 선택되지 않는 경우 null 을 리턴해야 한다.', (
+    WidgetTester tester,
+  ) async {
     // given
     List<PlutoColumn> columns = [
-      ...ColumnHelper.textColumn('left',
-          count: 3, frozen: PlutoColumnFrozen.start),
+      ...ColumnHelper.textColumn(
+        'left',
+        count: 3,
+        frozen: PlutoColumnFrozen.start,
+      ),
       ...ColumnHelper.textColumn('body', count: 3, width: 150),
-      ...ColumnHelper.textColumn('right',
-          count: 3, frozen: PlutoColumnFrozen.end),
-    ];
-
-    List<PlutoRow> rows = RowHelper.count(10, columns);
-
-    PlutoGridStateManager stateManager = getStateManager(
-      columns: columns,
-      rows: rows,
-      gridFocusNode: null,
-      scroll: scroll,
-    );
-
-    stateManager.setLayout(
-      const BoxConstraints(maxWidth: 1000, maxHeight: 600),
-    );
-
-    // when
-    String selectColumnField = 'body2';
-    stateManager.setCurrentCell(rows[2].cells[selectColumnField], 2);
-
-    PlutoColumn currentColumn = stateManager.currentColumn!;
-
-    // when
-    expect(currentColumn, isNot(null));
-    expect(currentColumn.field, selectColumnField);
-    expect(currentColumn.width, 150);
-  });
-
-  testWidgets('currentColumnField - currentCell 이 선택되지 않는 경우 null 을 리턴해야 한다.',
-      (WidgetTester tester) async {
-    // given
-    List<PlutoColumn> columns = [
-      ...ColumnHelper.textColumn('left',
-          count: 3, frozen: PlutoColumnFrozen.start),
-      ...ColumnHelper.textColumn('body', count: 3, width: 150),
-      ...ColumnHelper.textColumn('right',
-          count: 3, frozen: PlutoColumnFrozen.end),
+      ...ColumnHelper.textColumn(
+        'right',
+        count: 3,
+        frozen: PlutoColumnFrozen.end,
+      ),
     ];
 
     List<PlutoRow> rows = RowHelper.count(10, columns);
@@ -512,38 +564,45 @@ void main() {
   });
 
   testWidgets(
-      'currentColumnField - currentCell 이 선택 된 경우 선택 된 컬럼의 field 를 리턴해야 한다.',
-      (WidgetTester tester) async {
-    // given
-    List<PlutoColumn> columns = [
-      ...ColumnHelper.textColumn('left',
-          count: 3, frozen: PlutoColumnFrozen.start),
-      ...ColumnHelper.textColumn('body', count: 3, width: 150),
-      ...ColumnHelper.textColumn('right',
-          count: 3, frozen: PlutoColumnFrozen.end),
-    ];
+    'currentColumnField - currentCell 이 선택 된 경우 선택 된 컬럼의 field 를 리턴해야 한다.',
+    (WidgetTester tester) async {
+      // given
+      List<PlutoColumn> columns = [
+        ...ColumnHelper.textColumn(
+          'left',
+          count: 3,
+          frozen: PlutoColumnFrozen.start,
+        ),
+        ...ColumnHelper.textColumn('body', count: 3, width: 150),
+        ...ColumnHelper.textColumn(
+          'right',
+          count: 3,
+          frozen: PlutoColumnFrozen.end,
+        ),
+      ];
 
-    List<PlutoRow> rows = RowHelper.count(10, columns);
+      List<PlutoRow> rows = RowHelper.count(10, columns);
 
-    PlutoGridStateManager stateManager = getStateManager(
-      columns: columns,
-      rows: rows,
-      gridFocusNode: null,
-      scroll: scroll,
-    );
+      PlutoGridStateManager stateManager = getStateManager(
+        columns: columns,
+        rows: rows,
+        gridFocusNode: null,
+        scroll: scroll,
+      );
 
-    stateManager.setLayout(const BoxConstraints());
+      stateManager.setLayout(const BoxConstraints());
 
-    // when
-    String selectColumnField = 'body1';
-    stateManager.setCurrentCell(rows[2].cells[selectColumnField], 2);
+      // when
+      String selectColumnField = 'body1';
+      stateManager.setCurrentCell(rows[2].cells[selectColumnField], 2);
 
-    String? currentColumnField = stateManager.currentColumnField;
+      String? currentColumnField = stateManager.currentColumnField;
 
-    // when
-    expect(currentColumnField, isNot(null));
-    expect(currentColumnField, selectColumnField);
-  });
+      // when
+      expect(currentColumnField, isNot(null));
+      expect(currentColumnField, selectColumnField);
+    },
+  );
 
   group('getSortedColumn', () {
     test('Sort 컬럼이 없는 경우 null 을 리턴해야 한다.', () {
@@ -575,8 +634,7 @@ void main() {
   });
 
   group('columnIndexesByShowFrozen', () {
-    testWidgets(
-        '고정 컬럼이 없는 상태에서 '
+    testWidgets('고정 컬럼이 없는 상태에서 '
         'columnIndexes 가 리턴 되어야 한다.', (WidgetTester tester) async {
       // given
       List<PlutoColumn> columns = [
@@ -599,8 +657,7 @@ void main() {
       expect(stateManager.columnIndexesByShowFrozen, [0, 1, 2]);
     });
 
-    testWidgets(
-        '고정 컬럼이 없는 상태에서 '
+    testWidgets('고정 컬럼이 없는 상태에서 '
         '3번 째 컬럼을 왼쪽 고정 토글 하고 '
         '넓이가 충분한 경우 '
         'columnIndexesForShowFrozen 가 리턴 되어야 한다.', (WidgetTester tester) async {
@@ -634,8 +691,7 @@ void main() {
       expect(stateManager.columnIndexesByShowFrozen, [2, 0, 1, 3, 4]);
     });
 
-    testWidgets(
-        '고정 컬럼이 없는 상태에서 '
+    testWidgets('고정 컬럼이 없는 상태에서 '
         '3번 째 컬럼을 왼쪽 고정 토글 하고 '
         '넓이가 충분하지 않은 경우 '
         'columnIndexes 가 리턴 되어야 한다.', (WidgetTester tester) async {
@@ -668,8 +724,7 @@ void main() {
       expect(stateManager.columnIndexesByShowFrozen, [0, 1, 2, 3, 4]);
     });
 
-    testWidgets(
-        '고정 컬럼이 있는 상태에서 '
+    testWidgets('고정 컬럼이 있는 상태에서 '
         '넓이가 충분한 경우 '
         'columnIndexes 가 리턴 되어야 한다.', (WidgetTester tester) async {
       // given
@@ -698,16 +753,16 @@ void main() {
         scroll: scroll,
       );
 
-      stateManager
-          .setLayout(const BoxConstraints(maxWidth: 500, maxHeight: 600));
+      stateManager.setLayout(
+        const BoxConstraints(maxWidth: 500, maxHeight: 600),
+      );
 
       // when
       // then
       expect(stateManager.columnIndexesByShowFrozen, [0, 1, 2, 3, 4]);
     });
 
-    testWidgets(
-        '고정 컬럼이 있는 상태에서 '
+    testWidgets('고정 컬럼이 있는 상태에서 '
         '고정 컬럼 하나를 토글하여 왼쪽 추가하고  '
         '넓이가 충분한 경우 '
         'columnIndexesForShowFrozen 가 리턴 되어야 한다.', (WidgetTester tester) async {
@@ -752,8 +807,7 @@ void main() {
       expect(stateManager.columnIndexesByShowFrozen, [0, 2, 1, 3, 4]);
     });
 
-    testWidgets(
-        '고정 컬럼이 있는 상태에서 '
+    testWidgets('고정 컬럼이 있는 상태에서 '
         '고정 컬럼 하나를 토글하여 오른쪽 추가하고  '
         '넓이가 충분한 경우 '
         'columnIndexesForShowFrozen 가 리턴 되어야 한다.', (WidgetTester tester) async {
@@ -829,8 +883,9 @@ void main() {
       );
 
       // 150 + 200 + 150 = 최소 500 필요
-      stateManager
-          .setLayout(const BoxConstraints(maxWidth: 550, maxHeight: 600));
+      stateManager.setLayout(
+        const BoxConstraints(maxWidth: 550, maxHeight: 600),
+      );
 
       expect(stateManager.showFrozenColumn, true);
       expect(columns.first.width, 150);
@@ -887,8 +942,7 @@ void main() {
   );
 
   group('toggleFrozenColumn', () {
-    test(
-        'columnSizeConfig.restoreAutoSizeAfterFrozenColumn 이 false 면, '
+    test('columnSizeConfig.restoreAutoSizeAfterFrozenColumn 이 false 면, '
         'activatedColumnsAutoSize 가 false 로 변경 되어야 한다.', () {
       final columns = ColumnHelper.textColumn('title', count: 5);
 
@@ -1028,8 +1082,7 @@ void main() {
       },
     );
 
-    test(
-        'columnSizeConfig.restoreAutoSizeAfterInsertColumn 이 false 면, '
+    test('columnSizeConfig.restoreAutoSizeAfterInsertColumn 이 false 면, '
         'activatedColumnsAutoSize 가 false 로 변경 되어야 한다.', () {
       final columns = ColumnHelper.textColumn('title', count: 5);
 
@@ -1149,11 +1202,12 @@ void main() {
         final List<PlutoColumnGroup> columnGroups = [
           PlutoColumnGroup(title: 'a', fields: ['column0']),
           PlutoColumnGroup(
-              title: 'b',
-              fields: columns
-                  .where((element) => element.field != 'column0')
-                  .map((e) => e.field)
-                  .toList()),
+            title: 'b',
+            fields: columns
+                .where((element) => element.field != 'column0')
+                .map((e) => e.field)
+                .toList(),
+          ),
         ];
 
         final List<PlutoRow> rows = RowHelper.count(2, columns);
@@ -1187,11 +1241,12 @@ void main() {
         final List<PlutoColumnGroup> columnGroups = [
           PlutoColumnGroup(title: 'a', fields: ['column0']),
           PlutoColumnGroup(
-              title: 'b',
-              fields: columns
-                  .where((element) => element.field != 'column0')
-                  .map((e) => e.field)
-                  .toList()),
+            title: 'b',
+            fields: columns
+                .where((element) => element.field != 'column0')
+                .map((e) => e.field)
+                .toList(),
+          ),
         ];
 
         final List<PlutoRow> rows = RowHelper.count(2, columns);
@@ -1234,12 +1289,15 @@ void main() {
             children: [
               PlutoColumnGroup(title: 'c', fields: ['column1']),
               PlutoColumnGroup(
-                  title: 'd',
-                  fields: columns
-                      .where((element) =>
-                          !['column0', 'column1'].contains(element.field))
-                      .map((e) => e.field)
-                      .toList()),
+                title: 'd',
+                fields: columns
+                    .where(
+                      (element) =>
+                          !['column0', 'column1'].contains(element.field),
+                    )
+                    .map((e) => e.field)
+                    .toList(),
+              ),
             ],
           ),
         ];
@@ -1308,8 +1366,7 @@ void main() {
       },
     );
 
-    test(
-        'columnSizeConfig.restoreAutoSizeAfterRemoveColumn 이 false 면, '
+    test('columnSizeConfig.restoreAutoSizeAfterRemoveColumn 이 false 면, '
         'activatedColumnsAutoSize 가 false 로 변경 되어야 한다.', () {
       final columns = ColumnHelper.textColumn('title', count: 5);
 
@@ -1520,8 +1577,7 @@ void main() {
       expect(stateManager.refColumns[4].title, 'title4');
     });
 
-    test(
-        'columnSizeConfig.restoreAutoSizeAfterMoveColumn 이 false 면, '
+    test('columnSizeConfig.restoreAutoSizeAfterMoveColumn 이 false 면, '
         'activatedColumnsAutoSize 가 false 로 변경 되어야 한다.', () {
       final columns = ColumnHelper.textColumn('title', count: 5);
 
@@ -1554,12 +1610,13 @@ void main() {
   });
 
   group('resizeColumn', () {
-    test('columnsResizeMode.isNone 이면 notifyResizingListeners 가 호출 되지 않아야 한다.',
-        () {
-      final columns = ColumnHelper.textColumn('title', count: 5);
-      final mockListener = MockMethods();
+    test(
+      'columnsResizeMode.isNone 이면 notifyResizingListeners 가 호출 되지 않아야 한다.',
+      () {
+        final columns = ColumnHelper.textColumn('title', count: 5);
+        final mockListener = MockMethods();
 
-      PlutoGridStateManager stateManager = getStateManager(
+        PlutoGridStateManager stateManager = getStateManager(
           columns: columns,
           rows: [],
           gridFocusNode: null,
@@ -1568,30 +1625,32 @@ void main() {
             columnSize: PlutoGridColumnSizeConfig(
               resizeMode: PlutoResizeMode.none,
             ),
-          ));
+          ),
+        );
 
-      stateManager.setLayout(const BoxConstraints(maxWidth: 800));
+        stateManager.setLayout(const BoxConstraints(maxWidth: 800));
 
-      stateManager.resizingChangeNotifier.addListener(
-        mockListener.noParamReturnVoid,
-      );
+        stateManager.resizingChangeNotifier.addListener(
+          mockListener.noParamReturnVoid,
+        );
 
-      stateManager.resizeColumn(columns.first, 10);
+        stateManager.resizeColumn(columns.first, 10);
 
-      verifyNever(mockListener.noParamReturnVoid());
+        verifyNever(mockListener.noParamReturnVoid());
 
-      stateManager.resizingChangeNotifier.removeListener(
-        mockListener.noParamReturnVoid,
-      );
-    });
+        stateManager.resizingChangeNotifier.removeListener(
+          mockListener.noParamReturnVoid,
+        );
+      },
+    );
 
     test(
-        'column.enableDropToResize 가 false 이면 notifyResizingListeners 가 호출 되지 않아야 한다.',
-        () {
-      final columns = ColumnHelper.textColumn('title', count: 5);
-      final mockListener = MockMethods();
+      'column.enableDropToResize 가 false 이면 notifyResizingListeners 가 호출 되지 않아야 한다.',
+      () {
+        final columns = ColumnHelper.textColumn('title', count: 5);
+        final mockListener = MockMethods();
 
-      PlutoGridStateManager stateManager = getStateManager(
+        PlutoGridStateManager stateManager = getStateManager(
           columns: columns,
           rows: [],
           gridFocusNode: null,
@@ -1600,37 +1659,43 @@ void main() {
             columnSize: PlutoGridColumnSizeConfig(
               resizeMode: PlutoResizeMode.normal,
             ),
-          ));
+          ),
+        );
 
-      stateManager.setLayout(const BoxConstraints(maxWidth: 800));
+        stateManager.setLayout(const BoxConstraints(maxWidth: 800));
 
-      stateManager.resizingChangeNotifier.addListener(
-        mockListener.noParamReturnVoid,
-      );
+        stateManager.resizingChangeNotifier.addListener(
+          mockListener.noParamReturnVoid,
+        );
 
-      stateManager.resizeColumn(columns.first..enableDropToResize = false, 10);
+        stateManager.resizeColumn(
+          columns.first..enableDropToResize = false,
+          10,
+        );
 
-      verifyNever(mockListener.noParamReturnVoid());
+        verifyNever(mockListener.noParamReturnVoid());
 
-      stateManager.resizingChangeNotifier.removeListener(
-        mockListener.noParamReturnVoid,
-      );
-    });
+        stateManager.resizingChangeNotifier.removeListener(
+          mockListener.noParamReturnVoid,
+        );
+      },
+    );
 
     test('offset 10 만큼 컬럼의 넓이가 늘어나야 한다.', () {
       final columns = ColumnHelper.textColumn('title', count: 5);
       final mockListener = MockMethods();
 
       PlutoGridStateManager stateManager = getStateManager(
-          columns: columns,
-          rows: [],
-          gridFocusNode: null,
-          scroll: scroll,
-          configuration: const PlutoGridConfiguration(
-            columnSize: PlutoGridColumnSizeConfig(
-              resizeMode: PlutoResizeMode.normal,
-            ),
-          ));
+        columns: columns,
+        rows: [],
+        gridFocusNode: null,
+        scroll: scroll,
+        configuration: const PlutoGridConfiguration(
+          columnSize: PlutoGridColumnSizeConfig(
+            resizeMode: PlutoResizeMode.normal,
+          ),
+        ),
+      );
 
       stateManager.setLayout(const BoxConstraints(maxWidth: 800));
 
@@ -1656,15 +1721,16 @@ void main() {
         final columns = ColumnHelper.textColumn('title', count: 5);
 
         PlutoGridStateManager stateManager = getStateManager(
-            columns: columns,
-            rows: [],
-            gridFocusNode: null,
-            scroll: scroll,
-            configuration: const PlutoGridConfiguration(
-              columnSize: PlutoGridColumnSizeConfig(
-                resizeMode: PlutoResizeMode.pushAndPull,
-              ),
-            ));
+          columns: columns,
+          rows: [],
+          gridFocusNode: null,
+          scroll: scroll,
+          configuration: const PlutoGridConfiguration(
+            columnSize: PlutoGridColumnSizeConfig(
+              resizeMode: PlutoResizeMode.pushAndPull,
+            ),
+          ),
+        );
 
         stateManager.setLayout(const BoxConstraints(maxWidth: 800));
 
@@ -1720,8 +1786,9 @@ void main() {
       expect(columns.first.width, lessThan(oldWidth));
     });
 
-    testWidgets('가장 넓은 셀이 컬럼 최소 넓이보다 큰 경우 최소 넓이 이상으로 변경 되어야 한다.',
-        (tester) async {
+    testWidgets('가장 넓은 셀이 컬럼 최소 넓이보다 큰 경우 최소 넓이 이상으로 변경 되어야 한다.', (
+      tester,
+    ) async {
       final columns = ColumnHelper.textColumn('title');
 
       final rows = RowHelper.count(3, columns);
@@ -1764,8 +1831,9 @@ void main() {
   });
 
   group('hideColumn', () {
-    testWidgets('flag 를 true 로 호출 한 경우 컬럼의 hide 가 true 로 변경 되어야 한다.',
-        (WidgetTester tester) async {
+    testWidgets('flag 를 true 로 호출 한 경우 컬럼의 hide 가 true 로 변경 되어야 한다.', (
+      WidgetTester tester,
+    ) async {
       // given
       var columns = [
         PlutoColumn(title: '', field: '', type: PlutoColumnType.text()),
@@ -1792,37 +1860,38 @@ void main() {
     });
 
     testWidgets(
-        'hide 가 true 인 컬럼을 flag 를 false 로 호출하여 hide 가 false 로 변경 되어야 한다.',
-        (WidgetTester tester) async {
-      // given
-      var columns = [
-        PlutoColumn(
-          title: '',
-          field: '',
-          type: PlutoColumnType.text(),
-          hide: true,
-        ),
-        PlutoColumn(title: '', field: '', type: PlutoColumnType.text()),
-        PlutoColumn(title: '', field: '', type: PlutoColumnType.text()),
-      ];
+      'hide 가 true 인 컬럼을 flag 를 false 로 호출하여 hide 가 false 로 변경 되어야 한다.',
+      (WidgetTester tester) async {
+        // given
+        var columns = [
+          PlutoColumn(
+            title: '',
+            field: '',
+            type: PlutoColumnType.text(),
+            hide: true,
+          ),
+          PlutoColumn(title: '', field: '', type: PlutoColumnType.text()),
+          PlutoColumn(title: '', field: '', type: PlutoColumnType.text()),
+        ];
 
-      PlutoGridStateManager stateManager = getStateManager(
-        columns: columns,
-        rows: [],
-        gridFocusNode: null,
-        scroll: scroll,
-      );
+        PlutoGridStateManager stateManager = getStateManager(
+          columns: columns,
+          rows: [],
+          gridFocusNode: null,
+          scroll: scroll,
+        );
 
-      stateManager.setLayout(const BoxConstraints(maxWidth: 800));
+        stateManager.setLayout(const BoxConstraints(maxWidth: 800));
 
-      // when
-      expect(stateManager.refColumns.originalList.first.hide, isTrue);
+        // when
+        expect(stateManager.refColumns.originalList.first.hide, isTrue);
 
-      stateManager.hideColumn(columns.first, false);
+        stateManager.hideColumn(columns.first, false);
 
-      // then
-      expect(stateManager.columns.first.hide, isFalse);
-    });
+        // then
+        expect(stateManager.columns.first.hide, isFalse);
+      },
+    );
 
     testWidgets(
       '고정 컬럼인 hide 가 true 인 컬럼을 flag 를 false 로 호출 할 때, '
@@ -1864,8 +1933,9 @@ void main() {
       },
     );
 
-    testWidgets('flag 를 true 로 호출 한 경우 notifyListeners 가 호출 되어야 한다.',
-        (WidgetTester tester) async {
+    testWidgets('flag 를 true 로 호출 한 경우 notifyListeners 가 호출 되어야 한다.', (
+      WidgetTester tester,
+    ) async {
       // given
       var columns = [
         PlutoColumn(title: '', field: '', type: PlutoColumnType.text()),
@@ -1896,34 +1966,35 @@ void main() {
     });
 
     testWidgets(
-        'hide 가 false 이 경우 flag 를 false 로 호출 하면 notifyListeners 가 호출 되지 않아야 한다.',
-        (WidgetTester tester) async {
-      // given
-      var columns = [
-        PlutoColumn(title: '', field: '', type: PlutoColumnType.text()),
-        PlutoColumn(title: '', field: '', type: PlutoColumnType.text()),
-        PlutoColumn(title: '', field: '', type: PlutoColumnType.text()),
-      ];
+      'hide 가 false 이 경우 flag 를 false 로 호출 하면 notifyListeners 가 호출 되지 않아야 한다.',
+      (WidgetTester tester) async {
+        // given
+        var columns = [
+          PlutoColumn(title: '', field: '', type: PlutoColumnType.text()),
+          PlutoColumn(title: '', field: '', type: PlutoColumnType.text()),
+          PlutoColumn(title: '', field: '', type: PlutoColumnType.text()),
+        ];
 
-      PlutoGridStateManager stateManager = getStateManager(
-        columns: columns,
-        rows: [],
-        gridFocusNode: null,
-        scroll: scroll,
-      );
+        PlutoGridStateManager stateManager = getStateManager(
+          columns: columns,
+          rows: [],
+          gridFocusNode: null,
+          scroll: scroll,
+        );
 
-      var listeners = MockMethods();
+        var listeners = MockMethods();
 
-      stateManager.addListener(listeners.noParamReturnVoid);
+        stateManager.addListener(listeners.noParamReturnVoid);
 
-      // when
-      expect(stateManager.columns.first.hide, isFalse);
+        // when
+        expect(stateManager.columns.first.hide, isFalse);
 
-      stateManager.hideColumn(columns.first, false);
+        stateManager.hideColumn(columns.first, false);
 
-      // then
-      verifyNever(listeners.noParamReturnVoid());
-    });
+        // then
+        verifyNever(listeners.noParamReturnVoid());
+      },
+    );
   });
 
   group('hideColumns', () {

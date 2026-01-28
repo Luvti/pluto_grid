@@ -281,7 +281,8 @@ void main() {
 
         stateManager.updateVisibilityLayout();
 
-        final bodyWidth = stateManager.maxWidth! -
+        final bodyWidth =
+            stateManager.maxWidth! -
             stateManager.bodyLeftOffset -
             stateManager.bodyRightOffset;
 

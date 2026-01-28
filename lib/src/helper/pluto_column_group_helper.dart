@@ -104,7 +104,8 @@ class PlutoColumnGroupHelper {
 
       final field = column.field;
 
-      final foundGroup = getGroupIfExistsFromList(
+      final foundGroup =
+          getGroupIfExistsFromList(
             field: field,
             columnGroupList: columnGroupList,
           ) ??
@@ -118,10 +119,12 @@ class PlutoColumnGroupHelper {
       previousGroup ??= foundGroup;
 
       if (previousGroup.key != foundGroup.key) {
-        separatedColumns.add(PlutoColumnGroupPair(
-          group: previousGroup,
-          columns: linkedColumns,
-        ));
+        separatedColumns.add(
+          PlutoColumnGroupPair(
+            group: previousGroup,
+            columns: linkedColumns,
+          ),
+        );
 
         linkedColumns = [];
 
@@ -131,10 +134,12 @@ class PlutoColumnGroupHelper {
       linkedColumns.add(column);
 
       if (i == columns.length - 1) {
-        separatedColumns.add(PlutoColumnGroupPair(
-          group: foundGroup,
-          columns: linkedColumns,
-        ));
+        separatedColumns.add(
+          PlutoColumnGroupPair(
+            group: foundGroup,
+            columns: linkedColumns,
+          ),
+        );
       }
     }
 

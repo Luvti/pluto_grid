@@ -290,8 +290,9 @@ void main() {
         await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
         await tester.sendKeyEvent(LogicalKeyboardKey.enter);
 
-        verify(stateManager.handleAfterSelectingRow(any, '01/23/2020'))
-            .called(1);
+        verify(
+          stateManager.handleAfterSelectingRow(any, '01/23/2020'),
+        ).called(1);
       },
     );
 
@@ -307,8 +308,9 @@ void main() {
         await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
         await tester.sendKeyEvent(LogicalKeyboardKey.enter);
 
-        verify(stateManager.handleAfterSelectingRow(any, '01/29/2020'))
-            .called(1);
+        verify(
+          stateManager.handleAfterSelectingRow(any, '01/29/2020'),
+        ).called(1);
       },
     );
 
@@ -324,8 +326,9 @@ void main() {
         await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
         await tester.sendKeyEvent(LogicalKeyboardKey.enter);
 
-        verify(stateManager.handleAfterSelectingRow(any, '01/31/2020'))
-            .called(1);
+        verify(
+          stateManager.handleAfterSelectingRow(any, '01/31/2020'),
+        ).called(1);
       },
     );
   });
@@ -392,10 +395,12 @@ void main() {
 
         await tester.pumpAndSettle(const Duration(milliseconds: 300));
 
-        verifyNever(stateManager.handleAfterSelectingRow(
-          any,
-          '2020년 11월 30일',
-        ));
+        verifyNever(
+          stateManager.handleAfterSelectingRow(
+            any,
+            '2020년 11월 30일',
+          ),
+        );
 
         expect(find.text('2020년 12월 01일'), findsOneWidget);
       },

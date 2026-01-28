@@ -1049,21 +1049,24 @@ class _ScrollbarPainter extends ChangeNotifier implements CustomPainter {
 
   Paint get _paintThumb {
     return Paint()
-      ..color =
-          color.withValues(alpha: color.a * fadeoutOpacityAnimation.value);
+      ..color = color.withValues(
+        alpha: color.a * fadeoutOpacityAnimation.value,
+      );
   }
 
   Paint _paintTrack({bool isBorder = false}) {
     if (isBorder) {
       return Paint()
         ..color = trackBorderColor.withValues(
-            alpha: trackBorderColor.a * fadeoutOpacityAnimation.value)
+          alpha: trackBorderColor.a * fadeoutOpacityAnimation.value,
+        )
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.0;
     }
     return Paint()
       ..color = trackColor.withValues(
-          alpha: trackColor.a * fadeoutOpacityAnimation.value);
+        alpha: trackColor.a * fadeoutOpacityAnimation.value,
+      );
   }
 
   void _paintScrollbar(

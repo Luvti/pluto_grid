@@ -67,8 +67,7 @@ void main() {
         expect(items[4].size, 100);
       });
 
-      test(
-          '각 아이템의 최소크기의 합계 보다 maxSize 가 작은 경우, '
+      test('각 아이템의 최소크기의 합계 보다 maxSize 가 작은 경우, '
           '각 아이템은 minSize 로 설정 되어야 한다.', () {
         final items = [
           _ResizeItem(index: 0, size: 100, minSize: 50),
@@ -153,8 +152,7 @@ void main() {
         expect(items[4].size, 100 * scale);
       });
 
-      test(
-          '각 아이템의 최소크기의 합계 보다 maxSize 가 작은 경우, '
+      test('각 아이템의 최소크기의 합계 보다 maxSize 가 작은 경우, '
           '각 아이템은 minSize 로 설정 되어야 한다.', () {
         final items = [
           _ResizeItem(index: 0, size: 100, minSize: 50),
@@ -497,8 +495,7 @@ void main() {
         expect(items[4].size, 80);
       });
 
-      test(
-          '2번의 크기를 200 에서 최소크기보다 작게 40 으로 줄이면, '
+      test('2번의 크기를 200 에서 최소크기보다 작게 40 으로 줄이면, '
           '2번의 크기가 80, 3번의 크기가 360, 1번의 크기가 160 으로 변경 되어야 한다.', () {
         final items = <_ResizeItem>[
           _ResizeItem(index: 0, size: 200, minSize: 80),
@@ -526,8 +523,7 @@ void main() {
         expect(items[4].size, 200);
       });
 
-      test(
-          '0번의 크기를 200 에서 최소크기보다 작게 40 으로 줄이면, '
+      test('0번의 크기를 200 에서 최소크기보다 작게 40 으로 줄이면, '
           '0번의 크기가 80, 1번의 크기가 320 이어야 한다.', () {
         final items = <_ResizeItem>[
           _ResizeItem(index: 0, size: 200, minSize: 80),
@@ -555,8 +551,7 @@ void main() {
         expect(items[4].size, 200);
       });
 
-      test(
-          '4번의 크기를 200 에서 최소크기보다 작게 40 으로 줄이면, '
+      test('4번의 크기를 200 에서 최소크기보다 작게 40 으로 줄이면, '
           '4번의 크기가 80, 3번의 크기가 320 이어야 한다.', () {
         final items = <_ResizeItem>[
           _ResizeItem(index: 0, size: 200, minSize: 80),

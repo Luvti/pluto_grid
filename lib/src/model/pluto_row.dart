@@ -9,10 +9,10 @@ class PlutoRow<T> {
     this.data,
     bool checked = false,
     Key? key,
-  })  : type = type ?? PlutoRowTypeNormal.instance,
-        _checked = checked,
-        _state = PlutoRowState.none,
-        _key = key ?? UniqueKey();
+  }) : type = type ?? PlutoRowTypeNormal.instance,
+       _checked = checked,
+       _state = PlutoRowState.none,
+       _key = key ?? UniqueKey();
 
   final PlutoRowType type;
 

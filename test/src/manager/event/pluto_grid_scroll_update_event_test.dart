@@ -16,10 +16,9 @@ void main() {
 
   eventBuilder({
     required Offset offset,
-  }) =>
-      PlutoGridScrollUpdateEvent(
-        offset: offset,
-      );
+  }) => PlutoGridScrollUpdateEvent(
+    offset: offset,
+  );
 
   setUp(() {
     stateManager = MockPlutoGridStateManager();
@@ -70,23 +69,29 @@ void main() {
         when(horizontalController.offset).thenReturn(scrollOffset);
         when(stateManager.toDirectionalOffset(any)).thenReturn(offset);
 
-        when(stateManager.needMovingScroll(offset, PlutoMoveDirection.left))
-            .thenReturn(true);
-        when(stateManager.needMovingScroll(offset, PlutoMoveDirection.right))
-            .thenReturn(false);
-        when(stateManager.needMovingScroll(offset, PlutoMoveDirection.up))
-            .thenReturn(false);
-        when(stateManager.needMovingScroll(offset, PlutoMoveDirection.down))
-            .thenReturn(false);
+        when(
+          stateManager.needMovingScroll(offset, PlutoMoveDirection.left),
+        ).thenReturn(true);
+        when(
+          stateManager.needMovingScroll(offset, PlutoMoveDirection.right),
+        ).thenReturn(false);
+        when(
+          stateManager.needMovingScroll(offset, PlutoMoveDirection.up),
+        ).thenReturn(false);
+        when(
+          stateManager.needMovingScroll(offset, PlutoMoveDirection.down),
+        ).thenReturn(false);
 
         var event = eventBuilder(offset: offset);
         event.handler(stateManager);
 
-        verify(horizontalController.animateTo(
-          0.0,
-          curve: anyNamed('curve'),
-          duration: anyNamed('duration'),
-        ));
+        verify(
+          horizontalController.animateTo(
+            0.0,
+            curve: anyNamed('curve'),
+            duration: anyNamed('duration'),
+          ),
+        );
       },
     );
 
@@ -101,23 +106,29 @@ void main() {
         when(scrollPosition.maxScrollExtent).thenReturn(100);
         when(stateManager.toDirectionalOffset(any)).thenReturn(offset);
 
-        when(stateManager.needMovingScroll(offset, PlutoMoveDirection.left))
-            .thenReturn(false);
-        when(stateManager.needMovingScroll(offset, PlutoMoveDirection.right))
-            .thenReturn(true);
-        when(stateManager.needMovingScroll(offset, PlutoMoveDirection.up))
-            .thenReturn(false);
-        when(stateManager.needMovingScroll(offset, PlutoMoveDirection.down))
-            .thenReturn(false);
+        when(
+          stateManager.needMovingScroll(offset, PlutoMoveDirection.left),
+        ).thenReturn(false);
+        when(
+          stateManager.needMovingScroll(offset, PlutoMoveDirection.right),
+        ).thenReturn(true);
+        when(
+          stateManager.needMovingScroll(offset, PlutoMoveDirection.up),
+        ).thenReturn(false);
+        when(
+          stateManager.needMovingScroll(offset, PlutoMoveDirection.down),
+        ).thenReturn(false);
 
         var event = eventBuilder(offset: offset);
         event.handler(stateManager);
 
-        verify(horizontalController.animateTo(
-          100,
-          curve: anyNamed('curve'),
-          duration: anyNamed('duration'),
-        ));
+        verify(
+          horizontalController.animateTo(
+            100,
+            curve: anyNamed('curve'),
+            duration: anyNamed('duration'),
+          ),
+        );
       },
     );
 
@@ -131,23 +142,29 @@ void main() {
         when(verticalController.offset).thenReturn(scrollOffset);
         when(stateManager.toDirectionalOffset(any)).thenReturn(offset);
 
-        when(stateManager.needMovingScroll(offset, PlutoMoveDirection.left))
-            .thenReturn(false);
-        when(stateManager.needMovingScroll(offset, PlutoMoveDirection.right))
-            .thenReturn(false);
-        when(stateManager.needMovingScroll(offset, PlutoMoveDirection.up))
-            .thenReturn(true);
-        when(stateManager.needMovingScroll(offset, PlutoMoveDirection.down))
-            .thenReturn(false);
+        when(
+          stateManager.needMovingScroll(offset, PlutoMoveDirection.left),
+        ).thenReturn(false);
+        when(
+          stateManager.needMovingScroll(offset, PlutoMoveDirection.right),
+        ).thenReturn(false);
+        when(
+          stateManager.needMovingScroll(offset, PlutoMoveDirection.up),
+        ).thenReturn(true);
+        when(
+          stateManager.needMovingScroll(offset, PlutoMoveDirection.down),
+        ).thenReturn(false);
 
         var event = eventBuilder(offset: offset);
         event.handler(stateManager);
 
-        verify(verticalController.animateTo(
-          0,
-          curve: anyNamed('curve'),
-          duration: anyNamed('duration'),
-        ));
+        verify(
+          verticalController.animateTo(
+            0,
+            curve: anyNamed('curve'),
+            duration: anyNamed('duration'),
+          ),
+        );
       },
     );
 
@@ -162,23 +179,29 @@ void main() {
         when(scrollPosition.maxScrollExtent).thenReturn(200);
         when(stateManager.toDirectionalOffset(any)).thenReturn(offset);
 
-        when(stateManager.needMovingScroll(offset, PlutoMoveDirection.left))
-            .thenReturn(false);
-        when(stateManager.needMovingScroll(offset, PlutoMoveDirection.right))
-            .thenReturn(false);
-        when(stateManager.needMovingScroll(offset, PlutoMoveDirection.up))
-            .thenReturn(false);
-        when(stateManager.needMovingScroll(offset, PlutoMoveDirection.down))
-            .thenReturn(true);
+        when(
+          stateManager.needMovingScroll(offset, PlutoMoveDirection.left),
+        ).thenReturn(false);
+        when(
+          stateManager.needMovingScroll(offset, PlutoMoveDirection.right),
+        ).thenReturn(false);
+        when(
+          stateManager.needMovingScroll(offset, PlutoMoveDirection.up),
+        ).thenReturn(false);
+        when(
+          stateManager.needMovingScroll(offset, PlutoMoveDirection.down),
+        ).thenReturn(true);
 
         var event = eventBuilder(offset: offset);
         event.handler(stateManager);
 
-        verify(verticalController.animateTo(
-          200,
-          curve: anyNamed('curve'),
-          duration: anyNamed('duration'),
-        ));
+        verify(
+          verticalController.animateTo(
+            200,
+            curve: anyNamed('curve'),
+            duration: anyNamed('duration'),
+          ),
+        );
       },
     );
   });

@@ -215,11 +215,13 @@ void main() {
     late PlutoGridStateManager stateManager;
 
     PlutoRow createRow(String value1, String value2, String value3) {
-      return PlutoRow(cells: {
-        'column1': PlutoCell(value: value1),
-        'column2': PlutoCell(value: value2),
-        'column3': PlutoCell(value: value3),
-      });
+      return PlutoRow(
+        cells: {
+          'column1': PlutoCell(value: value1),
+          'column2': PlutoCell(value: value2),
+          'column3': PlutoCell(value: value3),
+        },
+      );
     }
 
     setUp(() {
@@ -242,39 +244,53 @@ void main() {
       ];
 
       rows = [
-        PlutoRow(cells: {
-          'column1': PlutoCell(value: 'A'),
-          'column2': PlutoCell(value: '1'),
-          'column3': PlutoCell(value: '001'),
-        }),
-        PlutoRow(cells: {
-          'column1': PlutoCell(value: 'A'),
-          'column2': PlutoCell(value: '2'),
-          'column3': PlutoCell(value: '002'),
-        }),
-        PlutoRow(cells: {
-          'column1': PlutoCell(value: 'B'),
-          'column2': PlutoCell(value: '1'),
-          'column3': PlutoCell(value: '003'),
-        }),
-        PlutoRow(cells: {
-          'column1': PlutoCell(value: 'B'),
-          'column2': PlutoCell(value: '1'),
-          'column3': PlutoCell(value: '004'),
-        }),
-        PlutoRow(cells: {
-          'column1': PlutoCell(value: 'B'),
-          'column2': PlutoCell(value: '2'),
-          'column3': PlutoCell(value: '005'),
-        }),
+        PlutoRow(
+          cells: {
+            'column1': PlutoCell(value: 'A'),
+            'column2': PlutoCell(value: '1'),
+            'column3': PlutoCell(value: '001'),
+          },
+        ),
+        PlutoRow(
+          cells: {
+            'column1': PlutoCell(value: 'A'),
+            'column2': PlutoCell(value: '2'),
+            'column3': PlutoCell(value: '002'),
+          },
+        ),
+        PlutoRow(
+          cells: {
+            'column1': PlutoCell(value: 'B'),
+            'column2': PlutoCell(value: '1'),
+            'column3': PlutoCell(value: '003'),
+          },
+        ),
+        PlutoRow(
+          cells: {
+            'column1': PlutoCell(value: 'B'),
+            'column2': PlutoCell(value: '1'),
+            'column3': PlutoCell(value: '004'),
+          },
+        ),
+        PlutoRow(
+          cells: {
+            'column1': PlutoCell(value: 'B'),
+            'column2': PlutoCell(value: '2'),
+            'column3': PlutoCell(value: '005'),
+          },
+        ),
       ];
 
       stateManager = createStateManager(columns: columns, rows: rows);
 
-      stateManager.setRowGroup(PlutoRowGroupByColumnDelegate(columns: [
-        columns[0],
-        columns[1],
-      ]));
+      stateManager.setRowGroup(
+        PlutoRowGroupByColumnDelegate(
+          columns: [
+            columns[0],
+            columns[1],
+          ],
+        ),
+      );
     });
 
     test('hasRowGroups 이 true 를 리턴해야 한다.', () {
@@ -587,11 +603,13 @@ void main() {
     );
 
     test('첫번째 행에 column2 의 값이 3인 행을 추가 하면 첫번째 행의 자식은 3개가 되어야 한다.', () {
-      final rowToAdd = PlutoRow(cells: {
-        'column1': PlutoCell(value: 'A'),
-        'column2': PlutoCell(value: '3'),
-        'column3': PlutoCell(value: '006'),
-      });
+      final rowToAdd = PlutoRow(
+        cells: {
+          'column1': PlutoCell(value: 'A'),
+          'column2': PlutoCell(value: '3'),
+          'column3': PlutoCell(value: '006'),
+        },
+      );
 
       expect(stateManager.refRows.first.type.group.children.length, 2);
 
@@ -601,11 +619,13 @@ void main() {
     });
 
     test('첫번째 행에 column2 의 값이 3인 행을 추가 하면 추가 된 자식의 parent 가 설정 되어야 한다.', () {
-      final rowToAdd = PlutoRow(cells: {
-        'column1': PlutoCell(value: 'A'),
-        'column2': PlutoCell(value: '3'),
-        'column3': PlutoCell(value: '006'),
-      });
+      final rowToAdd = PlutoRow(
+        cells: {
+          'column1': PlutoCell(value: 'A'),
+          'column2': PlutoCell(value: '3'),
+          'column3': PlutoCell(value: '006'),
+        },
+      );
 
       stateManager.insertRows(0, [rowToAdd]);
 
@@ -617,11 +637,13 @@ void main() {
       '정렬 된 상태에서 첫번째 행에 column2 의 값이 3인 행을 추가 하면, '
       '추가 된 자식의 parent 가 설정 되어야 한다.',
       () {
-        final rowToAdd = PlutoRow(cells: {
-          'column1': PlutoCell(value: 'A'),
-          'column2': PlutoCell(value: '3'),
-          'column3': PlutoCell(value: '006'),
-        });
+        final rowToAdd = PlutoRow(
+          cells: {
+            'column1': PlutoCell(value: 'A'),
+            'column2': PlutoCell(value: '3'),
+            'column3': PlutoCell(value: '006'),
+          },
+        );
 
         stateManager.toggleSortColumn(columns.first);
 
@@ -636,11 +658,13 @@ void main() {
       'prependRows 로 column2 의 값이 3인 행을 추가 하면, '
       '추가 된 자식의 parent 가 설정 되어야 한다.',
       () {
-        final rowToAdd = PlutoRow(cells: {
-          'column1': PlutoCell(value: 'A'),
-          'column2': PlutoCell(value: '3'),
-          'column3': PlutoCell(value: '006'),
-        });
+        final rowToAdd = PlutoRow(
+          cells: {
+            'column1': PlutoCell(value: 'A'),
+            'column2': PlutoCell(value: '3'),
+            'column3': PlutoCell(value: '006'),
+          },
+        );
 
         stateManager.toggleSortColumn(columns.first);
 
@@ -655,11 +679,13 @@ void main() {
       'appendRows 로 column2 의 값이 3인 행을 추가 하면, '
       '추가 된 자식의 parent 가 설정 되어야 한다.',
       () {
-        final rowToAdd = PlutoRow(cells: {
-          'column1': PlutoCell(value: 'A'),
-          'column2': PlutoCell(value: '3'),
-          'column3': PlutoCell(value: '006'),
-        });
+        final rowToAdd = PlutoRow(
+          cells: {
+            'column1': PlutoCell(value: 'A'),
+            'column2': PlutoCell(value: '3'),
+            'column3': PlutoCell(value: '006'),
+          },
+        );
 
         stateManager.toggleSortColumn(columns.first);
 
@@ -1614,18 +1640,22 @@ void main() {
             PlutoRow(
               cells: createCell('G300'),
               type: PlutoRowType.group(
-                children: FilteredList(initialList: [
-                  PlutoRow(cells: createCell('G310')),
-                  PlutoRow(
-                    cells: createCell('G320'),
-                    type: PlutoRowType.group(
-                      children: FilteredList(initialList: [
-                        PlutoRow(cells: createCell('G321')),
-                        PlutoRow(cells: createCell('G322')),
-                      ]),
+                children: FilteredList(
+                  initialList: [
+                    PlutoRow(cells: createCell('G310')),
+                    PlutoRow(
+                      cells: createCell('G320'),
+                      type: PlutoRowType.group(
+                        children: FilteredList(
+                          initialList: [
+                            PlutoRow(cells: createCell('G321')),
+                            PlutoRow(cells: createCell('G322')),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                ]),
+                  ],
+                ),
               ),
             ),
           ]);

@@ -83,12 +83,9 @@ void main() {
 
       await buildWidget(tester: tester, column: column);
 
-      final DecoratedBox box = find
-          .byType(DecoratedBox)
-          .first
-          .evaluate()
-          .first
-          .widget as DecoratedBox;
+      final DecoratedBox box =
+          find.byType(DecoratedBox).first.evaluate().first.widget
+              as DecoratedBox;
 
       final decoration = box.decoration as BoxDecoration;
 
@@ -118,12 +115,9 @@ void main() {
         enableColumnBorderVertical: false,
       );
 
-      final DecoratedBox box = find
-          .byType(DecoratedBox)
-          .first
-          .evaluate()
-          .first
-          .widget as DecoratedBox;
+      final DecoratedBox box =
+          find.byType(DecoratedBox).first.evaluate().first.widget
+              as DecoratedBox;
 
       final decoration = box.decoration as BoxDecoration;
 
@@ -152,12 +146,9 @@ void main() {
         enableColumnBorderVertical: false,
       );
 
-      final DecoratedBox box = find
-          .byType(DecoratedBox)
-          .first
-          .evaluate()
-          .first
-          .widget as DecoratedBox;
+      final DecoratedBox box =
+          find.byType(DecoratedBox).first.evaluate().first.widget
+              as DecoratedBox;
 
       final decoration = box.decoration as BoxDecoration;
 

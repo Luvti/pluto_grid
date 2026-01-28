@@ -21,9 +21,11 @@ void main() {
     });
 
     test('row 가 있는 경우 filter 가 호출 되어야 한다.', () {
-      final FilteredList<PlutoRow> rows = FilteredList(initialList: [
-        PlutoRow(cells: {}),
-      ]);
+      final FilteredList<PlutoRow> rows = FilteredList(
+        initialList: [
+          PlutoRow(cells: {}),
+        ],
+      );
 
       final mockFilter = mock.oneParamReturnBool<PlutoRow>;
 
@@ -37,11 +39,13 @@ void main() {
     });
 
     test('filter 가 설정 된 상태에서 null 로 호출하면 필터가 삭제 되어야 한다.', () {
-      final FilteredList<PlutoRow> rows = FilteredList(initialList: [
-        PlutoRow(cells: {'column1': PlutoCell(value: 'test1')}),
-        PlutoRow(cells: {'column1': PlutoCell(value: 'test2')}),
-        PlutoRow(cells: {'column1': PlutoCell(value: 'test3')}),
-      ]);
+      final FilteredList<PlutoRow> rows = FilteredList(
+        initialList: [
+          PlutoRow(cells: {'column1': PlutoCell(value: 'test1')}),
+          PlutoRow(cells: {'column1': PlutoCell(value: 'test2')}),
+          PlutoRow(cells: {'column1': PlutoCell(value: 'test3')}),
+        ],
+      );
 
       filter(PlutoRow row) => row.cells['column1']!.value == 'test1';
 
@@ -61,19 +65,23 @@ void main() {
     });
 
     test('그룹 행이 포함 된 경우 그룹행의 filter 를 포함해서 호출 되어야 한다.', () {
-      final FilteredList<PlutoRow> rows = FilteredList(initialList: [
-        PlutoRow(cells: {'column1': PlutoCell(value: 'test1')}),
-        PlutoRow(cells: {'column1': PlutoCell(value: 'test2')}),
-        PlutoRow(
-          cells: {'column1': PlutoCell(value: 'test3')},
-          type: PlutoRowType.group(
-            children: FilteredList(initialList: [
-              PlutoRow(cells: {'column1': PlutoCell(value: 'group1')}),
-              PlutoRow(cells: {'column1': PlutoCell(value: 'group2')}),
-            ]),
+      final FilteredList<PlutoRow> rows = FilteredList(
+        initialList: [
+          PlutoRow(cells: {'column1': PlutoCell(value: 'test1')}),
+          PlutoRow(cells: {'column1': PlutoCell(value: 'test2')}),
+          PlutoRow(
+            cells: {'column1': PlutoCell(value: 'test3')},
+            type: PlutoRowType.group(
+              children: FilteredList(
+                initialList: [
+                  PlutoRow(cells: {'column1': PlutoCell(value: 'group1')}),
+                  PlutoRow(cells: {'column1': PlutoCell(value: 'group2')}),
+                ],
+              ),
+            ),
           ),
-        ),
-      ]);
+        ],
+      );
 
       final mockFilter = mock.oneParamReturnBool<PlutoRow>;
 
@@ -85,19 +93,23 @@ void main() {
     });
 
     test('그룹의 자식 행을 필터링 한 후 필터를 제거하면 자식 행이 리스트에 포함 되어야 한다.', () {
-      final FilteredList<PlutoRow> rows = FilteredList(initialList: [
-        PlutoRow(cells: {'column1': PlutoCell(value: 'test1')}),
-        PlutoRow(cells: {'column1': PlutoCell(value: 'test2')}),
-        PlutoRow(
-          cells: {'column1': PlutoCell(value: 'test3')},
-          type: PlutoRowType.group(
-            children: FilteredList(initialList: [
-              PlutoRow(cells: {'column1': PlutoCell(value: 'group1')}),
-              PlutoRow(cells: {'column1': PlutoCell(value: 'group2')}),
-            ]),
+      final FilteredList<PlutoRow> rows = FilteredList(
+        initialList: [
+          PlutoRow(cells: {'column1': PlutoCell(value: 'test1')}),
+          PlutoRow(cells: {'column1': PlutoCell(value: 'test2')}),
+          PlutoRow(
+            cells: {'column1': PlutoCell(value: 'test3')},
+            type: PlutoRowType.group(
+              children: FilteredList(
+                initialList: [
+                  PlutoRow(cells: {'column1': PlutoCell(value: 'group1')}),
+                  PlutoRow(cells: {'column1': PlutoCell(value: 'group2')}),
+                ],
+              ),
+            ),
           ),
-        ),
-      ]);
+        ],
+      );
 
       filter(PlutoRow row) =>
           !row.cells['column1']!.value.toString().startsWith('group');

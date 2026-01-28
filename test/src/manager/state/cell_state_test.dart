@@ -38,72 +38,87 @@ void main() {
 
   group('currentCellPosition', () {
     testWidgets(
-        'currentCellPosition - currentCell 이 선택되지 않은 경우 null 을 리턴해야 한다.',
-        (WidgetTester tester) async {
-      // given
-      List<PlutoColumn> columns = [
-        ...ColumnHelper.textColumn('left',
-            count: 3, frozen: PlutoColumnFrozen.start),
-        ...ColumnHelper.textColumn('body', count: 3, width: 150),
-        ...ColumnHelper.textColumn('right',
-            count: 3, frozen: PlutoColumnFrozen.end),
-      ];
+      'currentCellPosition - currentCell 이 선택되지 않은 경우 null 을 리턴해야 한다.',
+      (WidgetTester tester) async {
+        // given
+        List<PlutoColumn> columns = [
+          ...ColumnHelper.textColumn(
+            'left',
+            count: 3,
+            frozen: PlutoColumnFrozen.start,
+          ),
+          ...ColumnHelper.textColumn('body', count: 3, width: 150),
+          ...ColumnHelper.textColumn(
+            'right',
+            count: 3,
+            frozen: PlutoColumnFrozen.end,
+          ),
+        ];
 
-      List<PlutoRow> rows = RowHelper.count(10, columns);
+        List<PlutoRow> rows = RowHelper.count(10, columns);
 
-      PlutoGridStateManager stateManager = createStateManager(
-        columns: columns,
-        rows: rows,
-        gridFocusNode: null,
-        scroll: null,
-      );
+        PlutoGridStateManager stateManager = createStateManager(
+          columns: columns,
+          rows: rows,
+          gridFocusNode: null,
+          scroll: null,
+        );
 
-      // when
-      PlutoGridCellPosition? currentCellPosition =
-          stateManager.currentCellPosition;
+        // when
+        PlutoGridCellPosition? currentCellPosition =
+            stateManager.currentCellPosition;
 
-      // when
-      expect(currentCellPosition, null);
-    });
-
-    testWidgets('currentCellPosition - currentCell 이 선택된 경우 선택 된 위치를 리턴해야 한다.',
-        (WidgetTester tester) async {
-      // given
-      List<PlutoColumn> columns = [
-        ...ColumnHelper.textColumn('left',
-            count: 3, frozen: PlutoColumnFrozen.start),
-        ...ColumnHelper.textColumn('body', count: 3, width: 150),
-        ...ColumnHelper.textColumn('right',
-            count: 3, frozen: PlutoColumnFrozen.end),
-      ];
-
-      List<PlutoRow> rows = RowHelper.count(10, columns);
-
-      PlutoGridStateManager stateManager = createStateManager(
-        columns: columns,
-        rows: rows,
-        gridFocusNode: null,
-        scroll: null,
-      );
-
-      // when
-      stateManager
-          .setLayout(const BoxConstraints(maxWidth: 1900, maxHeight: 500));
-
-      String selectColumnField = 'body1';
-      stateManager.setCurrentCell(rows[5].cells[selectColumnField], 5);
-
-      PlutoGridCellPosition currentCellPosition =
-          stateManager.currentCellPosition!;
-
-      // when
-      expect(currentCellPosition, isNot(null));
-      expect(currentCellPosition.rowIdx, 5);
-      expect(currentCellPosition.columnIdx, 4);
-    });
+        // when
+        expect(currentCellPosition, null);
+      },
+    );
 
     testWidgets(
-        'currentCellPosition - currentCell 이 선택된 경우 선택 된 위치를 리턴해야 한다.'
+      'currentCellPosition - currentCell 이 선택된 경우 선택 된 위치를 리턴해야 한다.',
+      (WidgetTester tester) async {
+        // given
+        List<PlutoColumn> columns = [
+          ...ColumnHelper.textColumn(
+            'left',
+            count: 3,
+            frozen: PlutoColumnFrozen.start,
+          ),
+          ...ColumnHelper.textColumn('body', count: 3, width: 150),
+          ...ColumnHelper.textColumn(
+            'right',
+            count: 3,
+            frozen: PlutoColumnFrozen.end,
+          ),
+        ];
+
+        List<PlutoRow> rows = RowHelper.count(10, columns);
+
+        PlutoGridStateManager stateManager = createStateManager(
+          columns: columns,
+          rows: rows,
+          gridFocusNode: null,
+          scroll: null,
+        );
+
+        // when
+        stateManager.setLayout(
+          const BoxConstraints(maxWidth: 1900, maxHeight: 500),
+        );
+
+        String selectColumnField = 'body1';
+        stateManager.setCurrentCell(rows[5].cells[selectColumnField], 5);
+
+        PlutoGridCellPosition currentCellPosition =
+            stateManager.currentCellPosition!;
+
+        // when
+        expect(currentCellPosition, isNot(null));
+        expect(currentCellPosition.rowIdx, 5);
+        expect(currentCellPosition.columnIdx, 4);
+      },
+    );
+
+    testWidgets('currentCellPosition - currentCell 이 선택된 경우 선택 된 위치를 리턴해야 한다.'
         '컬럼 고정 상태가 바뀌고, body 최소 넓이가 작은 경우', (WidgetTester tester) async {
       // given
       List<PlutoColumn> columns = [
@@ -145,8 +160,7 @@ void main() {
       expect(currentCellPosition.columnIdx, 2);
     });
 
-    testWidgets(
-        'currentCellPosition - currentCell 이 선택된 경우 선택 된 위치를 리턴해야 한다.'
+    testWidgets('currentCellPosition - currentCell 이 선택된 경우 선택 된 위치를 리턴해야 한다.'
         '컬럼 고정 상태가 바뀌고, body 최소 넓이가 충분한 경우', (WidgetTester tester) async {
       // given
       List<PlutoColumn> columns = [
@@ -370,8 +384,9 @@ void main() {
         scroll: null,
       );
 
-      stateManager
-          .setLayout(const BoxConstraints(maxHeight: 300, maxWidth: 50));
+      stateManager.setLayout(
+        const BoxConstraints(maxHeight: 300, maxWidth: 50),
+      );
 
       // when
       final Key nonExistsKey = UniqueKey();
@@ -380,8 +395,9 @@ void main() {
       expect(stateManager.cellPositionByCellKey(nonExistsKey), isNull);
     });
 
-    testWidgets('should be returned cellPosition columnIdx: 0, rowIdx 0',
-        (WidgetTester tester) async {
+    testWidgets('should be returned cellPosition columnIdx: 0, rowIdx 0', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
         ...ColumnHelper.textColumn('body', count: 10, width: 150),
@@ -396,8 +412,9 @@ void main() {
         scroll: null,
       );
 
-      stateManager
-          .setLayout(const BoxConstraints(maxHeight: 300, maxWidth: 50));
+      stateManager.setLayout(
+        const BoxConstraints(maxHeight: 300, maxWidth: 50),
+      );
 
       // when
       final Key cellKey = rows.first.cells['body0']!.key;
@@ -409,8 +426,9 @@ void main() {
       expect(cellPosition.rowIdx, 0);
     });
 
-    testWidgets('should be returned cellPosition columnIdx: 3, rowIdx 7',
-        (WidgetTester tester) async {
+    testWidgets('should be returned cellPosition columnIdx: 3, rowIdx 7', (
+      WidgetTester tester,
+    ) async {
       // given
       List<PlutoColumn> columns = [
         ...ColumnHelper.textColumn('body', count: 10, width: 150),
@@ -425,8 +443,9 @@ void main() {
         scroll: null,
       );
 
-      stateManager
-          .setLayout(const BoxConstraints(maxHeight: 300, maxWidth: 50));
+      stateManager.setLayout(
+        const BoxConstraints(maxHeight: 300, maxWidth: 50),
+      );
 
       // when
       final Key cellKey = rows[7].cells['body3']!.key;
@@ -600,11 +619,11 @@ void main() {
   });
 
   group('filteredCellValue', () {
-    testWidgets(
-        'select column'
+    testWidgets('select column'
         'WHEN newValue is not contained in select items'
-        'THEN the return value should be oldValue.',
-        (WidgetTester tester) async {
+        'THEN the return value should be oldValue.', (
+      WidgetTester tester,
+    ) async {
       // given
       const String newValue = 'four';
 
@@ -636,11 +655,11 @@ void main() {
       expect(filteredValue, oldValue);
     });
 
-    testWidgets(
-        'select column'
+    testWidgets('select column'
         'WHEN newValue is contained in select items'
-        'THEN the return value should be newValue.',
-        (WidgetTester tester) async {
+        'THEN the return value should be newValue.', (
+      WidgetTester tester,
+    ) async {
       // given
       const String newValue = 'four';
 
@@ -672,11 +691,11 @@ void main() {
       expect(filteredValue, newValue);
     });
 
-    testWidgets(
-        'date column'
+    testWidgets('date column'
         'WHEN newValue is not parsed to DateTime'
-        'THEN the return value should be oldValue.',
-        (WidgetTester tester) async {
+        'THEN the return value should be oldValue.', (
+      WidgetTester tester,
+    ) async {
       // given
       const String newValue = 'not date';
 
@@ -708,11 +727,11 @@ void main() {
       expect(filteredValue, oldValue);
     });
 
-    testWidgets(
-        'date column'
+    testWidgets('date column'
         'WHEN newValue is parsed to DateTime'
-        'THEN the return value should be newValue.',
-        (WidgetTester tester) async {
+        'THEN the return value should be newValue.', (
+      WidgetTester tester,
+    ) async {
       // given
       const String newValue = '2020-12-12';
 
@@ -744,11 +763,11 @@ void main() {
       expect(filteredValue, newValue);
     });
 
-    testWidgets(
-        'time column'
+    testWidgets('time column'
         'WHEN newValue is not in 00:00 format'
-        'THEN the return value should be oldValue.',
-        (WidgetTester tester) async {
+        'THEN the return value should be oldValue.', (
+      WidgetTester tester,
+    ) async {
       // given
       const String newValue = 'not 00:00';
 
@@ -780,11 +799,11 @@ void main() {
       expect(filteredValue, oldValue);
     });
 
-    testWidgets(
-        'time column'
+    testWidgets('time column'
         'WHEN newValue is in the 00:00 format'
-        'THEN the return value should be newValue.',
-        (WidgetTester tester) async {
+        'THEN the return value should be newValue.', (
+      WidgetTester tester,
+    ) async {
       // given
       const String newValue = '12:59';
 

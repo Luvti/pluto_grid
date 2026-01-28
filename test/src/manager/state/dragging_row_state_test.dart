@@ -379,13 +379,15 @@ void main() {
 
         expect(stateManager.isDraggingRow, isFalse);
         expect(
-          stateManager.dragRows
-              .firstWhereOrNull((element) => element.key == rows[5].key),
+          stateManager.dragRows.firstWhereOrNull(
+            (element) => element.key == rows[5].key,
+          ),
           isNot(isNull),
         );
         expect(
-          stateManager.dragRows
-              .firstWhereOrNull((element) => element.key == rows[6].key),
+          stateManager.dragRows.firstWhereOrNull(
+            (element) => element.key == rows[6].key,
+          ),
           isNot(isNull),
         );
 

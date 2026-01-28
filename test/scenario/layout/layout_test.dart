@@ -17,9 +17,12 @@ void main() {
     columns = ColumnHelper.textColumn('column', count: 5);
     rows = RowHelper.count(10, columns);
     columnGroups = [
-      PlutoColumnGroup(title: 'group1', children: [
-        PlutoColumnGroup(title: 'group1-1', fields: ['column0', 'column1']),
-      ]),
+      PlutoColumnGroup(
+        title: 'group1',
+        children: [
+          PlutoColumnGroup(title: 'group1-1', fields: ['column0', 'column1']),
+        ],
+      ),
     ];
   });
 

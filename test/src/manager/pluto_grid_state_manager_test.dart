@@ -114,40 +114,40 @@ void main() {
     });
 
     test(
-        'forceApplySortIdx 가 false 이고 이미 sortIdx 가 설정 된 경우 sortIdx 값이 유지 되어야 한다.',
-        () {
-      final List<PlutoColumn> columns = ColumnHelper.textColumn('title');
+      'forceApplySortIdx 가 false 이고 이미 sortIdx 가 설정 된 경우 sortIdx 값이 유지 되어야 한다.',
+      () {
+        final List<PlutoColumn> columns = ColumnHelper.textColumn('title');
 
-      final List<PlutoRow> rows = [
-        PlutoRow(
-          cells: {'title0': PlutoCell(value: 'test')},
-          sortIdx: 3,
-        ),
-        PlutoRow(
-          cells: {'title0': PlutoCell(value: 'test')},
-          sortIdx: 4,
-        ),
-        PlutoRow(
-          cells: {'title0': PlutoCell(value: 'test')},
-          sortIdx: 5,
-        ),
-      ];
+        final List<PlutoRow> rows = [
+          PlutoRow(
+            cells: {'title0': PlutoCell(value: 'test')},
+            sortIdx: 3,
+          ),
+          PlutoRow(
+            cells: {'title0': PlutoCell(value: 'test')},
+            sortIdx: 4,
+          ),
+          PlutoRow(
+            cells: {'title0': PlutoCell(value: 'test')},
+            sortIdx: 5,
+          ),
+        ];
 
-      expect(rows.first.sortIdx, 3);
-      expect(rows.last.sortIdx, 5);
+        expect(rows.first.sortIdx, 3);
+        expect(rows.last.sortIdx, 5);
 
-      PlutoGridStateManager.initializeRows(
-        columns,
-        rows,
-        forceApplySortIdx: false,
-      );
+        PlutoGridStateManager.initializeRows(
+          columns,
+          rows,
+          forceApplySortIdx: false,
+        );
 
-      expect(rows.first.sortIdx, 3);
-      expect(rows.last.sortIdx, 5);
-    });
+        expect(rows.first.sortIdx, 3);
+        expect(rows.last.sortIdx, 5);
+      },
+    );
 
-    test(
-        'forceApplySortIdx 가 true 인 경우, '
+    test('forceApplySortIdx 가 true 인 경우, '
         '이미 sortIdx 가 설정 되어도 0부터 다시 설정 되어야 한다.', () {
       final List<PlutoColumn> columns = ColumnHelper.textColumn('title');
 
@@ -230,7 +230,7 @@ void main() {
           title: 'title',
           field: 'field',
           type: PlutoColumnType.number(),
-        )
+        ),
       ];
 
       final List<PlutoRow> rows = [
@@ -249,8 +249,7 @@ void main() {
       expect(rows[2].cells['field']!.value, 1000);
     });
 
-    test(
-        'applyFormatOnInit 이 false 인 경우, '
+    test('applyFormatOnInit 이 false 인 경우, '
         '값이 cast 되지 않아야 한다.', () {
       final List<PlutoColumn> columns = [
         PlutoColumn(
@@ -259,7 +258,7 @@ void main() {
           type: PlutoColumnType.number(
             applyFormatOnInit: false,
           ),
-        )
+        ),
       ];
 
       final List<PlutoRow> rows = [
@@ -284,7 +283,7 @@ void main() {
           title: 'title',
           field: 'field',
           type: PlutoColumnType.date(),
-        )
+        ),
       ];
 
       final List<PlutoRow> rows = [
@@ -311,7 +310,7 @@ void main() {
           type: PlutoColumnType.date(
             applyFormatOnInit: false,
           ),
-        )
+        ),
       ];
 
       final List<PlutoRow> rows = [
@@ -336,7 +335,7 @@ void main() {
           title: 'title',
           field: 'field',
           type: PlutoColumnType.date(format: 'yyyy년 MM월 dd일'),
-        )
+        ),
       ];
 
       final List<PlutoRow> rows = [
@@ -361,7 +360,7 @@ void main() {
           title: 'title',
           field: 'field',
           type: PlutoColumnType.date(format: 'yyyy년 MM월 dd일'),
-        )
+        ),
       ];
 
       final List<PlutoRow> rows = [
@@ -421,8 +420,7 @@ void main() {
       );
     });
 
-    test(
-        'sortIdx 가 0부터 설정 된 rows 를 sortIdx 시작 값을 변경하여 실행하면, '
+    test('sortIdx 가 0부터 설정 된 rows 를 sortIdx 시작 값을 변경하여 실행하면, '
         'sortIdx 값을 10 으로 변경 하면 rows 의 sortIdx 가 변경 되고, '
         '원래 순서대로 리턴 되어야 한다.', () async {
       final List<PlutoColumn> columns = ColumnHelper.textColumn('title');
@@ -449,8 +447,7 @@ void main() {
       }
     });
 
-    test(
-        'sortIdx 가 0부터 설정 된 rows 를 sortIdx 시작 값을 변경하여 실행하면, '
+    test('sortIdx 가 0부터 설정 된 rows 를 sortIdx 시작 값을 변경하여 실행하면, '
         'sortIdx 값을 -10 으로 변경 하면 rows 의 sortIdx 가 변경 되고, '
         '원래 순서대로 리턴 되어야 한다.', () async {
       final List<PlutoColumn> columns = ColumnHelper.textColumn('title');
@@ -477,8 +474,7 @@ void main() {
       }
     });
 
-    test(
-        'sortIdx 가 0부터 설정 된 rows 를 sortIdx 시작 값을 변경하여 실행하면, '
+    test('sortIdx 가 0부터 설정 된 rows 를 sortIdx 시작 값을 변경하여 실행하면, '
         'sortIdx 값을 -10 으로 변경 하면 rows 의 sortIdx 가 변경 되고, '
         '원래 순서대로 리턴 되어야 한다.', () async {
       final List<PlutoColumn> columns = ColumnHelper.textColumn('title');

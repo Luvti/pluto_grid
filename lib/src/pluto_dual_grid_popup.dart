@@ -56,34 +56,36 @@ class PlutoDualGridPopup {
 
     PlutoDualOnSelectedEvent? selected =
         await showDialog<PlutoDualOnSelectedEvent>(
-            context: context,
-            builder: (BuildContext ctx) {
-              return Dialog(
-                shape: shape,
-                child: LayoutBuilder(
-                  builder: (ctx, size) {
-                    return SizedBox(
-                      width: (width ?? size.maxWidth) +
-                          PlutoGridSettings.gridInnerSpacing,
-                      height: height ?? size.maxHeight,
-                      child: Directionality(
-                        textDirection: textDirection,
-                        child: PlutoDualGrid(
-                          gridPropsA: propsA,
-                          gridPropsB: propsB,
-                          mode: mode,
-                          onSelected: (PlutoDualOnSelectedEvent event) {
-                            Navigator.pop(ctx, event);
-                          },
-                          display: display ?? PlutoDualGridDisplayRatio(),
-                          divider: divider ?? const PlutoDualGridDivider(),
-                        ),
+          context: context,
+          builder: (BuildContext ctx) {
+            return Dialog(
+              shape: shape,
+              child: LayoutBuilder(
+                builder: (ctx, size) {
+                  return SizedBox(
+                    width:
+                        (width ?? size.maxWidth) +
+                        PlutoGridSettings.gridInnerSpacing,
+                    height: height ?? size.maxHeight,
+                    child: Directionality(
+                      textDirection: textDirection,
+                      child: PlutoDualGrid(
+                        gridPropsA: propsA,
+                        gridPropsB: propsB,
+                        mode: mode,
+                        onSelected: (PlutoDualOnSelectedEvent event) {
+                          Navigator.pop(ctx, event);
+                        },
+                        display: display ?? PlutoDualGridDisplayRatio(),
+                        divider: divider ?? const PlutoDualGridDivider(),
                       ),
-                    );
-                  },
-                ),
-              );
-            });
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        );
     if (onSelected != null && selected != null) {
       onSelected!(selected);
     }

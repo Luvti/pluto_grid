@@ -92,9 +92,10 @@ void main() {
       rowHeight: rowHeight,
       columns: [
         PlutoColumn(
-            title: 'header',
-            field: 'header0',
-            type: PlutoColumnType.select(<String>['one', 'two', 'three'])),
+          title: 'header',
+          field: 'header0',
+          type: PlutoColumnType.select(<String>['one', 'two', 'three']),
+        ),
       ],
     ).test(
       'CellWidget 의 높이를 설정하면 selectColumn 의 팝업의 셀 높이는 '
@@ -112,9 +113,11 @@ void main() {
 
         final popupGrid = find.byType(PlutoGrid).last;
 
-        final Size cellPopupSize = tester.getSize(find
-            .descendant(of: popupGrid, matching: find.byType(PlutoBaseCell))
-            .first);
+        final Size cellPopupSize = tester.getSize(
+          find
+              .descendant(of: popupGrid, matching: find.byType(PlutoBaseCell))
+              .first,
+        );
 
         // select 팝업 높이 확인
         expect(cellPopupSize.height, rowHeight);
@@ -138,8 +141,9 @@ void main() {
         await tester.sendKeyEvent(LogicalKeyboardKey.f2);
         await tester.pumpAndSettle(const Duration(milliseconds: 300));
 
-        final sundayColumn =
-            find.text(stateManager!.configuration.localeText.sunday);
+        final sundayColumn = find.text(
+          stateManager!.configuration.localeText.sunday,
+        );
 
         expect(
           sundayColumn,
@@ -147,12 +151,16 @@ void main() {
         );
 
         // date 팝업의 CellWidget 높이 확인
-        final parent =
-            find.ancestor(of: sundayColumn, matching: find.byType(PlutoGrid));
+        final parent = find.ancestor(
+          of: sundayColumn,
+          matching: find.byType(PlutoGrid),
+        );
 
-        final Size cellSize = tester.getSize(find
-            .descendant(of: parent, matching: find.byType(PlutoBaseCell))
-            .first);
+        final Size cellSize = tester.getSize(
+          find
+              .descendant(of: parent, matching: find.byType(PlutoBaseCell))
+              .first,
+        );
 
         expect(cellSize.height, rowHeight);
       },
@@ -175,8 +183,9 @@ void main() {
         await tester.sendKeyEvent(LogicalKeyboardKey.f2);
         await tester.pumpAndSettle(const Duration(milliseconds: 300));
 
-        final hourColumn =
-            find.text(stateManager!.configuration.localeText.hour);
+        final hourColumn = find.text(
+          stateManager!.configuration.localeText.hour,
+        );
 
         expect(
           hourColumn,
@@ -184,12 +193,16 @@ void main() {
         );
 
         // time 팝업의 CellWidget 높이 확인
-        final parent =
-            find.ancestor(of: hourColumn, matching: find.byType(PlutoGrid));
+        final parent = find.ancestor(
+          of: hourColumn,
+          matching: find.byType(PlutoGrid),
+        );
 
-        final Size cellSize = tester.getSize(find
-            .descendant(of: parent, matching: find.byType(PlutoBaseCell))
-            .first);
+        final Size cellSize = tester.getSize(
+          find
+              .descendant(of: parent, matching: find.byType(PlutoBaseCell))
+              .first,
+        );
 
         expect(cellSize.height, rowHeight);
       },

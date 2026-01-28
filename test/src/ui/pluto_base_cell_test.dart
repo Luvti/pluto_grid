@@ -69,8 +69,7 @@ void main() {
     );
   }
 
-  testWidgets(
-      'WHEN If it is not CurrentCell or not in Editing state'
+  testWidgets('WHEN If it is not CurrentCell or not in Editing state'
       'THEN Text widget should be rendered', (WidgetTester tester) async {
     // given
     final PlutoCell cell = PlutoCell(value: 'cell value');
@@ -112,8 +111,7 @@ void main() {
     expect(find.byType(PlutoTextCell), findsNothing);
   });
 
-  testWidgets(
-      'WHEN If it is CurrentCell and not in Editing state'
+  testWidgets('WHEN If it is CurrentCell and not in Editing state'
       'THEN Text widget should be rendered', (WidgetTester tester) async {
     // given
     final PlutoCell cell = PlutoCell(value: 'cell value');
@@ -154,8 +152,7 @@ void main() {
     expect(find.byType(PlutoTextCell), findsNothing);
   });
 
-  testWidgets(
-      'WHEN If it is CurrentCell and in Editing state'
+  testWidgets('WHEN If it is CurrentCell and in Editing state'
       'THEN [TextCellWidget] should be rendered', (WidgetTester tester) async {
     // given
     final PlutoCell cell = PlutoCell(value: 'cell value');
@@ -196,8 +193,7 @@ void main() {
     expect(find.byType(PlutoTextCell), findsOneWidget);
   });
 
-  testWidgets(
-      'WHEN If it is CurrentCell and in Editing state'
+  testWidgets('WHEN If it is CurrentCell and in Editing state'
       'THEN [TimeCellWidget] should be rendered', (WidgetTester tester) async {
     // given
     final PlutoCell cell = PlutoCell(value: '00:00');
@@ -238,8 +234,7 @@ void main() {
     expect(find.byType(PlutoTextCell), findsNothing);
   });
 
-  testWidgets(
-      'WHEN If it is CurrentCell and in Editing state'
+  testWidgets('WHEN If it is CurrentCell and in Editing state'
       'THEN [DateCellWidget] should be rendered', (WidgetTester tester) async {
     // given
     final PlutoCell cell = PlutoCell(value: '2020-01-01');
@@ -280,10 +275,10 @@ void main() {
     expect(find.byType(PlutoTextCell), findsNothing);
   });
 
-  testWidgets(
-      'WHEN If it is CurrentCell and in Editing state'
-      'THEN [NumberCellWidget] should be rendered',
-      (WidgetTester tester) async {
+  testWidgets('WHEN If it is CurrentCell and in Editing state'
+      'THEN [NumberCellWidget] should be rendered', (
+    WidgetTester tester,
+  ) async {
     // given
     final PlutoCell cell = PlutoCell(value: 1234);
 
@@ -323,10 +318,10 @@ void main() {
     expect(find.byType(PlutoTextCell), findsNothing);
   });
 
-  testWidgets(
-      'WHEN If it is CurrentCell and in Editing state'
-      'THEN [SelectCellWidget] should be rendered',
-      (WidgetTester tester) async {
+  testWidgets('WHEN If it is CurrentCell and in Editing state'
+      'THEN [SelectCellWidget] should be rendered', (
+    WidgetTester tester,
+  ) async {
     // given
     final PlutoCell cell = PlutoCell(value: 'one');
 
@@ -404,14 +399,20 @@ void main() {
 
       await tester.tap(gesture);
 
-      verify(eventManager!.addEvent(
-        argThat(PlutoObjectMatcher<PlutoGridCellGestureEvent>(rule: (object) {
-          return object.gestureType.isOnTapUp &&
-              object.cell.key == cell.key &&
-              object.column.key == column.key &&
-              object.rowIdx == rowIdx;
-        })),
-      )).called(1);
+      verify(
+        eventManager!.addEvent(
+          argThat(
+            PlutoObjectMatcher<PlutoGridCellGestureEvent>(
+              rule: (object) {
+                return object.gestureType.isOnTapUp &&
+                    object.cell.key == cell.key &&
+                    object.column.key == column.key &&
+                    object.rowIdx == rowIdx;
+              },
+            ),
+          ),
+        ),
+      ).called(1);
     },
   );
 
@@ -453,14 +454,20 @@ void main() {
 
       await tester.longPress(gesture);
 
-      verify(eventManager!.addEvent(
-        argThat(PlutoObjectMatcher<PlutoGridCellGestureEvent>(rule: (object) {
-          return object.gestureType.isOnLongPressStart &&
-              object.cell.key == cell.key &&
-              object.column.key == column.key &&
-              object.rowIdx == rowIdx;
-        })),
-      )).called(1);
+      verify(
+        eventManager!.addEvent(
+          argThat(
+            PlutoObjectMatcher<PlutoGridCellGestureEvent>(
+              rule: (object) {
+                return object.gestureType.isOnLongPressStart &&
+                    object.cell.key == cell.key &&
+                    object.column.key == column.key &&
+                    object.rowIdx == rowIdx;
+              },
+            ),
+          ),
+        ),
+      ).called(1);
     },
   );
 
@@ -503,8 +510,9 @@ void main() {
       );
 
       // then
-      final TestGesture gesture =
-          await tester.startGesture(const Offset(100, 18));
+      final TestGesture gesture = await tester.startGesture(
+        const Offset(100, 18),
+      );
 
       await tester.pump(const Duration(milliseconds: 500));
 
@@ -516,14 +524,20 @@ void main() {
 
       await tester.pumpAndSettle(const Duration(milliseconds: 800));
 
-      verify(eventManager!.addEvent(
-        argThat(PlutoObjectMatcher<PlutoGridCellGestureEvent>(rule: (object) {
-          return object.gestureType.isOnLongPressMoveUpdate &&
-              object.cell.key == cell.key &&
-              object.column.key == column.key &&
-              object.rowIdx == rowIdx;
-        })),
-      )).called(1);
+      verify(
+        eventManager!.addEvent(
+          argThat(
+            PlutoObjectMatcher<PlutoGridCellGestureEvent>(
+              rule: (object) {
+                return object.gestureType.isOnLongPressMoveUpdate &&
+                    object.cell.key == cell.key &&
+                    object.column.key == column.key &&
+                    object.rowIdx == rowIdx;
+              },
+            ),
+          ),
+        ),
+      ).called(1);
     },
   );
 
@@ -622,8 +636,9 @@ void main() {
     }) {
       return PlutoWidgetTestHelper('a cell.', (tester) async {
         when(stateManager.isCurrentCell(any)).thenReturn(isCurrentCell);
-        when(stateManager.isSelectedCell(any, any, any))
-            .thenReturn(isSelectedCell);
+        when(
+          stateManager.isSelectedCell(any, any, any),
+        ).thenReturn(isSelectedCell);
         when(stateManager.style).thenReturn(configuration.style);
         when(stateManager.hasFocus).thenReturn(true);
         when(stateManager.isEditing).thenReturn(true);

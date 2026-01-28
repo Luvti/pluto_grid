@@ -110,10 +110,12 @@ void main() {
 
       await Future.delayed(Duration(milliseconds: delayedMS));
 
-      return Future.value(PlutoLazyPaginationResponse(
-        totalPage: totalPage,
-        rows: fetchedRows.toList(),
-      ));
+      return Future.value(
+        PlutoLazyPaginationResponse(
+          totalPage: totalPage,
+          rows: fetchedRows.toList(),
+        ),
+      );
     };
   }
 
@@ -140,11 +142,12 @@ void main() {
   Finder findFilterTextField(String columnTitle) {
     return find.descendant(
       of: find.descendant(
-          of: find.ancestor(
-            of: find.text(columnTitle),
-            matching: find.byType(PlutoBaseColumn),
-          ),
-          matching: find.byType(PlutoColumnFilter)),
+        of: find.ancestor(
+          of: find.text(columnTitle),
+          matching: find.byType(PlutoBaseColumn),
+        ),
+        matching: find.byType(PlutoColumnFilter),
+      ),
       matching: find.byType(TextField),
     );
   }
@@ -195,8 +198,7 @@ void main() {
     expect(find.text('column4 value 19'), findsOneWidget);
   });
 
-  testWidgets(
-      'initialFetch 가 false 인 경우, '
+  testWidgets('initialFetch 가 false 인 경우, '
       '행이 렌더링 되지 않아야 한다.', (tester) async {
     final dummyRows = RowHelper.count(90, columns);
     final fetch = makeFetch(fakeFetchedRows: dummyRows);
@@ -208,8 +210,7 @@ void main() {
     expect(find.byType(PlutoBaseRow), findsNothing);
   });
 
-  testWidgets(
-      'fetchWithSorting 를 true 로 설정하면, '
+  testWidgets('fetchWithSorting 를 true 로 설정하면, '
       'sortOnlyEvent 의 값도 변경 되어야 한다.', (tester) async {
     final dummyRows = RowHelper.count(90, columns);
     final fetch = makeFetch(fakeFetchedRows: dummyRows);
@@ -224,8 +225,7 @@ void main() {
     expect(stateManager.sortOnlyEvent, true);
   });
 
-  testWidgets(
-      'fetchWithFiltering 를 true 로 설정하면, '
+  testWidgets('fetchWithFiltering 를 true 로 설정하면, '
       'filterOnlyEvent 의 값도 변경 되어야 한다.', (tester) async {
     final dummyRows = RowHelper.count(90, columns);
     final fetch = makeFetch(fakeFetchedRows: dummyRows);
@@ -240,8 +240,7 @@ void main() {
     expect(stateManager.filterOnlyEvent, true);
   });
 
-  testWidgets(
-      'initialFetch 가 false 이고 PlutoGrid 에 20개의 행을 전달한 경우, '
+  testWidgets('initialFetch 가 false 이고 PlutoGrid 에 20개의 행을 전달한 경우, '
       '20개 행이 렌더링 되어야 한다.', (tester) async {
     final dummyRows = RowHelper.count(90, columns);
     final fetch = makeFetch(fakeFetchedRows: dummyRows);
@@ -294,8 +293,7 @@ void main() {
     expect(style1.color, stateManager.configuration.style.activatedBorderColor);
   });
 
-  testWidgets(
-      '2 페이지 버튼을 탭하면, '
+  testWidgets('2 페이지 버튼을 탭하면, '
       '2 페이지에 해당 되는 행이 렌더링 되어야 한다.', (tester) async {
     final dummyRows = RowHelper.count(90, columns);
     final fetch = makeFetch(fakeFetchedRows: dummyRows);
@@ -326,8 +324,7 @@ void main() {
     expect(find.text('column4 value 39'), findsOneWidget);
   });
 
-  testWidgets(
-      'initialPage 를 3으로 설정하면, '
+  testWidgets('initialPage 를 3으로 설정하면, '
       '3 페이지에 해당 되는 행이 렌더링 되어야 한다.', (tester) async {
     final dummyRows = RowHelper.count(90, columns);
     final fetch = makeFetch(fakeFetchedRows: dummyRows);
@@ -353,8 +350,7 @@ void main() {
     expect(find.text('column4 value 59'), findsOneWidget);
   });
 
-  testWidgets(
-      'initialPage 를 3으로 설정하면, '
+  testWidgets('initialPage 를 3으로 설정하면, '
       '3 페이지 버튼이 활성화 되어야 한다.', (tester) async {
     final dummyRows = RowHelper.count(90, columns);
     final fetch = makeFetch(fakeFetchedRows: dummyRows);
@@ -373,8 +369,7 @@ void main() {
     expect(style1.color, stateManager.configuration.style.activatedBorderColor);
   });
 
-  testWidgets(
-      '필터링이 적용된 상태에서, '
+  testWidgets('필터링이 적용된 상태에서, '
       '필터링 아이콘이 렌더링 되어야 한다.', (tester) async {
     final dummyRows = RowHelper.count(90, columns);
     final fetch = makeFetch(fakeFetchedRows: dummyRows);

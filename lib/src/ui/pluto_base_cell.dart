@@ -131,7 +131,8 @@ class PlutoBaseCell extends StatelessWidget
         rowIdx: rowIdx,
         row: row,
         column: column,
-        cellPadding: column.cellPadding ??
+        cellPadding:
+            column.cellPadding ??
             stateManager.configuration.style.defaultCellPadding,
         stateManager: stateManager,
         child: _Cell(
@@ -206,7 +207,8 @@ class _CellContainerState extends PlutoStateWithChange<_CellContainer> {
           widget.column,
           widget.rowIdx,
         ),
-        isGroupedRowCell: stateManager.enabledRowGroups &&
+        isGroupedRowCell:
+            stateManager.enabledRowGroups &&
             stateManager.rowGroupDelegate!.isExpandableCell(widget.cell),
         enableCellVerticalBorder: style.enableCellBorderVertical,
         borderColor: style.borderColor,

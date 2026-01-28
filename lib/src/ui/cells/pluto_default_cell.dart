@@ -79,7 +79,9 @@ class _PlutoDefaultCellState extends PlutoStateWithChange<PlutoDefaultCell> {
     }
 
     if (PlutoDefaultCell.canExpand(
-        stateManager.rowGroupDelegate!, widget.cell)) {
+      stateManager.rowGroupDelegate!,
+      widget.cell,
+    )) {
       return true;
     }
 
@@ -157,7 +159,9 @@ class _PlutoDefaultCellState extends PlutoStateWithChange<PlutoDefaultCell> {
 
     Widget? expandIcon;
     if (PlutoDefaultCell.canExpand(
-        stateManager.rowGroupDelegate, widget.cell)) {
+      stateManager.rowGroupDelegate,
+      widget.cell,
+    )) {
       expandIcon = IconButton(
         padding: const EdgeInsets.only(bottom: 0.0),
         onPressed: _isEmptyGroup ? null : _handleToggleExpandedRowGroup,
@@ -168,52 +172,58 @@ class _PlutoDefaultCellState extends PlutoStateWithChange<PlutoDefaultCell> {
                 color: style.iconColor,
               )
             : widget.row.type.group.expanded
-                ? Icon(
-                    style.rowGroupExpandedIcon,
-                    size: style.iconSize,
-                    color: style.iconColor,
-                  )
-                : Icon(
-                    style.rowGroupCollapsedIcon,
-                    size: style.iconSize,
-                    color: style.iconColor,
-                  ),
+            ? Icon(
+                style.rowGroupExpandedIcon,
+                size: style.iconSize,
+                color: style.iconColor,
+              )
+            : Icon(
+                style.rowGroupCollapsedIcon,
+                size: style.iconSize,
+                color: style.iconColor,
+              ),
       );
     }
 
-    return Row(children: [
-      if (_canRowDrag)
-        _RowDragIconWidget(
-          column: widget.column,
-          row: widget.row,
-          rowIdx: widget.rowIdx,
-          stateManager: stateManager,
-          feedbackWidget: cellWidget,
-          dragIcon: Icon(
-            Icons.drag_indicator,
-            size: style.iconSize,
-            color: style.iconColor,
+    return Row(
+      children: [
+        if (_canRowDrag)
+          _RowDragIconWidget(
+            column: widget.column,
+            row: widget.row,
+            rowIdx: widget.rowIdx,
+            stateManager: stateManager,
+            feedbackWidget: cellWidget,
+            dragIcon: Icon(
+              Icons.drag_indicator,
+              size: style.iconSize,
+              color: style.iconColor,
+            ),
           ),
-        ),
-      if (widget.column.enableRowChecked &&
-          depth >= widget.column.rowCheckBoxGroupDepth)
-        CheckboxSelectionWidget(
-          column: widget.column,
-          row: widget.row,
-          rowIdx: widget.rowIdx,
-          stateManager: stateManager,
-        ),
-      if (spacingWidget != null) spacingWidget,
-      if (expandIcon != null) expandIcon,
-      Expanded(child: cellWidget),
-      if (PlutoDefaultCell.showGroupCount(
-          stateManager.rowGroupDelegate, widget.cell))
-        Text(
-          PlutoDefaultCell.groupCountText(
-              stateManager.rowGroupDelegate!, widget.row),
-          style: PlutoDefaultCell.groupCountTextStyle(stateManager.style),
-        ),
-    ]);
+        if (widget.column.enableRowChecked &&
+            depth >= widget.column.rowCheckBoxGroupDepth)
+          CheckboxSelectionWidget(
+            column: widget.column,
+            row: widget.row,
+            rowIdx: widget.rowIdx,
+            stateManager: stateManager,
+          ),
+        if (spacingWidget != null) spacingWidget,
+        if (expandIcon != null) expandIcon,
+        Expanded(child: cellWidget),
+        if (PlutoDefaultCell.showGroupCount(
+          stateManager.rowGroupDelegate,
+          widget.cell,
+        ))
+          Text(
+            PlutoDefaultCell.groupCountText(
+              stateManager.rowGroupDelegate!,
+              widget.row,
+            ),
+            style: PlutoDefaultCell.groupCountTextStyle(stateManager.style),
+          ),
+      ],
+    );
   }
 }
 
@@ -270,9 +280,11 @@ class _RowDragIconWidget extends StatelessWidget {
       return;
     }
 
-    stateManager.eventManager!.addEvent(PlutoGridScrollUpdateEvent(
-      offset: event.position,
-    ));
+    stateManager.eventManager!.addEvent(
+      PlutoGridScrollUpdateEvent(
+        offset: event.position,
+      ),
+    );
 
     int? targetRowIdx = stateManager.getRowIdxByOffset(
       event.position.dy,

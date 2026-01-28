@@ -108,13 +108,18 @@ void main() {
 
       verify(
         mock.oneParamReturnVoid(
-            argThat(PlutoObjectMatcher<PlutoGridOnSelectedEvent>(rule: (event) {
-          return event.row?.key == stateManager.refRows.first.key &&
-              event.rowIdx == 0 &&
-              event.cell?.key ==
-                  stateManager.refRows.first.cells['column0']!.key &&
-              event.selectedRows == null;
-        }))),
+          argThat(
+            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(
+              rule: (event) {
+                return event.row?.key == stateManager.refRows.first.key &&
+                    event.rowIdx == 0 &&
+                    event.cell?.key ==
+                        stateManager.refRows.first.cells['column0']!.key &&
+                    event.selectedRows == null;
+              },
+            ),
+          ),
+        ),
       ).called(1);
 
       // select 모드에서는 currentSelectingRows 에 추가되지 않는다.
@@ -132,13 +137,18 @@ void main() {
 
       verify(
         mock.oneParamReturnVoid(
-            argThat(PlutoObjectMatcher<PlutoGridOnSelectedEvent>(rule: (event) {
-          return event.row?.key == stateManager.refRows[1].key &&
-              event.rowIdx == 1 &&
-              event.cell?.key ==
-                  stateManager.refRows[1].cells['column0']!.key &&
-              event.selectedRows == null;
-        }))),
+          argThat(
+            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(
+              rule: (event) {
+                return event.row?.key == stateManager.refRows[1].key &&
+                    event.rowIdx == 1 &&
+                    event.cell?.key ==
+                        stateManager.refRows[1].cells['column0']!.key &&
+                    event.selectedRows == null;
+              },
+            ),
+          ),
+        ),
       ).called(1);
 
       // select 모드에서는 currentSelectingRows 에 추가되지 않는다.
@@ -158,13 +168,18 @@ void main() {
 
       verify(
         mock.oneParamReturnVoid(
-            argThat(PlutoObjectMatcher<PlutoGridOnSelectedEvent>(rule: (event) {
-          return event.row?.key == stateManager.refRows[2].key &&
-              event.rowIdx == 2 &&
-              event.cell?.key ==
-                  stateManager.refRows[2].cells['column0']!.key &&
-              event.selectedRows == null;
-        }))),
+          argThat(
+            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(
+              rule: (event) {
+                return event.row?.key == stateManager.refRows[2].key &&
+                    event.rowIdx == 2 &&
+                    event.cell?.key ==
+                        stateManager.refRows[2].cells['column0']!.key &&
+                    event.selectedRows == null;
+              },
+            ),
+          ),
+        ),
       ).called(1);
 
       // select 모드에서는 currentSelectingRows 에 추가되지 않는다.
@@ -184,13 +199,18 @@ void main() {
 
       verify(
         mock.oneParamReturnVoid(
-            argThat(PlutoObjectMatcher<PlutoGridOnSelectedEvent>(rule: (event) {
-          return event.row?.key == stateManager.refRows[2].key &&
-              event.rowIdx == 2 &&
-              event.cell?.key ==
-                  stateManager.refRows[2].cells['column0']!.key &&
-              event.selectedRows == null;
-        }))),
+          argThat(
+            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(
+              rule: (event) {
+                return event.row?.key == stateManager.refRows[2].key &&
+                    event.rowIdx == 2 &&
+                    event.cell?.key ==
+                        stateManager.refRows[2].cells['column0']!.key &&
+                    event.selectedRows == null;
+              },
+            ),
+          ),
+        ),
       ).called(1);
 
       // select 모드에서는 currentSelectingRows 에 추가되지 않는다.
@@ -214,13 +234,18 @@ void main() {
 
       verify(
         mock.oneParamReturnVoid(
-            argThat(PlutoObjectMatcher<PlutoGridOnSelectedEvent>(rule: (event) {
-          return event.row?.key == stateManager.refRows[2].key &&
-              event.rowIdx == 2 &&
-              event.cell?.key ==
-                  stateManager.refRows[2].cells['column0']!.key &&
-              event.selectedRows == null;
-        }))),
+          argThat(
+            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(
+              rule: (event) {
+                return event.row?.key == stateManager.refRows[2].key &&
+                    event.rowIdx == 2 &&
+                    event.cell?.key ==
+                        stateManager.refRows[2].cells['column0']!.key &&
+                    event.selectedRows == null;
+              },
+            ),
+          ),
+        ),
       ).called(1);
 
       // select 모드에서는 currentSelectingRows 에 추가되지 않는다.
@@ -248,13 +273,18 @@ void main() {
 
       verify(
         mock.oneParamReturnVoid(
-            argThat(PlutoObjectMatcher<PlutoGridOnSelectedEvent>(rule: (event) {
-          return event.row?.key == stateManager.refRows.first.key &&
-              event.rowIdx == 0 &&
-              event.cell?.key ==
-                  stateManager.refRows.first.cells['column0']!.key &&
-              event.selectedRows == null;
-        }))),
+          argThat(
+            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(
+              rule: (event) {
+                return event.row?.key == stateManager.refRows.first.key &&
+                    event.rowIdx == 0 &&
+                    event.cell?.key ==
+                        stateManager.refRows.first.cells['column0']!.key &&
+                    event.selectedRows == null;
+              },
+            ),
+          ),
+        ),
       ).called(1);
 
       // select 모드에서는 currentSelectingRows 에 추가되지 않는다.
@@ -275,12 +305,17 @@ void main() {
 
       verify(
         mock.oneParamReturnVoid(
-            argThat(PlutoObjectMatcher<PlutoGridOnSelectedEvent>(rule: (event) {
-          return event.row == null &&
-              event.rowIdx == null &&
-              event.cell == null &&
-              event.selectedRows == null;
-        }))),
+          argThat(
+            PlutoObjectMatcher<PlutoGridOnSelectedEvent>(
+              rule: (event) {
+                return event.row == null &&
+                    event.rowIdx == null &&
+                    event.cell == null &&
+                    event.selectedRows == null;
+              },
+            ),
+          ),
+        ),
       ).called(1);
 
       // select 모드에서는 currentSelectingRows 에 추가되지 않는다.

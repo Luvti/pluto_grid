@@ -152,15 +152,17 @@ void main() {
 
       final rows = RowHelper.count(10, columns);
 
-      await tester.pumpWidget(buildGrid(
-        columns: columns,
-        rows: rows,
-        configuration: const PlutoGridConfiguration(
-          columnSize: PlutoGridColumnSizeConfig(
-            autoSizeMode: PlutoAutoSizeMode.equal,
+      await tester.pumpWidget(
+        buildGrid(
+          columns: columns,
+          rows: rows,
+          configuration: const PlutoGridConfiguration(
+            columnSize: PlutoGridColumnSizeConfig(
+              autoSizeMode: PlutoAutoSizeMode.equal,
+            ),
           ),
         ),
-      ));
+      );
 
       await tester.pump();
 
@@ -208,15 +210,17 @@ void main() {
 
       final rows = RowHelper.count(10, columns);
 
-      await tester.pumpWidget(buildGrid(
-        columns: columns,
-        rows: rows,
-        configuration: const PlutoGridConfiguration(
-          columnSize: PlutoGridColumnSizeConfig(
-            autoSizeMode: PlutoAutoSizeMode.equal,
+      await tester.pumpWidget(
+        buildGrid(
+          columns: columns,
+          rows: rows,
+          configuration: const PlutoGridConfiguration(
+            columnSize: PlutoGridColumnSizeConfig(
+              autoSizeMode: PlutoAutoSizeMode.equal,
+            ),
           ),
         ),
-      ));
+      );
 
       await tester.pump();
 
@@ -264,15 +268,17 @@ void main() {
 
       final rows = RowHelper.count(10, columns);
 
-      await tester.pumpWidget(buildGrid(
-        columns: columns,
-        rows: rows,
-        configuration: const PlutoGridConfiguration(
-          columnSize: PlutoGridColumnSizeConfig(
-            autoSizeMode: PlutoAutoSizeMode.equal,
+      await tester.pumpWidget(
+        buildGrid(
+          columns: columns,
+          rows: rows,
+          configuration: const PlutoGridConfiguration(
+            columnSize: PlutoGridColumnSizeConfig(
+              autoSizeMode: PlutoAutoSizeMode.equal,
+            ),
           ),
         ),
-      ));
+      );
 
       await tester.pump();
 
@@ -320,15 +326,17 @@ void main() {
 
       final rows = RowHelper.count(10, columns);
 
-      await tester.pumpWidget(buildGrid(
-        columns: columns,
-        rows: rows,
-        configuration: const PlutoGridConfiguration(
-          columnSize: PlutoGridColumnSizeConfig(
-            autoSizeMode: PlutoAutoSizeMode.scale,
+      await tester.pumpWidget(
+        buildGrid(
+          columns: columns,
+          rows: rows,
+          configuration: const PlutoGridConfiguration(
+            columnSize: PlutoGridColumnSizeConfig(
+              autoSizeMode: PlutoAutoSizeMode.scale,
+            ),
           ),
         ),
-      ));
+      );
 
       await tester.pump();
 
@@ -376,15 +384,17 @@ void main() {
 
       final rows = RowHelper.count(10, columns);
 
-      await tester.pumpWidget(buildGrid(
-        columns: columns,
-        rows: rows,
-        configuration: const PlutoGridConfiguration(
-          columnSize: PlutoGridColumnSizeConfig(
-            autoSizeMode: PlutoAutoSizeMode.scale,
+      await tester.pumpWidget(
+        buildGrid(
+          columns: columns,
+          rows: rows,
+          configuration: const PlutoGridConfiguration(
+            columnSize: PlutoGridColumnSizeConfig(
+              autoSizeMode: PlutoAutoSizeMode.scale,
+            ),
           ),
         ),
-      ));
+      );
 
       await tester.pump();
 
@@ -432,15 +442,17 @@ void main() {
 
       final rows = RowHelper.count(10, columns);
 
-      await tester.pumpWidget(buildGrid(
-        columns: columns,
-        rows: rows,
-        configuration: const PlutoGridConfiguration(
-          columnSize: PlutoGridColumnSizeConfig(
-            autoSizeMode: PlutoAutoSizeMode.scale,
+      await tester.pumpWidget(
+        buildGrid(
+          columns: columns,
+          rows: rows,
+          configuration: const PlutoGridConfiguration(
+            columnSize: PlutoGridColumnSizeConfig(
+              autoSizeMode: PlutoAutoSizeMode.scale,
+            ),
           ),
         ),
-      ));
+      );
 
       await tester.pump();
 

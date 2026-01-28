@@ -86,8 +86,8 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
   FilteredList({
     List<E>? initialList,
   }) : _list = initialList != null
-            ? <E>[...initialList]
-            : List<E>.empty(growable: true);
+           ? <E>[...initialList]
+           : List<E>.empty(growable: true);
 
   final List<E> _list;
 
@@ -124,11 +124,11 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   List<E> get _effectiveList => hasFilter
       ? hasRange
-          ? _filteredList.getRange(_safetyFrom, _safetyTo).toList()
-          : _filteredList
+            ? _filteredList.getRange(_safetyFrom, _safetyTo).toList()
+            : _filteredList
       : hasRange
-          ? _list.getRange(_safetyFrom, _safetyTo).toList()
-          : _list;
+      ? _list.getRange(_safetyFrom, _safetyTo).toList()
+      : _list;
 
   List<E> _filteredList = <E>[];
 
@@ -456,7 +456,8 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
     if (found < 1) {
       throw Exception(
-          'With the filter applied, the value cannot be found in the list by that index.');
+        'With the filter applied, the value cannot be found in the list by that index.',
+      );
     }
 
     if (found == 1) {

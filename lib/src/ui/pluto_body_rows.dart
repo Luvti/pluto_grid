@@ -72,10 +72,12 @@ class PlutoBodyRowsState extends PlutoStateWithChange<PlutoBodyRows> {
     final scrollbarConfig = stateManager.configuration.scrollbar;
 
     return PlutoScrollbar(
-      verticalController:
-          scrollbarConfig.draggableScrollbar ? _verticalScroll : null,
-      horizontalController:
-          scrollbarConfig.draggableScrollbar ? _horizontalScroll : null,
+      verticalController: scrollbarConfig.draggableScrollbar
+          ? _verticalScroll
+          : null,
+      horizontalController: scrollbarConfig.draggableScrollbar
+          ? _horizontalScroll
+          : null,
       isAlwaysShown: scrollbarConfig.isAlwaysShown,
       onlyDraggingThumb: scrollbarConfig.onlyDraggingThumb,
       enableHover: PlatformHelper.isDesktop,
@@ -134,7 +136,7 @@ class ListResizeDelegate extends SingleChildLayoutDelegate {
   List<PlutoColumn> columns;
 
   ListResizeDelegate(this.stateManager, this.columns)
-      : super(relayout: stateManager.resizingChangeNotifier);
+    : super(relayout: stateManager.resizingChangeNotifier);
 
   @override
   bool shouldRelayout(covariant SingleChildLayoutDelegate oldDelegate) {

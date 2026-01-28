@@ -23,8 +23,9 @@ void main() {
 
   late PlutoGridStateManager stateManager;
 
-  final withColumnAndRows =
-      PlutoWidgetTestHelper('컬럼 10개와 행 10개 인 상태에서, ', (tester) async {
+  final withColumnAndRows = PlutoWidgetTestHelper('컬럼 10개와 행 10개 인 상태에서, ', (
+    tester,
+  ) async {
     columns = [
       ...ColumnHelper.textColumn('column', count: 10, width: 100),
     ];

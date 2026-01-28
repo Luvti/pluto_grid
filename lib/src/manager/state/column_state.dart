@@ -175,10 +175,10 @@ mixin ColumnState implements IPlutoGridState {
 
   @override
   List<int> get columnIndexes => List.generate(
-        refColumns.length,
-        (index) => index,
-        growable: false,
-      );
+    refColumns.length,
+    (index) => index,
+    growable: false,
+  );
 
   @override
   List<int> get columnIndexesForShowFrozen {
@@ -191,8 +191,8 @@ mixin ColumnState implements IPlutoGridState {
       refColumns[i].frozen.isNone
           ? bodyIndexes.add(i)
           : refColumns[i].frozen.isStart
-              ? leftIndexes.add(i)
-              : rightIndexes.add(i);
+          ? leftIndexes.add(i)
+          : rightIndexes.add(i);
     }
 
     return leftIndexes + bodyIndexes + rightIndexes;
@@ -361,11 +361,13 @@ mixin ColumnState implements IPlutoGridState {
     updateVisibilityLayout();
 
     if (onColumnsMoved != null) {
-      onColumnsMoved!(PlutoGridOnColumnsMovedEvent(
-        idx: refColumns.indexOf(column),
-        visualIdx: columnIndex(column)!,
-        columns: [column],
-      ));
+      onColumnsMoved!(
+        PlutoGridOnColumnsMovedEvent(
+          idx: refColumns.indexOf(column),
+          visualIdx: columnIndex(column)!,
+          columns: [column],
+        ),
+      );
     }
 
     notifyListeners(true, toggleFrozenColumn.hashCode);
@@ -522,11 +524,13 @@ mixin ColumnState implements IPlutoGridState {
     updateVisibilityLayout();
 
     if (onColumnsMoved != null) {
-      onColumnsMoved!(PlutoGridOnColumnsMovedEvent(
-        idx: targetIndex,
-        visualIdx: columnIndex(columnToMove)!,
-        columns: [columnToMove],
-      ));
+      onColumnsMoved!(
+        PlutoGridOnColumnsMovedEvent(
+          idx: targetIndex,
+          visualIdx: columnIndex(columnToMove)!,
+          columns: [columnToMove],
+        ),
+      );
     }
 
     notifyListeners(true, moveColumn.hashCode);
@@ -583,15 +587,19 @@ mixin ColumnState implements IPlutoGridState {
       var value = column.formattedValueForDisplay(cell.value);
       if (hasRowGroups) {
         if (PlutoDefaultCell.showGroupCount(rowGroupDelegate!, cell)) {
-          final groupCountValue =
-              PlutoDefaultCell.groupCountText(rowGroupDelegate!, row);
+          final groupCountValue = PlutoDefaultCell.groupCountText(
+            rowGroupDelegate!,
+            row,
+          );
           if (groupCountValue.isNotEmpty) {
             value = '$value $groupCountValue';
           }
         }
 
-        hasExpandableRowGroup |=
-            PlutoDefaultCell.canExpand(rowGroupDelegate!, cell);
+        hasExpandableRowGroup |= PlutoDefaultCell.canExpand(
+          rowGroupDelegate!,
+          cell,
+        );
       }
       if (maxValue.length < value.length) {
         maxValue = value;
@@ -600,13 +608,16 @@ mixin ColumnState implements IPlutoGridState {
 
     // Get size after rendering virtually
     // https://stackoverflow.com/questions/54351655/flutter-textfield-width-should-match-width-of-contained-text
-    final titleTextWidth =
-        _visualTextWidth(column.title, style.columnTextStyle);
+    final titleTextWidth = _visualTextWidth(
+      column.title,
+      style.columnTextStyle,
+    );
     final maxValueTextWidth = _visualTextWidth(maxValue, style.cellTextStyle);
 
     // todo : Handle (renderer) width
 
-    final calculatedTileWidth = titleTextWidth -
+    final calculatedTileWidth =
+        titleTextWidth -
         column.width +
         [
           (column.titlePadding ?? style.defaultColumnTitlePadding).horizontal,
@@ -616,7 +627,8 @@ mixin ColumnState implements IPlutoGridState {
           8,
         ].reduce((acc, a) => acc + a);
 
-    final calculatedCellWidth = maxValueTextWidth -
+    final calculatedCellWidth =
+        maxValueTextWidth -
         column.width +
         [
           (column.cellPadding ?? style.defaultCellPadding).horizontal,
@@ -685,9 +697,9 @@ mixin ColumnState implements IPlutoGridState {
     if (sortOnlyEvent) return;
 
     compare(a, b) => column.type.compare(
-          a.cells[column.field]?.valueForSorting,
-          b.cells[column.field]?.valueForSorting,
-        );
+      a.cells[column.field]?.valueForSorting,
+      b.cells[column.field]?.valueForSorting,
+    );
 
     if (enabledRowGroups) {
       sortRowGroup(column: column, compare: compare);
@@ -707,9 +719,9 @@ mixin ColumnState implements IPlutoGridState {
     if (sortOnlyEvent) return;
 
     compare(b, a) => column.type.compare(
-          a.cells[column.field]?.valueForSorting,
-          b.cells[column.field]?.valueForSorting,
-        );
+      a.cells[column.field]?.valueForSorting,
+      b.cells[column.field]?.valueForSorting,
+    );
 
     if (enabledRowGroups) {
       sortRowGroup(column: column, compare: compare);
@@ -754,15 +766,16 @@ mixin ColumnState implements IPlutoGridState {
 
     final columns = [
       PlutoColumn(
-          title: configuration.localeText.setColumnsTitle.toUpperCase(),
-          field: titleField,
-          type: PlutoColumnType.text(),
-          enableRowChecked: true,
-          enableEditingMode: false,
-          enableDropToResize: true,
-          enableContextMenu: false,
-          enableColumnDrag: false,
-          backgroundColor: configuration.style.filterHeaderColor),
+        title: configuration.localeText.setColumnsTitle.toUpperCase(),
+        field: titleField,
+        type: PlutoColumnType.text(),
+        enableRowChecked: true,
+        enableEditingMode: false,
+        enableDropToResize: true,
+        enableContextMenu: false,
+        enableColumnDrag: false,
+        backgroundColor: configuration.style.filterHeaderColor,
+      ),
       PlutoColumn(
         title: 'hidden column',
         field: columnField,
@@ -1060,8 +1073,10 @@ mixin ColumnState implements IPlutoGridState {
     return resizeHelper.update();
   }
 
-  double _getEffectiveButtonWidth(BuildContext context,
-      {bool checkBox = false}) {
+  double _getEffectiveButtonWidth(
+    BuildContext context, {
+    bool checkBox = false,
+  }) {
     final theme = Theme.of(context);
     late double width;
     switch (theme.materialTapTargetSize) {

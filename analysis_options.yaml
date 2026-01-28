@@ -3,6 +3,9 @@ include: package:flutter_lints/flutter.yaml
 analyzer:
   exclude:
     - '**.mocks.dart'
+formatter:
+  page_width: 80
+  trailing_commas: preserve
 linter: 
   rules:
     - always_declare_return_types

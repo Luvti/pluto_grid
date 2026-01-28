@@ -111,9 +111,21 @@ void main() {
             createRow('B42', 'b42-1', 'b42-2', 'b42-3', 'b42-4', columns),
             createGroup('B43', 'b43-1', 'b43-2', 'b43-3', 'b43-4', columns, [
               createRow(
-                  'B431', 'b431-1', 'b431-2', 'b431-3', 'b431-4', columns),
+                'B431',
+                'b431-1',
+                'b431-2',
+                'b431-3',
+                'b431-4',
+                columns,
+              ),
               createRow(
-                  'B432', 'b432-1', 'b432-2', 'b432-3', 'b432-4', columns),
+                'B432',
+                'b432-1',
+                'b432-2',
+                'b432-3',
+                'b432-4',
+                columns,
+              ),
             ]),
           ]),
         ]),
@@ -131,7 +143,8 @@ void main() {
       bool Function(PlutoCell)? showText,
     }) {
       return PlutoRowGroupTreeDelegate(
-        resolveColumnDepth: resolveColumnDepth ??
+        resolveColumnDepth:
+            resolveColumnDepth ??
             (column) => int.parse(column.field.replaceAll('column', '')) - 1,
         showText: showText ?? (cell) => true,
       );
@@ -320,11 +333,13 @@ void main() {
         createRow('B', '4', '42', 'B412', '10', columns),
       ];
 
-      delegate = PlutoRowGroupByColumnDelegate(columns: [
-        columns[0],
-        columns[1],
-        columns[2],
-      ]);
+      delegate = PlutoRowGroupByColumnDelegate(
+        columns: [
+          columns[0],
+          columns[1],
+          columns[2],
+        ],
+      );
     });
 
     test('type 이 byColumn 을 리턴해야 한다.', () {

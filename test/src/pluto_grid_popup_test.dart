@@ -89,8 +89,7 @@ void main() {
     );
   }
 
-  testWidgets(
-      'Directionality.ltr 인 경우, '
+  testWidgets('Directionality.ltr 인 경우, '
       'stateManager.isLTR, isRTL 이 적용 되어야 한다.', (tester) async {
     final columns = ColumnHelper.textColumn('title', count: 10);
     final rows = RowHelper.count(10, columns);
@@ -110,8 +109,7 @@ void main() {
     expect(stateManager.isRTL, false);
   });
 
-  testWidgets(
-      'Directionality.rtl 인 경우, '
+  testWidgets('Directionality.rtl 인 경우, '
       'stateManager.isLTR, isRTL 이 적용 되어야 한다.', (tester) async {
     final columns = ColumnHelper.textColumn('title', count: 10);
     final rows = RowHelper.count(10, columns);
@@ -247,8 +245,9 @@ void main() {
     expect(event!.rowIdx, 0);
   });
 
-  testWidgets('mode 가 select 인 상태에서 행을 두번 탭하면 onSelected 콜백이 호출 되어야 한다.',
-      (tester) async {
+  testWidgets('mode 가 select 인 상태에서 행을 두번 탭하면 onSelected 콜백이 호출 되어야 한다.', (
+    tester,
+  ) async {
     final columns = ColumnHelper.textColumn('title', count: 10);
     final rows = RowHelper.count(10, columns);
 
@@ -276,32 +275,34 @@ void main() {
     expect(event!.cell!.value, 'title1 value 3');
   });
 
-  testWidgets('mode 가 selectWithOneTap 인 상태에서 행을 탭하면 onSelected 콜백이 호출 되어야 한다.',
-      (tester) async {
-    final columns = ColumnHelper.textColumn('title', count: 10);
-    final rows = RowHelper.count(10, columns);
+  testWidgets(
+    'mode 가 selectWithOneTap 인 상태에서 행을 탭하면 onSelected 콜백이 호출 되어야 한다.',
+    (tester) async {
+      final columns = ColumnHelper.textColumn('title', count: 10);
+      final rows = RowHelper.count(10, columns);
 
-    PlutoGridOnSelectedEvent? event;
+      PlutoGridOnSelectedEvent? event;
 
-    await build(
-      tester: tester,
-      columns: columns,
-      rows: rows,
-      onSelected: (e) => event = e,
-      mode: PlutoGridMode.selectWithOneTap,
-    );
+      await build(
+        tester: tester,
+        columns: columns,
+        rows: rows,
+        onSelected: (e) => event = e,
+        mode: PlutoGridMode.selectWithOneTap,
+      );
 
-    await tester.tap(find.text(buttonText));
-    await tester.pumpAndSettle();
+      await tester.tap(find.text(buttonText));
+      await tester.pumpAndSettle();
 
-    final cell = find.text('title2 value 4');
-    await tester.tap(cell);
-    await tester.pump();
+      final cell = find.text('title2 value 4');
+      await tester.tap(cell);
+      await tester.pump();
 
-    expect(event, isNotNull);
-    expect(event!.rowIdx, 4);
-    expect(event!.cell!.value, 'title2 value 4');
-  });
+      expect(event, isNotNull);
+      expect(event!.rowIdx, 4);
+      expect(event!.cell!.value, 'title2 value 4');
+    },
+  );
 
   testWidgets('컬럼을 탭하면 onSorted 콜백이 호출 되어야 한다.', (tester) async {
     final columns = ColumnHelper.textColumn('title', count: 10);
@@ -345,8 +346,7 @@ void main() {
     expect(event!.oldSort, PlutoColumnSort.descending);
   });
 
-  testWidgets(
-      'PlutoColumn.enableRowChecked 가 true 인 상태에서 '
+  testWidgets('PlutoColumn.enableRowChecked 가 true 인 상태에서 '
       '셀의 체크박스를 체크 하면 onRowChecked 콜백이 호출 되어야 한다.', (tester) async {
     final columns = ColumnHelper.textColumn('title', count: 10);
     final rows = RowHelper.count(10, columns);
@@ -407,8 +407,9 @@ void main() {
     expect(event!.cell.value, 'title2 value 2');
   });
 
-  testWidgets('Secondary 버튼을 탭하면 onRowSecondaryTap 콜백이 호출 되어야 한다.',
-      (tester) async {
+  testWidgets('Secondary 버튼을 탭하면 onRowSecondaryTap 콜백이 호출 되어야 한다.', (
+    tester,
+  ) async {
     final columns = ColumnHelper.textColumn('title', count: 10);
     final rows = RowHelper.count(10, columns);
 
@@ -515,9 +516,10 @@ void main() {
       columns: columns,
       rows: rows,
       configuration: const PlutoGridConfiguration(
-          style: PlutoGridStyleConfig(
-        enableRowColorAnimation: true,
-      )),
+        style: PlutoGridStyleConfig(
+          enableRowColorAnimation: true,
+        ),
+      ),
       rowColorCallback: (context) {
         return context.rowIdx % 2 == 0 ? Colors.pink : Colors.cyan;
       },
@@ -589,10 +591,15 @@ void main() {
     stateManager.toggleFrozenColumn(columns[1], PlutoColumnFrozen.start);
     await tester.pump();
 
-    verify(mock.oneParamReturnVoid(
-        PlutoObjectMatcher<PlutoGridOnColumnsMovedEvent>(rule: (e) {
-      return e.idx == 1 && e.visualIdx == 0 && e.columns.length == 1;
-    }))).called(1);
+    verify(
+      mock.oneParamReturnVoid(
+        PlutoObjectMatcher<PlutoGridOnColumnsMovedEvent>(
+          rule: (e) {
+            return e.idx == 1 && e.visualIdx == 0 && e.columns.length == 1;
+          },
+        ),
+      ),
+    ).called(1);
   });
 
   testWidgets('컬럼을 우측 고정 하면 onColumnsMoved 콜백이 호출 되어야 한다.', (tester) async {
@@ -613,10 +620,15 @@ void main() {
     stateManager.toggleFrozenColumn(columns[1], PlutoColumnFrozen.end);
     await tester.pump();
 
-    verify(mock.oneParamReturnVoid(
-        PlutoObjectMatcher<PlutoGridOnColumnsMovedEvent>(rule: (e) {
-      return e.idx == 1 && e.visualIdx == 9 && e.columns.length == 1;
-    }))).called(1);
+    verify(
+      mock.oneParamReturnVoid(
+        PlutoObjectMatcher<PlutoGridOnColumnsMovedEvent>(
+          rule: (e) {
+            return e.idx == 1 && e.visualIdx == 9 && e.columns.length == 1;
+          },
+        ),
+      ),
+    ).called(1);
   });
 
   testWidgets('컬럼을 드래그하여 이동하면 onColumnsMoved 콜백이 호출 되어야 한다.', (tester) async {
@@ -640,10 +652,15 @@ void main() {
 
     await tester.pumpAndSettle(const Duration(milliseconds: 300));
 
-    verify(mock.oneParamReturnVoid(
-        PlutoObjectMatcher<PlutoGridOnColumnsMovedEvent>(rule: (e) {
-      return e.idx == 3 && e.visualIdx == 3 && e.columns.length == 1;
-    }))).called(1);
+    verify(
+      mock.oneParamReturnVoid(
+        PlutoObjectMatcher<PlutoGridOnColumnsMovedEvent>(
+          rule: (e) {
+            return e.idx == 3 && e.visualIdx == 3 && e.columns.length == 1;
+          },
+        ),
+      ),
+    ).called(1);
   });
 
   group('noRowsWidget', () {

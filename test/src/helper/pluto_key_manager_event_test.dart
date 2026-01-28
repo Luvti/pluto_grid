@@ -29,16 +29,18 @@ void main() {
     required WidgetTester tester,
     required KeyEventResult Function(FocusNode, KeyEvent) callback,
   }) async {
-    await tester.pumpWidget(MaterialApp(
-      home: FocusScope(
-        autofocus: true,
-        onKeyEvent: callback,
-        child: Focus(
-          focusNode: focusNode,
-          child: const SizedBox(width: 100, height: 100),
+    await tester.pumpWidget(
+      MaterialApp(
+        home: FocusScope(
+          autofocus: true,
+          onKeyEvent: callback,
+          child: Focus(
+            focusNode: focusNode,
+            child: const SizedBox(width: 100, height: 100),
+          ),
         ),
       ),
-    ));
+    );
 
     focusNode.requestFocus();
   }
@@ -155,7 +157,8 @@ void main() {
       const key2 = LogicalKeyboardKey.keyC;
       await tester.sendKeyDownEvent(key);
       await tester.sendKeyUpEvent(
-          key2); // sendKeyUpEvent is not sending a keyManagerEvent
+        key2,
+      ); // sendKeyUpEvent is not sending a keyManagerEvent
 
       expect(keyManagerEvent?.isCtrlC, true);
       await tester.sendKeyUpEvent(key);

@@ -18,13 +18,13 @@ void main() {
 
       grid
           .buildSelectedRows(
-        numberOfRows: numberOfRows,
-        startRowIdx: startRowIdx,
-        endRowIdx: endRowIdx,
-      )
+            numberOfRows: numberOfRows,
+            startRowIdx: startRowIdx,
+            endRowIdx: endRowIdx,
+          )
           .test(description, (tester) async {
-        await testWithSelectedRowsFrom3To5(tester);
-      });
+            await testWithSelectedRowsFrom3To5(tester);
+          });
     }
 
     selectRowsFrom3To5(

@@ -59,8 +59,9 @@ mixin PopupCellState<T extends PopupCell> on State<T>
     super.initState();
 
     textController = TextEditingController()
-      ..text =
-          widget.column.formattedValueForDisplayInEditing(widget.cell.value);
+      ..text = widget.column.formattedValueForDisplayInEditing(
+        widget.cell.value,
+      );
 
     textFocus = FocusNode(onKeyEvent: _handleKeyboardFocusOnKey);
   }
@@ -88,7 +89,8 @@ mixin PopupCellState<T extends PopupCell> on State<T>
       onSelected: onSelected,
       columns: popupColumns,
       rows: popupRows,
-      width: popupColumns.fold<double>(0, (previous, column) {
+      width:
+          popupColumns.fold<double>(0, (previous, column) {
             return previous + column.width;
           }) +
           1,
@@ -117,14 +119,18 @@ mixin PopupCellState<T extends PopupCell> on State<T>
         for (var entry in popupRows[i].cells.entries) {
           if (popupRows[i].cells[entry.key]!.value == widget.cell.value) {
             event.stateManager.setCurrentCell(
-                event.stateManager.refRows[i].cells[entry.key], i);
+              event.stateManager.refRows[i].cells[entry.key],
+              i,
+            );
             break;
           }
         }
       } else {
         if (popupRows[i].cells[fieldOnSelected!]!.value == widget.cell.value) {
           event.stateManager.setCurrentCell(
-              event.stateManager.refRows[i].cells[fieldOnSelected!], i);
+            event.stateManager.refRows[i].cells[fieldOnSelected!],
+            i,
+          );
           break;
         }
       }
@@ -138,7 +144,9 @@ mixin PopupCellState<T extends PopupCell> on State<T>
         event.stateManager.moveScrollByRow(PlutoMoveDirection.up, rowIdxToMove);
       } else {
         event.stateManager.moveScrollByRow(
-            PlutoMoveDirection.up, event.stateManager.refRows.length);
+          PlutoMoveDirection.up,
+          event.stateManager.refRows.length,
+        );
       }
     }
   }

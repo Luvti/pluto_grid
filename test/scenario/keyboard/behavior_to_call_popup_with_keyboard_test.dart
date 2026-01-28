@@ -23,7 +23,7 @@ void main() {
           startDate: DateTime.parse('2020-01-01'),
           endDate: DateTime.parse('2020-01-31'),
         ),
-      )
+      ),
     ];
 
     final rows = [

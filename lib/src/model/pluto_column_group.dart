@@ -47,13 +47,17 @@ class PlutoColumnGroup {
     this.expandedColumn = false,
     this.backgroundColor,
     Key? key,
-  })  : assert(fields == null
-            ? (children != null && children.isNotEmpty)
-            : fields.isNotEmpty && children == null),
-        assert(expandedColumn == true
-            ? fields?.length == 1 && children == null
-            : true),
-        _key = key ?? UniqueKey() {
+  }) : assert(
+         fields == null
+             ? (children != null && children.isNotEmpty)
+             : fields.isNotEmpty && children == null,
+       ),
+       assert(
+         expandedColumn == true
+             ? fields?.length == 1 && children == null
+             : true,
+       ),
+       _key = key ?? UniqueKey() {
     hasFields = fields != null;
 
     hasChildren = !hasFields;
@@ -93,11 +97,14 @@ class PlutoColumnGroupPair {
   PlutoColumnGroupPair({
     required this.group,
     required this.columns,
-  }) :
-        // a unique reproducible key
-        _key = ValueKey(group.key.toString() +
-            columns.fold("",
-                (previousValue, element) => "$previousValue-${element.field}"));
+  }) : // a unique reproducible key
+       _key = ValueKey(
+         group.key.toString() +
+             columns.fold(
+               "",
+               (previousValue, element) => "$previousValue-${element.field}",
+             ),
+       );
 
   Key get key => _key;
 

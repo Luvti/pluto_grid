@@ -57,8 +57,9 @@ void main() {
           columnGroupList:
               realInvocation.namedArguments[const Symbol('columnGroupList')]
                   as List<PlutoColumnGroup>,
-          columns: realInvocation.namedArguments[const Symbol('columns')]
-              as List<PlutoColumn>,
+          columns:
+              realInvocation.namedArguments[const Symbol('columns')]
+                  as List<PlutoColumn>,
         );
       },
     );
@@ -189,12 +190,14 @@ void main() {
     (tester) async {
       final groupTitle = find.text('column group title');
 
-      final groupTitleWidget = find
-          .ancestor(of: groupTitle, matching: find.byType(SizedBox))
-          .first
-          .evaluate()
-          .first
-          .widget as SizedBox;
+      final groupTitleWidget =
+          find
+                  .ancestor(of: groupTitle, matching: find.byType(SizedBox))
+                  .first
+                  .evaluate()
+                  .first
+                  .widget
+              as SizedBox;
 
       final columnTitle = find.text('column1');
 
@@ -248,10 +251,13 @@ void main() {
                 fields: ['column4'],
                 expandedColumn: true,
               ),
-              PlutoColumnGroup(title: 'group b-3', children: [
-                PlutoColumnGroup(title: 'group b-3-1', fields: ['column5']),
-                PlutoColumnGroup(title: 'group b-3-2', fields: ['column6']),
-              ]),
+              PlutoColumnGroup(
+                title: 'group b-3',
+                children: [
+                  PlutoColumnGroup(title: 'group b-3-1', fields: ['column5']),
+                  PlutoColumnGroup(title: 'group b-3-2', fields: ['column6']),
+                ],
+              ),
             ],
           ),
         ],
