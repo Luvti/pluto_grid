@@ -52,7 +52,8 @@
             "cwd": "example",
             "request": "launch",
             "type": "dart",
-            "program":"lib/big.dart"
+            "program":"lib/big.dart",
+            "flutterMode": "profile"
         },
         {
             "name": "example (profile mode)",

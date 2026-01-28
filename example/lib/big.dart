@@ -40,17 +40,24 @@ class _PlutoGridBigDataPageState extends State<PlutoGridBigDataPage> {
   late List<PlutoColumn> columns;
   late List<PlutoRow> rows;
   late PlutoGridStateManager stateManager;
+  static const int countRows = 150_000;
 
   @override
   void initState() {
     super.initState();
 
     columns = [
-      PlutoColumn(title: 'Text', field: 'text', type: PlutoColumnType.text()),
+      PlutoColumn(
+        title: 'Text',
+        field: 'text',
+        type: PlutoColumnType.text(),
+        sort: PlutoColumnSort.ascending,
+      ),
       PlutoColumn(
         title: 'Number',
         field: 'number',
         type: PlutoColumnType.number(),
+        defaultFilter: PlutoFilterTypeLessThan(),
       ),
       PlutoColumn(
         title: 'Double',
@@ -72,17 +79,49 @@ class _PlutoGridBigDataPageState extends State<PlutoGridBigDataPage> {
       PlutoColumn(title: 'Time', field: 'time', type: PlutoColumnType.time()),
     ];
 
-    rows = List.generate(50000, (index) {
+    rows = List.generate(countRows, (index) {
       return PlutoRow(
         cells: {
-          'text': PlutoCell(value: 'Text value $index'),
-          'number': PlutoCell(value: index),
-          'double': PlutoCell(value: index * 0.5),
-          'currency': PlutoCell(value: index * 10.0),
-          'select': PlutoCell(value: 'Option ${(index % 3) + 1}'),
-          'bool': PlutoCell(value: index % 2 == 0),
-          'date': PlutoCell(value: '2023-01-01'),
-          'time': PlutoCell(value: '12:00'),
+          'text': PlutoCell(
+            value: 'Text value $index',
+            referenceValue: index,
+            filterValue: 'Text value $index',
+          ),
+          'number': PlutoCell(
+            value: index,
+            referenceValue: index,
+            filterValue: index,
+          ),
+          'double': PlutoCell(
+            value: index * 0.5,
+            referenceValue: index * 0.5,
+            filterValue: index * 0.5,
+          ),
+          'currency': PlutoCell(
+            value: index * 10.0,
+            referenceValue: index * 10.0,
+            filterValue: index * 10.0,
+          ),
+          'select': PlutoCell(
+            value: 'Option ${(index % 3) + 1}',
+            referenceValue: 'Option ${(index % 3) + 1}',
+            filterValue: 'Option ${(index % 3) + 1}',
+          ),
+          'bool': PlutoCell(
+            value: index % 2 == 0,
+            referenceValue: index % 2 == 0,
+            filterValue: index % 2 == 0,
+          ),
+          'date': PlutoCell(
+            value: '2023-01-01',
+            referenceValue: '2023-01-01',
+            filterValue: '2023-01-01',
+          ),
+          'time': PlutoCell(
+            value: '12:00',
+            referenceValue: '12:00',
+            filterValue: '12:00',
+          ),
         },
       );
     });
@@ -93,7 +132,7 @@ class _PlutoGridBigDataPageState extends State<PlutoGridBigDataPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('PlutoGrid 50k Rows'),
+        title: Text('PlutoGrid ${countRows / 1000}k Rows'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
