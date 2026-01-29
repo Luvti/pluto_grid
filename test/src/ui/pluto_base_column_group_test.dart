@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -66,10 +68,10 @@ void main() {
   });
 
   tearDown(() {
-    subject.close();
+    unawaited(subject.close());
   });
 
-  buildWidget({
+  PlutoWidgetTestHelper buildWidget({
     required PlutoColumnGroupPair columnGroup,
     required int depth,
     bool showColumnFilter = false,

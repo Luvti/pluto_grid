@@ -175,7 +175,7 @@ mixin PopupCellState<T extends PopupCell> on State<T>
     widget.stateManager.handleAfterSelectingRow(widget.cell, value);
 
     textController.text = widget.column.formattedValueForDisplayInEditing(
-      widget.cell.value,
+      widget.cell.valueFormatted,
     );
 
     if (!widget.stateManager.configuration.enableMoveDownAfterSelecting) {

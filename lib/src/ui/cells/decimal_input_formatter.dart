@@ -17,7 +17,9 @@ class DecimalTextInputFormatter extends TextInputFormatter {
     String num = '[0-9]*$dp';
 
     if (activatedNegativeValues) {
-      final firstSymbols = allowFirstDot ? '[-$decimalSeparator]' : '[-]';
+      final String firstSymbols = allowFirstDot
+          ? '[-$decimalSeparator]'
+          : '[-]';
 
       _exp = RegExp(
         '^(((($firstSymbols){0,1})|(($firstSymbols){0,1}[0-9]$num))){0,1}\$',

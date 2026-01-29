@@ -152,7 +152,7 @@ class _PlutoLazyPaginationState extends State<PlutoLazyPagination> {
 
   @override
   void dispose() {
-    _events.cancel();
+    unawaited(_events.cancel());
 
     super.dispose();
   }

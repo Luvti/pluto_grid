@@ -20,43 +20,48 @@ class PlutoGridEventManager {
   StreamSubscription get subscription => _subscription;
 
   void dispose() {
-    _subscription.cancel();
+    unawaited(_subscription.cancel());
 
-    _subject.close();
+    unawaited(_subject.close());
   }
 
   void init() {
-    final normalStream = _subject.stream.where((event) => event.type.isNormal);
+    final Stream<PlutoGridEvent> normalStream = _subject.stream.where(
+      (PlutoGridEvent event) => event.type.isNormal,
+    );
 
-    final throttleLeadingStream = _subject.stream
-        .where((event) => event.type.isThrottleLeading)
+    final Stream<PlutoGridEvent> throttleLeadingStream = _subject.stream
+        .where((PlutoGridEvent event) => event.type.isThrottleLeading)
         .transform(
           ThrottleStreamTransformer(
-            (s) => TimerStream<PlutoGridEvent>(s, s.duration as Duration),
+            (PlutoGridEvent s) =>
+                TimerStream<PlutoGridEvent>(s, s.duration as Duration),
             trailing: false,
             leading: true,
           ),
         );
 
-    final throttleTrailingStream = _subject.stream
-        .where((event) => event.type.isThrottleTrailing)
+    final Stream<PlutoGridEvent> throttleTrailingStream = _subject.stream
+        .where((PlutoGridEvent event) => event.type.isThrottleTrailing)
         .transform(
           ThrottleStreamTransformer(
-            (s) => TimerStream<PlutoGridEvent>(s, s.duration as Duration),
+            (PlutoGridEvent s) =>
+                TimerStream<PlutoGridEvent>(s, s.duration as Duration),
             trailing: true,
             leading: false,
           ),
         );
 
-    final debounceStream = _subject.stream
-        .where((event) => event.type.isDebounce)
+    final Stream<PlutoGridEvent> debounceStream = _subject.stream
+        .where((PlutoGridEvent event) => event.type.isDebounce)
         .transform(
           DebounceStreamTransformer(
-            (s) => TimerStream<PlutoGridEvent>(s, s.duration as Duration),
+            (PlutoGridEvent s) =>
+                TimerStream<PlutoGridEvent>(s, s.duration as Duration),
           ),
         );
 
-    _subscription = MergeStream([
+    _subscription = MergeStream(<Stream<PlutoGridEvent>>[
       normalStream,
       throttleLeadingStream,
       throttleTrailingStream,

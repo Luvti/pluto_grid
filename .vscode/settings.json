@@ -1,4 +1,7 @@
 {
   "dart.flutterSdkPath": ".fvm/versions/stable",
-  "kiroAgent.configureMCP": "Enabled"
+  "kiroAgent.configureMCP": "Enabled",
+  "cSpell.words": [
+    "Customise"
+  ]
 }

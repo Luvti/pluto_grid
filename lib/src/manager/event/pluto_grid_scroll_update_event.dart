@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
@@ -157,10 +159,12 @@ class PlutoGridScrollUpdateEvent extends PlutoGridEvent {
         ? Duration(milliseconds: msToReachEndOfScroll)
         : Duration(seconds: remainingOffset ~/ offsetInSecond);
 
-    scroll.animateTo(
-      offsetToReachEndOfScroll,
-      curve: Curves.linear,
-      duration: duration,
+    unawaited(
+      scroll.animateTo(
+        offsetToReachEndOfScroll,
+        curve: Curves.linear,
+        duration: duration,
+      ),
     );
   }
 }

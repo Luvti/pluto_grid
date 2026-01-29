@@ -88,11 +88,11 @@ class _ExportScreenState extends State<ExportScreen> {
         renderer: (rendererContext) {
           Color textColor = Colors.black;
 
-          if (rendererContext.cell.value == 'red') {
+          if (rendererContext.cell.originalValue == 'red') {
             textColor = Colors.red;
-          } else if (rendererContext.cell.value == 'blue') {
+          } else if (rendererContext.cell.originalValue == 'blue') {
             textColor = Colors.blue;
-          } else if (rendererContext.cell.value == 'green') {
+          } else if (rendererContext.cell.originalValue == 'green') {
             textColor = Colors.green;
           }
 
@@ -165,9 +165,7 @@ class _ExportScreenState extends State<ExportScreen> {
 }
 
 class _Header extends StatefulWidget {
-  const _Header({
-    required this.stateManager,
-  });
+  const _Header({required this.stateManager});
 
   final PlutoGridStateManager stateManager;
 

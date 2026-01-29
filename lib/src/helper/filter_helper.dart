@@ -114,11 +114,13 @@ class FilterHelper {
         if (cellValue == null) {
           continue;
         }
-        final PlutoFilterType? filterType = cellValue.value as PlutoFilterType?;
+        final PlutoFilterType? filterType =
+            cellValue.originalValue as PlutoFilterType?;
         if (filterType == null) {
           continue;
         }
-        if (e.cells[filterFieldColumn]!.value == filterFieldAllColumns) {
+        if (e.cells[filterFieldColumn]!.originalValue ==
+            filterFieldAllColumns) {
           bool? flagAllColumns;
 
           row.cells.forEach((String key, PlutoCell value) {
@@ -132,9 +134,11 @@ class FilterHelper {
                 flagAllColumns,
                 compareByFilterType(
                   filterType: filterType,
-                  base: value.value?.toString(),
+                  base: value.originalValue?.toString(),
                   baseObject: value.filterValue,
-                  search: e.cells[filterFieldValue]?.value?.toString() ?? '',
+                  search:
+                      e.cells[filterFieldValue]?.originalValue?.toString() ??
+                      '',
                   searchObject: e.cells[filterFieldValue]?.filterValue,
                   column: foundColumn,
                 ),
@@ -147,7 +151,7 @@ class FilterHelper {
           final PlutoColumn? foundColumn = enabledFilterColumns
               ?.firstWhereOrNull(
                 (PlutoColumn element) =>
-                    element.field == e.cells[filterFieldColumn]?.value,
+                    element.field == e.cells[filterFieldColumn]?.originalValue,
               );
 
           if (foundColumn != null) {
@@ -156,12 +160,16 @@ class FilterHelper {
               compareByFilterType(
                 filterType: filterType,
                 base:
-                    row.cells[e.cells[filterFieldColumn]?.value]?.value
+                    row
+                        .cells[e.cells[filterFieldColumn]?.originalValue]
+                        ?.originalValue
                         ?.toString() ??
                     '',
-                baseObject:
-                    row.cells[e.cells[filterFieldColumn]?.value]?.filterValue,
-                search: e.cells[filterFieldValue]?.value?.toString() ?? '',
+                baseObject: row
+                    .cells[e.cells[filterFieldColumn]?.originalValue]
+                    ?.filterValue,
+                search:
+                    e.cells[filterFieldValue]?.originalValue?.toString() ?? '',
                 searchObject: e.cells[filterFieldValue]?.filterValue,
                 column: foundColumn,
               ),
@@ -199,17 +207,20 @@ class FilterHelper {
     }
 
     for (final PlutoRow row in filterRows) {
-      String columnField = row.cells[FilterHelper.filterFieldColumn]!.value;
+      String columnField =
+          row.cells[FilterHelper.filterFieldColumn]!.originalValue;
 
       if (columnField == FilterHelper.filterFieldAllColumns) {
         columnField = allField;
       }
 
       final String filterType =
-          (row.cells[FilterHelper.filterFieldType]!.value as PlutoFilterType)
+          (row.cells[FilterHelper.filterFieldType]!.originalValue
+                  as PlutoFilterType)
               .title;
 
-      final filterValue = row.cells[FilterHelper.filterFieldValue]!.value;
+      final filterValue =
+          row.cells[FilterHelper.filterFieldValue]!.originalValue;
 
       if (map.containsKey(columnField)) {
         map[columnField]!.add(<String, String>{filterType: filterValue});
@@ -237,8 +248,9 @@ class FilterHelper {
     }
 
     for (PlutoRow? row in filteredRows) {
-      if (row!.cells[filterFieldColumn]!.value == filterFieldAllColumns ||
-          row.cells[filterFieldColumn]!.value == column.field) {
+      if (row!.cells[filterFieldColumn]!.originalValue ==
+              filterFieldAllColumns ||
+          row.cells[filterFieldColumn]!.originalValue == column.field) {
         return true;
       }
     }
@@ -947,7 +959,8 @@ class _PlutoFilterValueCellState extends State<PlutoFilterValueCell> {
   PlutoGridStyleConfig get _style => _stateManager.style;
 
   PlutoFilterType? get _filterType =>
-      _row.cells[FilterHelper.filterFieldType]?.value as PlutoFilterType?;
+      _row.cells[FilterHelper.filterFieldType]?.originalValue
+          as PlutoFilterType?;
 
   bool get _isBetween => _filterType is PlutoFilterTypeBetween;
 
@@ -977,13 +990,13 @@ class _PlutoFilterValueCellState extends State<PlutoFilterValueCell> {
   void _syncFromCell() {
     if (_isBetween) {
       final List<String> values = FilterHelper.resolveBetweenValues(
-        search: _cell.value?.toString(),
+        search: _cell.valueFormatted?.toString(),
         searchObject: _cell.filterValue,
       );
       _startController.text = values.isNotEmpty ? values.first : '';
       _endController.text = values.length > 1 ? values[1] : '';
     } else {
-      _singleController.text = _cell.value?.toString() ?? '';
+      _singleController.text = _cell.valueFormatted?.toString() ?? '';
     }
   }
 

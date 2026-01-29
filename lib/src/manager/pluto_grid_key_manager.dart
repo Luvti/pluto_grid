@@ -55,26 +55,31 @@ class PlutoGridKeyManager {
   StreamSubscription get subscription => _subscription;
 
   void dispose() {
-    _subscription.cancel();
+    unawaited(_subscription.cancel());
 
-    _subject.close();
+    unawaited(_subject.close());
   }
 
   void init() {
-    final normalStream = _subject.stream.where((event) => !event.needsThrottle);
+    final Stream<PlutoKeyManagerEvent> normalStream = _subject.stream.where(
+      (PlutoKeyManagerEvent event) => !event.needsThrottle,
+    );
 
-    final movingStream = _subject.stream
-        .where((event) => event.needsThrottle)
+    final Stream<PlutoKeyManagerEvent> movingStream = _subject.stream
+        .where((PlutoKeyManagerEvent event) => event.needsThrottle)
         .transform(
           ThrottleStreamTransformer(
-            (s) => TimerStream<PlutoKeyManagerEvent>(
+            (PlutoKeyManagerEvent s) => TimerStream<PlutoKeyManagerEvent>(
               s,
               const Duration(milliseconds: 1),
             ),
           ),
         );
 
-    _subscription = MergeStream([normalStream, movingStream]).listen(_handler);
+    _subscription = MergeStream(<Stream<PlutoKeyManagerEvent>>[
+      normalStream,
+      movingStream,
+    ]).listen(_handler);
   }
 
   void _handler(PlutoKeyManagerEvent keyEvent) {

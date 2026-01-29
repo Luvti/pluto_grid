@@ -27,14 +27,15 @@ class _CurrencyTypeColumnScreenState extends State<CurrencyTypeColumnScreen> {
 
     Color color = Colors.black;
 
-    if (ctx.cell.value > 0) {
+    if (ctx.cell.originalValue > 0) {
       color = Colors.blue;
-    } else if (ctx.cell.value < 0) {
+    } else if (ctx.cell.originalValue < 0) {
       color = Colors.red;
     }
 
     return Text(
-      ctx.column.type.applyFormat(ctx.cell.value),
+      // original because valueFormatted would return String with currency symbol
+      ctx.column.type.applyFormat(ctx.cell.originalValue),
       style: TextStyle(color: color),
       textAlign: TextAlign.end,
     );

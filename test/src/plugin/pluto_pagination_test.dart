@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -27,11 +29,11 @@ void main() {
   });
 
   tearDown(() {
-    subject.close();
+    unawaited(subject.close());
   });
 
   group('렌더링', () {
-    buildWidget({
+    PlutoWidgetTestHelper buildWidget({
       int page = 1,
       int totalPage = 1,
       int? pageSizeToMove,

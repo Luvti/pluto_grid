@@ -370,8 +370,10 @@ class PlutoGridCupertinoScrollbarState extends State<PlutoScrollbar>
       return;
     }
     _fadeoutTimer?.cancel();
-    _thicknessAnimationController.forward().then<void>(
-      (_) => HapticFeedback.mediumImpact(),
+    unawaited(
+      _thicknessAnimationController.forward().then<void>(
+        (_) => HapticFeedback.mediumImpact(),
+      ),
     );
   }
 
@@ -402,14 +404,14 @@ class PlutoGridCupertinoScrollbarState extends State<PlutoScrollbar>
         _handleDragScrollEnd(details.velocity.pixelsPerSecond.dy, direction);
         if (details.velocity.pixelsPerSecond.dy.abs() < 10 &&
             (details.localPosition.dy - _pressStartAxisPosition).abs() > 0) {
-          HapticFeedback.mediumImpact();
+          unawaited(HapticFeedback.mediumImpact());
         }
         break;
       case Axis.horizontal:
         _handleDragScrollEnd(details.velocity.pixelsPerSecond.dx, direction);
         if (details.velocity.pixelsPerSecond.dx.abs() < 10 &&
             (details.localPosition.dx - _pressStartAxisPosition).abs() > 0) {
-          HapticFeedback.mediumImpact();
+          unawaited(HapticFeedback.mediumImpact());
         }
         break;
     }

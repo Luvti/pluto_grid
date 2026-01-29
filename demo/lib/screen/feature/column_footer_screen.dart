@@ -77,10 +77,7 @@ class _ColumnFooterScreenState extends State<ColumnFooterScreen> {
             format: '#,###.###',
             alignment: Alignment.center,
             titleSpanBuilder: (text) {
-              return [
-                const TextSpan(text: 'Average : '),
-                TextSpan(text: text),
-              ];
+              return [const TextSpan(text: 'Average : '), TextSpan(text: text)];
             },
           );
         },
@@ -97,10 +94,7 @@ class _ColumnFooterScreenState extends State<ColumnFooterScreen> {
             format: '#,###',
             alignment: Alignment.center,
             titleSpanBuilder: (text) {
-              return [
-                const TextSpan(text: 'Min : '),
-                TextSpan(text: text),
-              ];
+              return [const TextSpan(text: 'Min : '), TextSpan(text: text)];
             },
           );
         },
@@ -117,10 +111,7 @@ class _ColumnFooterScreenState extends State<ColumnFooterScreen> {
             format: '#,###',
             alignment: Alignment.center,
             titleSpanBuilder: (text) {
-              return [
-                const TextSpan(text: 'Max : '),
-                TextSpan(text: text),
-              ];
+              return [const TextSpan(text: 'Max : '), TextSpan(text: text)];
             },
           );
         },
@@ -133,7 +124,7 @@ class _ColumnFooterScreenState extends State<ColumnFooterScreen> {
           return PlutoAggregateColumnFooter(
             rendererContext: rendererContext,
             type: PlutoAggregateColumnType.count,
-            filter: (cell) => cell.value == 'Android',
+            filter: (cell) => cell.originalValue == 'Android',
             format: 'Android : #,###',
             alignment: Alignment.center,
           );
@@ -151,9 +142,11 @@ class _ColumnFooterScreenState extends State<ColumnFooterScreen> {
       topTitle: 'Column footer',
       topContents: const [
         Text(
-            'Implement PlutoColumn \'s footerRenderer callback to display information such as sum, average, min, max, etc.'),
+          'Implement PlutoColumn \'s footerRenderer callback to display information such as sum, average, min, max, etc.',
+        ),
         Text(
-            'You can easily implement it with the built-in PlutoAggregateColumnFooter plugin widget, or return the widget you want as a callback return value.'),
+          'You can easily implement it with the built-in PlutoAggregateColumnFooter plugin widget, or return the widget you want as a callback return value.',
+        ),
       ],
       topButtons: [
         PlutoExampleButton(

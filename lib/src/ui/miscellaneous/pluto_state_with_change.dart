@@ -71,7 +71,7 @@ abstract class PlutoStateWithChange<T extends PlutoStatefulWidget>
 
   @override
   void dispose() {
-    _subscription.cancel();
+    unawaited(_subscription.cancel());
 
     super.dispose();
   }

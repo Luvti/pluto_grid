@@ -291,7 +291,7 @@ class PlutoRow<T> {
     bool includeChildren = true,
     String childrenField = 'children',
   }) {
-    final json = cells.map((key, value) => MapEntry(key, value.value));
+    final json = cells.map((key, value) => MapEntry(key, value.valueFormatted));
 
     if (!includeChildren || !type.isGroup) return json;
 

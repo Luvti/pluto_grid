@@ -104,7 +104,9 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
            columnMenuDelegate ?? const PlutoColumnMenuDelegateDefault(),
        notifierFilterResolver =
            notifierFilterResolver ?? const PlutoNotifierFilterResolverDefault(),
-       columnsMap = Map.fromEntries(columns.map((e) => MapEntry(e.field, e))),
+       columnsMap = Map.fromEntries(
+         columns.map((PlutoColumn e) => MapEntry(e.field, e)),
+       ),
        gridKey = GlobalKey() {
     setConfiguration(configuration);
     setGridMode(mode ?? PlutoGridMode.normal);
@@ -205,12 +207,12 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
       refRows.originalList,
     );
 
-    refColumns.setFilter((element) => element.hide == false);
+    refColumns.setFilter((PlutoColumn element) => element.hide == false);
 
     setShowColumnGroups(columnGroups.isNotEmpty, notify: false);
 
     setShowColumnFooter(
-      refColumns.originalList.any((e) => e.footerRenderer != null),
+      refColumns.originalList.any((PlutoColumn e) => e.footerRenderer != null),
       notify: false,
     );
 
@@ -324,7 +326,7 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
       return refRows;
     }
 
-    _ApplyList applyList = _ApplyList([
+    final _ApplyList applyList = _ApplyList(<_Apply>[
       _ApplyCellForSetColumnRow(refColumns),
       _ApplyRowForSortIdx(
         forceApply: forceApplySortIdx,
@@ -339,9 +341,9 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
       return refRows;
     }
 
-    var rowLength = refRows.length;
+    final int rowLength = refRows.length;
 
-    for (var rowIdx = 0; rowIdx < rowLength; rowIdx += 1) {
+    for (int rowIdx = 0; rowIdx < rowLength; rowIdx += 1) {
       applyList.execute(refRows[rowIdx]);
     }
 
@@ -391,45 +393,49 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
 
     final Completer<List<PlutoRow>> completer = Completer();
 
-    SplayTreeMap<int, List<PlutoRow>> splayMapRows = SplayTreeMap();
+    final SplayTreeMap<int, List<PlutoRow>> splayMapRows = SplayTreeMap();
 
     final Iterable<List<PlutoRow>> chunks = refRows.slices(chunkSize);
 
-    final chunksLength = chunks.length;
+    final int chunksLength = chunks.length;
 
     final List<int> chunksIndexes = List.generate(
       chunksLength,
-      (index) => index,
+      (int index) => index,
     );
 
-    Timer.periodic(duration, (timer) {
+    Timer.periodic(duration, (Timer timer) {
       if (chunksIndexes.isEmpty) {
         return;
       }
 
-      final chunkIndex = chunksIndexes.removeLast();
+      final int chunkIndex = chunksIndexes.removeLast();
 
-      final chunk = chunks.elementAt(chunkIndex);
+      final List<PlutoRow> chunk = chunks.elementAt(chunkIndex);
 
-      Future(() {
-        return PlutoGridStateManager.initializeRows(
-          refColumns,
-          chunk,
-          forceApplySortIdx: forceApplySortIdx,
-          increase: increase,
-          start: start + (chunkIndex * chunkSize),
-        );
-      }).then((value) {
-        splayMapRows[chunkIndex] = value;
-
-        if (splayMapRows.length == chunksLength) {
-          completer.complete(
-            splayMapRows.values.expand((element) => element).toList(),
+      unawaited(
+        Future(() {
+          return PlutoGridStateManager.initializeRows(
+            refColumns,
+            chunk,
+            forceApplySortIdx: forceApplySortIdx,
+            increase: increase,
+            start: start + (chunkIndex * chunkSize),
           );
+        }).then((List<PlutoRow> value) {
+          splayMapRows[chunkIndex] = value;
 
-          timer.cancel();
-        }
-      });
+          if (splayMapRows.length == chunksLength) {
+            completer.complete(
+              splayMapRows.values
+                  .expand((List<PlutoRow> element) => element)
+                  .toList(),
+            );
+
+            timer.cancel();
+          }
+        }),
+      );
     });
 
     return completer.future;
@@ -530,14 +536,16 @@ class PlutoGridSelectingCellPosition {
 
 class PlutoGridKeyPressed {
   bool get shift {
-    final keysPressed = HardwareKeyboard.instance.logicalKeysPressed;
+    final Set<LogicalKeyboardKey> keysPressed =
+        HardwareKeyboard.instance.logicalKeysPressed;
 
     return !(!keysPressed.contains(LogicalKeyboardKey.shiftLeft) &&
         !keysPressed.contains(LogicalKeyboardKey.shiftRight));
   }
 
   bool get ctrl {
-    final keysPressed = HardwareKeyboard.instance.logicalKeysPressed;
+    final Set<LogicalKeyboardKey> keysPressed =
+        HardwareKeyboard.instance.logicalKeysPressed;
 
     return !(!keysPressed.contains(LogicalKeyboardKey.controlLeft) &&
         !keysPressed.contains(LogicalKeyboardKey.controlRight));
@@ -581,7 +589,7 @@ class _ApplyList implements _Apply {
   final List<_Apply> list;
 
   _ApplyList(this.list) {
-    list.removeWhere((element) => !element.apply);
+    list.removeWhere((_Apply element) => !element.apply);
   }
 
   @override
@@ -589,9 +597,9 @@ class _ApplyList implements _Apply {
 
   @override
   void execute(PlutoRow row) {
-    var len = list.length;
+    final int len = list.length;
 
-    for (var i = 0; i < len; i += 1) {
+    for (int i = 0; i < len; i += 1) {
       list[i].execute(row);
     }
   }
@@ -679,7 +687,7 @@ class _ApplyRowGroup implements _Apply {
     required List<PlutoRow> rows,
     required PlutoRow parent,
   }) {
-    for (final row in rows) {
+    for (final PlutoRow row in rows) {
       row.setParent(parent);
     }
 

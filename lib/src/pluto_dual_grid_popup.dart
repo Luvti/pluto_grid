@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
@@ -34,22 +36,24 @@ class PlutoDualGridPopup {
     this.height,
     this.divider,
   }) {
-    open();
+    unawaited(open());
   }
 
   Future<void> open() async {
-    final textDirection = Directionality.of(context);
+    final TextDirection textDirection = Directionality.of(context);
 
-    final splitBorderRadius = _splitBorderRadius(textDirection);
+    final List<BorderRadius> splitBorderRadius = _splitBorderRadius(
+      textDirection,
+    );
 
-    final shape = _getShape(splitBorderRadius);
+    final ShapeBorder shape = _getShape(splitBorderRadius);
 
-    final propsA = _applyBorderRadiusToGridProps(
+    final PlutoDualGridProps propsA = _applyBorderRadiusToGridProps(
       splitBorderRadius.elementAt(0),
       gridPropsA,
     );
 
-    final propsB = _applyBorderRadiusToGridProps(
+    final PlutoDualGridProps propsB = _applyBorderRadiusToGridProps(
       splitBorderRadius.elementAt(1),
       gridPropsB,
     );
@@ -61,7 +65,7 @@ class PlutoDualGridPopup {
             return Dialog(
               shape: shape,
               child: LayoutBuilder(
-                builder: (ctx, size) {
+                builder: (BuildContext ctx, BoxConstraints size) {
                   return SizedBox(
                     width:
                         (width ?? size.maxWidth) +
@@ -92,15 +96,17 @@ class PlutoDualGridPopup {
   }
 
   List<BorderRadius> _splitBorderRadius(TextDirection textDirection) {
-    final left = gridPropsA.configuration.style.gridBorderRadius.resolve(
-      TextDirection.ltr,
-    );
+    final BorderRadius left = gridPropsA.configuration.style.gridBorderRadius
+        .resolve(
+          TextDirection.ltr,
+        );
 
-    final right = gridPropsB.configuration.style.gridBorderRadius.resolve(
-      TextDirection.ltr,
-    );
+    final BorderRadius right = gridPropsB.configuration.style.gridBorderRadius
+        .resolve(
+          TextDirection.ltr,
+        );
 
-    return [
+    return <BorderRadius>[
       BorderRadiusDirectional.only(
         topStart: left.topLeft,
         bottomStart: left.bottomLeft,

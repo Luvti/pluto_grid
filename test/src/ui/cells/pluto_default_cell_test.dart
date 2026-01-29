@@ -163,7 +163,7 @@ void main() {
     final renderTextWithCellValue = buildCellWidgetWithRenderer((
       PlutoColumnRendererContext rendererContext,
     ) {
-      return Text(rendererContext.cell.value.toString());
+      return Text(rendererContext.cell.valueFormatted.toString());
     });
 
     renderTextWithCellValue.test(

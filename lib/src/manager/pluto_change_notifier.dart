@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -5,7 +7,7 @@ class PlutoChangeNotifier extends ChangeNotifier {
   final PublishSubject<PlutoNotifierEvent> _streamNotifier =
       PublishSubject<PlutoNotifierEvent>();
 
-  final Set<int> _notifier = {};
+  final Set<int> _notifier = <int>{};
 
   PublishSubject<PlutoNotifierEvent> get streamNotifier => _streamNotifier;
 
@@ -15,7 +17,7 @@ class PlutoChangeNotifier extends ChangeNotifier {
   void dispose() {
     _disposed = true;
 
-    _streamNotifier.close();
+    unawaited(_streamNotifier.close());
 
     super.dispose();
   }
@@ -38,7 +40,7 @@ class PlutoChangeNotifier extends ChangeNotifier {
   }
 
   void notifyListenersOnPostFrame([bool notify = true, int? notifier]) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((Duration timeStamp) {
       notifyListeners(notify, notifier);
     });
   }
@@ -49,7 +51,7 @@ class PlutoChangeNotifier extends ChangeNotifier {
   }
 
   Set<int> _drainNotifier() {
-    final drain = <int>{..._notifier};
+    final Set<int> drain = <int>{..._notifier};
     _notifier.clear();
     return drain;
   }
@@ -60,15 +62,17 @@ class PlutoNotifierEvent {
 
   final Set<int> _notifier;
 
-  Set<int> get notifier => {..._notifier};
+  Set<int> get notifier => <int>{..._notifier};
 
   bool any(Set<int> hashes) {
-    return _notifier.isEmpty ? true : _notifier.any((e) => hashes.contains(e));
+    return _notifier.isEmpty
+        ? true
+        : _notifier.any((int e) => hashes.contains(e));
   }
 }
 
 class PlutoNotifierEventForceUpdate extends PlutoNotifierEvent {
-  PlutoNotifierEventForceUpdate._() : super({});
+  PlutoNotifierEventForceUpdate._() : super(<int>{});
 
   static PlutoNotifierEventForceUpdate instance =
       PlutoNotifierEventForceUpdate._();

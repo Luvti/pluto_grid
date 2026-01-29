@@ -657,7 +657,7 @@ mixin SelectingState implements IPlutoGridState {
       for (int i = 0; i < columnIndexes.length; i += 1) {
         final String field = refColumns[columnIndexes[i]].field;
 
-        columnText.add(row.cells[field]!.value.toString());
+        columnText.add(row.cells[field]!.valueFormatted.toString());
       }
 
       rowText.add(columnText.join('\t'));
@@ -697,7 +697,7 @@ mixin SelectingState implements IPlutoGridState {
       for (int j = columnStartIdx; j <= columnEndIdx; j += 1) {
         final String field = refColumns[columnIndexes[j]].field;
 
-        columnText.add(refRows[i].cells[field]!.value.toString());
+        columnText.add(refRows[i].cells[field]!.valueFormatted.toString());
       }
 
       rowText.add(columnText.join('\t'));
@@ -707,7 +707,7 @@ mixin SelectingState implements IPlutoGridState {
   }
 
   String _selectingTextFromCurrentCell() {
-    return currentCell!.value.toString();
+    return currentCell!.valueFormatted.toString();
   }
 
   void _setFistCellAsCurrent() {

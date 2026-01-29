@@ -42,7 +42,7 @@ class PlutoGridDatePicker {
     this.itemHeight = PlutoGridSettings.rowTotalHeight,
     this.configuration = const PlutoGridConfiguration(),
   }) {
-    open();
+    unawaited(open());
   }
 
   static double dateCellWidth = 45.0;
@@ -176,7 +176,7 @@ class PlutoGridDatePicker {
   }
 
   void _onSelected(PlutoGridOnSelectedEvent event) {
-    keyboardStream.cancel();
+    unawaited(keyboardStream.cancel());
 
     if (onSelected != null) {
       onSelected!(event);

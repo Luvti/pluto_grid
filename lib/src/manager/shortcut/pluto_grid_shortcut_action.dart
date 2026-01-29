@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
@@ -80,7 +82,7 @@ class PlutoGridActionMoveCellFocus extends PlutoGridShortcutAction {
     required PlutoKeyManagerEvent keyEvent,
     required PlutoGridStateManager stateManager,
   }) {
-    bool force =
+    final bool force =
         keyEvent.isHorizontal &&
         stateManager.configuration.enableMoveHorizontalInEditing == true;
 
@@ -135,9 +137,10 @@ class PlutoGridActionMoveCellFocusByPage extends PlutoGridShortcutAction {
       case PlutoMoveDirection.right:
         if (!stateManager.isPaginated) return;
 
-        final currentColumn = stateManager.currentColumn;
+        final PlutoColumn? currentColumn = stateManager.currentColumn;
 
-        final previousPosition = stateManager.currentCellPosition;
+        final PlutoGridCellPosition? previousPosition =
+            stateManager.currentCellPosition;
 
         int toPage = direction.isLeft
             ? stateManager.page - 1
@@ -251,7 +254,7 @@ class PlutoGridActionDefaultTab extends PlutoGridShortcutAction {
       return;
     }
 
-    final saveIsEditing = stateManager.isEditing;
+    final bool saveIsEditing = stateManager.isEditing;
 
     keyEvent.isShiftPressed
         ? _moveCellPrevious(stateManager)
@@ -379,7 +382,7 @@ class PlutoGridActionDefaultEnterKey extends PlutoGridShortcutAction {
     } else {
       if (stateManager.isEditing == true ||
           stateManager.currentColumn?.enableEditingMode == false) {
-        final saveIsEditing = stateManager.isEditing;
+        final bool saveIsEditing = stateManager.isEditing;
 
         _moveCell(keyEvent, stateManager);
 
@@ -409,7 +412,8 @@ class PlutoGridActionDefaultEnterKey extends PlutoGridShortcutAction {
     PlutoKeyManagerEvent keyEvent,
     PlutoGridStateManager stateManager,
   ) {
-    final enterKeyAction = stateManager.configuration.enterKeyAction;
+    final PlutoGridEnterKeyAction enterKeyAction =
+        stateManager.configuration.enterKeyAction;
 
     if (enterKeyAction.isNone) {
       return;
@@ -554,7 +558,7 @@ class PlutoGridActionFocusToColumnFilter extends PlutoGridShortcutAction {
     required PlutoKeyManagerEvent keyEvent,
     required PlutoGridStateManager stateManager,
   }) {
-    final currentColumn = stateManager.currentColumn;
+    final PlutoColumn? currentColumn = stateManager.currentColumn;
 
     if (currentColumn == null) return;
 
@@ -579,11 +583,12 @@ class PlutoGridActionToggleColumnSort extends PlutoGridShortcutAction {
     required PlutoKeyManagerEvent keyEvent,
     required PlutoGridStateManager stateManager,
   }) {
-    final currentColumn = stateManager.currentColumn;
+    final PlutoColumn? currentColumn = stateManager.currentColumn;
 
     if (currentColumn == null || !currentColumn.enableSorting) return;
 
-    final previousPosition = stateManager.currentCellPosition;
+    final PlutoGridCellPosition? previousPosition =
+        stateManager.currentCellPosition;
 
     stateManager.toggleSortColumn(currentColumn);
 
@@ -638,9 +643,11 @@ class PlutoGridActionCopyValues extends PlutoGridShortcutAction {
     if (stateManager.refColumns.any((PlutoColumn column) {
       return column.type.defaultValue == stateManager.currentSelectingText;
     })) {
-      Clipboard.setData(ClipboardData(text: '-'));
+      unawaited(Clipboard.setData(const ClipboardData(text: '-')));
     }
-    Clipboard.setData(ClipboardData(text: stateManager.currentSelectingText));
+    unawaited(
+      Clipboard.setData(ClipboardData(text: stateManager.currentSelectingText)),
+    );
   }
 }
 
@@ -664,13 +671,16 @@ class PlutoGridActionPasteValues extends PlutoGridShortcutAction {
       return;
     }
 
-    Clipboard.getData('text/plain').then((value) {
-      List<List<String>> textList = PlutoClipboardTransformation.stringToList(
-        value!.text!,
-      );
+    unawaited(
+      Clipboard.getData('text/plain').then((ClipboardData? value) {
+        final List<List<String>> textList =
+            PlutoClipboardTransformation.stringToList(
+              value!.text!,
+            );
 
-      stateManager.pasteCellValue(textList);
-    });
+        stateManager.pasteCellValue(textList);
+      }),
+    );
   }
 }
 

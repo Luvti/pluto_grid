@@ -106,9 +106,9 @@ class PlutoDualGridState extends State<PlutoDualGrid> {
 
   @override
   void dispose() {
-    _streamA.cancel();
+    unawaited(_streamA.cancel());
 
-    _streamB.cancel();
+    unawaited(_streamB.cancel());
 
     super.dispose();
   }

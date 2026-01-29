@@ -135,7 +135,7 @@ class _PlutoInfinityScrollRowsState extends State<PlutoInfinityScrollRows> {
     scroll.addListener(_scrollListener);
 
     if (widget.initialFetch) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      WidgetsBinding.instance.addPostFrameCallback((Duration timeStamp) {
         _update(null);
       });
     }
@@ -145,7 +145,7 @@ class _PlutoInfinityScrollRowsState extends State<PlutoInfinityScrollRows> {
   void dispose() {
     scroll.removeListener(_scrollListener);
 
-    _events.cancel();
+    unawaited(_events.cancel());
 
     super.dispose();
   }
@@ -184,26 +184,29 @@ class _PlutoInfinityScrollRowsState extends State<PlutoInfinityScrollRows> {
           : PlutoGridLoadingLevel.rowsBottomCircular,
     );
 
-    final request = PlutoInfinityScrollRowsRequest(
-      lastRow: lastRow,
-      sortColumn: stateManager.getSortedColumn,
-      filterRows: stateManager.filterRows,
+    final PlutoInfinityScrollRowsRequest request =
+        PlutoInfinityScrollRowsRequest(
+          lastRow: lastRow,
+          sortColumn: stateManager.getSortedColumn,
+          filterRows: stateManager.filterRows,
+        );
+
+    unawaited(
+      widget.fetch(request).then((PlutoInfinityScrollRowsResponse response) {
+        if (lastRow == null) {
+          scroll.jumpTo(0);
+          stateManager.removeAllRows(notify: false);
+        }
+
+        stateManager
+          ..appendRows(response.rows)
+          ..setShowLoading(false);
+
+        _isFetching = false;
+
+        _isLast = response.isLast;
+      }),
     );
-
-    widget.fetch(request).then((response) {
-      if (lastRow == null) {
-        scroll.jumpTo(0);
-        stateManager.removeAllRows(notify: false);
-      }
-
-      stateManager.appendRows(response.rows);
-
-      stateManager.setShowLoading(false);
-
-      _isFetching = false;
-
-      _isLast = response.isLast;
-    });
   }
 
   @override

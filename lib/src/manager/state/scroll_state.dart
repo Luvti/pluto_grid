@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
@@ -128,7 +130,7 @@ mixin ScrollState implements IPlutoGridState {
       return;
     }
 
-    final columnIndexes = columnIndexesByShowFrozen;
+    final List<int> columnIndexes = columnIndexesByShowFrozen;
 
     final PlutoColumn columnToMove =
         refColumns[columnIndexes[columnIdx! + direction.offset]];
@@ -157,9 +159,9 @@ mixin ScrollState implements IPlutoGridState {
         }
       }
     } else {
-      final offsetToNeed = offsetToMove + columnToMove.width;
+      final double offsetToNeed = offsetToMove + columnToMove.width;
 
-      final currentOffset = screenOffset! + scroll.horizontal!.offset;
+      final double currentOffset = screenOffset! + scroll.horizontal!.offset;
 
       if (offsetToNeed > currentOffset) {
         offsetToMove = scroll.horizontal!.offset + offsetToNeed - currentOffset;
@@ -192,16 +194,18 @@ mixin ScrollState implements IPlutoGridState {
 
   @override
   void updateCorrectScrollOffset() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((Duration timeStamp) {
       if (scroll.bodyRowsHorizontal?.hasClients != true) {
         return;
       }
 
       if (isHorizontalOverScrolled) {
-        scroll.horizontal!.animateTo(
-          correctHorizontalOffset,
-          curve: Curves.ease,
-          duration: const Duration(milliseconds: 300),
+        unawaited(
+          scroll.horizontal!.animateTo(
+            correctHorizontalOffset,
+            curve: Curves.ease,
+            duration: const Duration(milliseconds: 300),
+          ),
         );
       }
     });

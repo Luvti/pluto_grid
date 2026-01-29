@@ -30,7 +30,7 @@ class PlutoCell {
   ///
   /// [setColumn] is called when [PlutoGridStateManager.initializeRows] is called.
   /// When [setColumn] is called, this value is changed to `true` according to the column setting.
-  /// If this value is `true` when the getter of [PlutoCell.value] is called,
+  /// If this value is `true` when the getter of [PlutoCell.valueFormatted] is called,
   /// it calls [_applyFormatOnInit] to update the value according to the format.
   /// [_applyFormatOnInit] is called once, and if [setColumn] is not called again,
   /// it is not called anymore.
@@ -56,7 +56,25 @@ class PlutoCell {
     return _row!;
   }
 
+  dynamic get valueFormatted {
+    // if (canUseOriginalValueForSorting) {
+    //   return _originalValue;
+    // }
+
+    if (_needToApplyFormatOnInit) {
+      _applyFormatOnInit();
+    }
+
+    return _value;
+  }
+
+  // deprecated
+  @Deprecated('Use valueFormatted instead or originalValue')
   dynamic get value {
+    // if (canUseOriginalValueForSorting) {
+    //   return _originalValue;
+    // }
+
     if (_needToApplyFormatOnInit) {
       _applyFormatOnInit();
     }
@@ -101,11 +119,38 @@ class PlutoCell {
       return _value;
     }
 
+    if (canUseOriginalValueForSorting) {
+      return _originalValue;
+    }
+
     if (_needToApplyFormatOnInit) {
       _applyFormatOnInit();
     }
 
     return _column!.type.makeCompareValue(_value);
+  }
+
+  bool get canUseOriginalValueForSorting {
+    if (_column == null) {
+      return false;
+    }
+
+    if (column.type.type == PlutoColumnTypeEnum.number &&
+        _originalValue is num) {
+      return true;
+    }
+
+    if (column.type.type == PlutoColumnTypeEnum.double &&
+        _originalValue is double) {
+      return true;
+    }
+
+    if (column.type.type == PlutoColumnTypeEnum.bool &&
+        _originalValue is bool) {
+      return true;
+    }
+
+    return false;
   }
 
   void _applyFormatOnInit() {

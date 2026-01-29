@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
@@ -102,11 +104,11 @@ class PlutoGridPopup {
     this.height,
     this.barrierDismissible,
   }) {
-    open();
+    unawaited(open());
   }
 
-  setColumnConfig() {
-    columns.map((element) {
+  List<PlutoColumn> setColumnConfig() {
+    columns.map((PlutoColumn element) {
       if (configuration.style.filterHeaderColor != null) {
         element.backgroundColor = configuration.style.filterHeaderColor!;
       }
@@ -115,13 +117,14 @@ class PlutoGridPopup {
   }
 
   Future<void> open() async {
-    final textDirection = Directionality.of(context);
+    final TextDirection textDirection = Directionality.of(context);
 
-    final borderRadius = configuration.style.gridBorderRadius.resolve(
-      textDirection,
-    );
+    final BorderRadius borderRadius = configuration.style.gridBorderRadius
+        .resolve(
+          textDirection,
+        );
 
-    PlutoGridOnSelectedEvent? selected =
+    final PlutoGridOnSelectedEvent? selected =
         await showDialog<PlutoGridOnSelectedEvent>(
           context: context,
           barrierDismissible: barrierDismissible ?? true,
@@ -131,7 +134,7 @@ class PlutoGridPopup {
                   ? null
                   : RoundedRectangleBorder(borderRadius: borderRadius),
               child: LayoutBuilder(
-                builder: (ctx, size) {
+                builder: (BuildContext ctx, BoxConstraints size) {
                   return SizedBox(
                     width:
                         (width ?? size.maxWidth) +

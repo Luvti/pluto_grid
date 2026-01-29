@@ -51,7 +51,7 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
   String get _filterValue {
     return _filterRows.isEmpty
         ? ''
-        : _filterRows.first.cells[FilterHelper.filterFieldValue]!.value
+        : _filterRows.first.cells[FilterHelper.filterFieldValue]!.originalValue
               .toString();
   }
 
@@ -64,8 +64,8 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
         _filterRows.first.cells[FilterHelper.filterFieldValue]!;
 
     return FilterHelper.resolveBetweenValues(
-      search: cell.value?.toString(),
-      searchObject: cell.filterValue,
+      search: cell.originalValue?.toString(),
+      searchObject: cell.filterValue ?? cell.originalValue,
     );
   }
 
@@ -322,10 +322,11 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
     final List<PlutoRow> filterRow = stateManager.filterColumns;
     final PlutoRow<dynamic>? filterRowValues = filterRow.firstWhereOrNull(
       (PlutoRow<dynamic> c) =>
-          c.cells[FilterHelper.filterFieldColumn]?.value == widget.column.field,
+          c.cells[FilterHelper.filterFieldColumn]?.originalValue ==
+          widget.column.field,
     );
     final PlutoFilterType? filterFieldType =
-        filterRowValues?.cells[FilterHelper.filterFieldType]?.value ??
+        filterRowValues?.cells[FilterHelper.filterFieldType]?.originalValue ??
         widget.column.defaultFilter;
 
     return filterFieldType;

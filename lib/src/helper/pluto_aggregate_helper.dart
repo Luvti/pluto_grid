@@ -23,8 +23,10 @@ class PlutoAggregateHelper {
         : rows;
 
     final Iterable<num> numbers = foundItems
-        .map((PlutoRow<dynamic> e) => e.cells[column.field]?.value as num?)
-        .whereNotNull();
+        .map(
+          (PlutoRow<dynamic> e) => e.cells[column.field]?.originalValue as num?,
+        )
+        .nonNulls;
 
     return numbers.isNotEmpty
         ? numberColumn.toNumber(numberColumn.applyFormat(numbers.sum))
@@ -51,7 +53,7 @@ class PlutoAggregateHelper {
             (PlutoRow<dynamic> e) =>
                 e.cells[column.field]?.valueForSorting as double?,
           )
-          .whereNotNull();
+          .nonNulls;
 
       return numbers.isNotEmpty
           ? numberColumn.toDouble(numberColumn.applyFormat(numbers.average))
@@ -72,8 +74,10 @@ class PlutoAggregateHelper {
         : rows;
 
     final Iterable<num> numbers = foundItems
-        .map((PlutoRow<dynamic> e) => e.cells[column.field]?.value as num?)
-        .whereNotNull();
+        .map(
+          (PlutoRow<dynamic> e) => e.cells[column.field]?.originalValue as num?,
+        )
+        .nonNulls;
 
     return numbers.isNotEmpty
         ? numberColumn.toNumber(numberColumn.applyFormat(numbers.average))
@@ -97,7 +101,7 @@ class PlutoAggregateHelper {
         : rows;
 
     final Iterable<num> mapValues = foundItems.map(
-      (PlutoRow<dynamic> e) => e.cells[column.field]!.value,
+      (PlutoRow<dynamic> e) => e.cells[column.field]!.originalValue,
     );
 
     return mapValues.minOrNull;
@@ -120,7 +124,7 @@ class PlutoAggregateHelper {
         : rows;
 
     final Iterable<num> mapValues = foundItems.map(
-      (PlutoRow<dynamic> e) => e.cells[column.field]!.value,
+      (PlutoRow<dynamic> e) => e.cells[column.field]!.originalValue,
     );
 
     return mapValues.maxOrNull;
@@ -167,7 +171,7 @@ class PlutoAggregateHelper {
         : rows;
 
     return foundItems
-        .map((PlutoRow<dynamic> c) => c.cells[column.field]?.value)
+        .map((PlutoRow<dynamic> c) => c.cells[column.field]?.originalValue)
         .toSet()
         .length;
   }
