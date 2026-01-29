@@ -10,6 +10,18 @@ class PlutoGridOnLoadedEvent {
   });
 }
 
+/// [PlutoGrid.onDispose] Argument received by registering callback.
+/// Called before the [PlutoGridStateManager] is disposed.
+/// Use this to clear external references to the stateManager
+/// (e.g., from singleton blocs or other long-lived objects).
+class PlutoGridOnDisposeEvent {
+  final PlutoGridStateManager stateManager;
+
+  const PlutoGridOnDisposeEvent({
+    required this.stateManager,
+  });
+}
+
 /// Event called when the value of [PlutoCell] is changed.
 ///
 /// Notice.

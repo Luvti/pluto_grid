@@ -13,6 +13,9 @@ import 'ui/ui.dart';
 typedef PlutoOnLoadedEventCallback =
     void Function(PlutoGridOnLoadedEvent event);
 
+typedef PlutoOnDisposeEventCallback =
+    void Function(PlutoGridOnDisposeEvent event);
+
 typedef PlutoOnChangedEventCallback =
     void Function(PlutoGridOnChangedEvent event);
 
@@ -75,6 +78,7 @@ class PlutoGrid extends PlutoStatefulWidget {
     this.editCellWrapper,
     this.columnGroups,
     this.onLoaded,
+    this.onDispose,
     this.onFiltered,
     this.onChanged,
     this.onSelected,
@@ -171,6 +175,23 @@ class PlutoGrid extends PlutoStatefulWidget {
   /// ```
   /// {@endtemplate}
   final PlutoOnLoadedEventCallback? onLoaded;
+
+  /// {@template pluto_grid_property_onDispose}
+  /// [onDispose] is called before the [PlutoGridStateManager] is disposed.
+  ///
+  /// Use this callback to clear external references to the stateManager
+  /// that may have been stored during [onLoaded].
+  /// For example, if you stored the stateManager in a singleton bloc,
+  /// you should set it to null in this callback.
+  ///
+  /// ```dart
+  /// onDispose: (PlutoGridOnDisposeEvent event) {
+  ///   myBloc.clearGridStateManager();
+  /// },
+  /// ```
+  /// {@endtemplate}
+  final PlutoOnDisposeEventCallback? onDispose;
+
   final PlutoOnFilteredEventCallback? onFiltered;
 
   /// {@template pluto_grid_property_onChanged}
@@ -472,6 +493,11 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
 
   @override
   void dispose() {
+    // Call onDispose callback before disposing, allowing external cleanup
+    widget.onDispose?.call(
+      PlutoGridOnDisposeEvent(stateManager: _stateManager),
+    );
+
     for (final Function() dispose in _disposeList) {
       dispose();
     }
