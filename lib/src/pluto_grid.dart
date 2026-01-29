@@ -498,6 +498,10 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
       PlutoGridOnDisposeEvent(stateManager: _stateManager),
     );
 
+    // Dispose scroll controller groups to prevent memory leaks
+    _verticalScroll.dispose();
+    _horizontalScroll.dispose();
+
     for (final Function() dispose in _disposeList) {
       dispose();
     }
@@ -541,10 +545,7 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
       stateManager.showFrozenColumn,
     );
 
-    _showLoading = update<bool>(
-      _showLoading,
-      stateManager.showLoading,
-    );
+    _showLoading = update<bool>(_showLoading, stateManager.showLoading);
 
     _hasLeftFrozenColumns = update<bool>(
       _hasLeftFrozenColumns,
@@ -614,9 +615,7 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
   }
 
   void _initKeyManager() {
-    _keyManager = PlutoGridKeyManager(
-      stateManager: _stateManager,
-    );
+    _keyManager = PlutoGridKeyManager(stateManager: _stateManager);
 
     _keyManager.init();
 
@@ -629,9 +628,7 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
   }
 
   void _initEventManager() {
-    _eventManager = PlutoGridEventManager(
-      stateManager: _stateManager,
-    );
+    _eventManager = PlutoGridEventManager(stateManager: _stateManager);
 
     _eventManager.init();
 
@@ -684,10 +681,7 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
   KeyEventResult _handleGridFocusOnKey(FocusNode focusNode, KeyEvent event) {
     if (_keyManager.eventResult.isSkip == false) {
       _keyManager.subject.add(
-        PlutoKeyManagerEvent(
-          focusNode: focusNode,
-          event: event,
-        ),
+        PlutoKeyManagerEvent(focusNode: focusNode, event: event),
       );
     }
 
@@ -816,10 +810,7 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
                       shadow: style.enableGridBorderShadow,
                     ),
                   ),
-                  LayoutId(
-                    id: _StackName.header,
-                    child: _header!,
-                  ),
+                  LayoutId(id: _StackName.header, child: _header!),
                 ],
 
                 /// Column footer divider.
@@ -844,10 +835,7 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
                       reverse: true,
                     ),
                   ),
-                  LayoutId(
-                    id: _StackName.footer,
-                    child: _footer!,
-                  ),
+                  LayoutId(id: _StackName.footer, child: _footer!),
                 ],
 
                 /// Loading screen.
@@ -922,15 +910,10 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
     if (hasChild(_StackName.headerDivider)) {
       layoutChild(
         _StackName.headerDivider,
-        BoxConstraints.tight(
-          Size(size.width, gridBorderWidth),
-        ),
+        BoxConstraints.tight(Size(size.width, gridBorderWidth)),
       );
 
-      positionChild(
-        _StackName.headerDivider,
-        Offset(0, columnsTopOffset),
-      );
+      positionChild(_StackName.headerDivider, Offset(0, columnsTopOffset));
     }
 
     if (hasChild(_StackName.footer)) {
@@ -953,9 +936,7 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
     if (hasChild(_StackName.footerDivider)) {
       layoutChild(
         _StackName.footerDivider,
-        BoxConstraints.tight(
-          Size(size.width, gridBorderWidth),
-        ),
+        BoxConstraints.tight(Size(size.width, gridBorderWidth)),
       );
 
       positionChild(
@@ -1074,10 +1055,7 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
           ? bodyLeftOffset
           : size.width - s.width - bodyRightOffset;
 
-      positionChild(
-        _StackName.bodyColumns,
-        Offset(posX, columnsTopOffset),
-      );
+      positionChild(_StackName.bodyColumns, Offset(posX, columnsTopOffset));
 
       bodyRowsTopOffset += s.height;
     }
@@ -1110,9 +1088,7 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
     if (hasChild(_StackName.columnFooterDivider)) {
       final Size s = layoutChild(
         _StackName.columnFooterDivider,
-        BoxConstraints.tight(
-          Size(size.width, gridBorderWidth),
-        ),
+        BoxConstraints.tight(Size(size.width, gridBorderWidth)),
       );
 
       positionChild(
@@ -1125,15 +1101,10 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
     if (hasChild(_StackName.columnRowDivider)) {
       final Size s = layoutChild(
         _StackName.columnRowDivider,
-        BoxConstraints.tight(
-          Size(size.width, gridBorderWidth),
-        ),
+        BoxConstraints.tight(Size(size.width, gridBorderWidth)),
       );
 
-      positionChild(
-        _StackName.columnRowDivider,
-        Offset(0, bodyRowsTopOffset),
-      );
+      positionChild(_StackName.columnRowDivider, Offset(0, bodyRowsTopOffset));
 
       bodyRowsTopOffset += s.height;
     } else {
@@ -1156,10 +1127,7 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
         ),
       );
 
-      positionChild(
-        _StackName.leftFrozenRows,
-        Offset(posX, bodyRowsTopOffset),
-      );
+      positionChild(_StackName.leftFrozenRows, Offset(posX, bodyRowsTopOffset));
     }
 
     if (hasChild(_StackName.leftFrozenColumnFooters)) {
@@ -1224,9 +1192,7 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
         BoxConstraints.tight(
           Size(
             _safe(size.width - bodyLeftOffset - bodyRightOffset),
-            _safe(
-              size.height - bodyRowsTopOffset - bodyRowsBottomOffset,
-            ),
+            _safe(size.height - bodyRowsTopOffset - bodyRowsBottomOffset),
           ),
         ),
       );
@@ -1246,10 +1212,7 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
           break;
         case PlutoGridLoadingLevel.rows:
           loadingSize = Size(size.width, 3);
-          positionChild(
-            _StackName.loading,
-            Offset(0, bodyRowsTopOffset),
-          );
+          positionChild(_StackName.loading, Offset(0, bodyRowsTopOffset));
           break;
         case PlutoGridLoadingLevel.rowsBottomCircular:
           loadingSize = const Size(30, 30);
@@ -1263,10 +1226,7 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
           break;
       }
 
-      layoutChild(
-        _StackName.loading,
-        BoxConstraints.tight(loadingSize),
-      );
+      layoutChild(_StackName.loading, BoxConstraints.tight(loadingSize));
     }
 
     if (hasChild(_StackName.noRows)) {
@@ -1280,10 +1240,7 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
         ),
       );
 
-      positionChild(
-        _StackName.noRows,
-        Offset(0, bodyRowsTopOffset),
-      );
+      positionChild(_StackName.noRows, Offset(0, bodyRowsTopOffset));
     }
   }
 
@@ -1300,10 +1257,7 @@ class _GridContainer extends StatelessWidget {
 
   final Widget child;
 
-  const _GridContainer({
-    required this.stateManager,
-    required this.child,
-  });
+  const _GridContainer({required this.stateManager, required this.child});
 
   @override
   Widget build(BuildContext context) {

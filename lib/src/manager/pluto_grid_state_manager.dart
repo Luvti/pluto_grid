@@ -448,6 +448,12 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
       row.clear();
     }
     refRows.clearFromOriginal();
+    refColumns.clearFromOriginal();
+
+    // Clear scroll controller references
+    scroll.setBodyRowsHorizontal(null);
+    scroll.setBodyRowsVertical(null);
+
     resetCurrentState(notify: false);
     super.dispose();
   }

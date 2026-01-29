@@ -108,6 +108,19 @@ class LinkedScrollControllerGroup {
       controller.position.notifyListeners();
     }
   }
+
+  /// Disposes of the controller group and all its resources.
+  /// This should be called when the scroll controller group is no longer needed
+  /// to prevent memory leaks.
+  void dispose() {
+    _offsetNotifier.dispose();
+    // Dispose all controllers that are still attached
+    // ignore: always_specify_types
+    for (final _LinkedScrollController controller in List.of(_allControllers)) {
+      controller.dispose();
+    }
+    _allControllers.clear();
+  }
 }
 
 /// This class provides change notification for [LinkedScrollControllerGroup]'s
