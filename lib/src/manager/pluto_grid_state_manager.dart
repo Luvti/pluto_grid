@@ -440,6 +440,17 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
 
     return completer.future;
   }
+
+  @override
+  void dispose() {
+    // Clear each row to break reference cycles (PlutoCell <-> PlutoRow <-> PlutoColumn)
+    for (final PlutoRow row in refRows.originalList) {
+      row.clear();
+    }
+    refRows.clearFromOriginal();
+    resetCurrentState(notify: false);
+    super.dispose();
+  }
 }
 
 /// This is a class for handling horizontal and vertical scrolling of columns and rows of [PlutoGrid].

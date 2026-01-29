@@ -347,11 +347,16 @@ mixin RowState implements IPlutoGridState {
       return;
     }
 
+    final PlutoRow rowToRemove = currentRow!;
+
     if (enabledRowGroups) {
-      removeRowAndGroupByKey(<Key>[currentRow!.key]);
+      removeRowAndGroupByKey(<Key>[rowToRemove.key]);
     } else {
       refRows.removeAt(currentRowIdx!);
     }
+
+    // Clear removed row to break reference cycles
+    rowToRemove.clear();
 
     resetCurrentState(notify: false);
 
@@ -395,6 +400,11 @@ mixin RowState implements IPlutoGridState {
       );
     }
 
+    // Clear removed rows to break reference cycles
+    for (final row in rows) {
+      row.clear();
+    }
+
     updateCurrentCellPosition(notify: false);
 
     setCurrentSelectingPositionByCellKey(selectingCellKey, notify: false);
@@ -410,6 +420,11 @@ mixin RowState implements IPlutoGridState {
   void removeAllRows({bool notify = true}) {
     if (refRows.originalList.isEmpty) {
       return;
+    }
+
+    // Clear all rows to break reference cycles
+    for (final row in refRows.originalList) {
+      row.clear();
     }
 
     refRows.clearFromOriginal();

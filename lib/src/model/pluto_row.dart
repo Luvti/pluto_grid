@@ -51,7 +51,7 @@ class PlutoRow<T> {
   /// Returns the depth if [PlutoRow] is a child of a group row.
   int get depth {
     int depth = 0;
-    var current = parent;
+    PlutoRow? current = parent;
     while (current != null) {
       depth += 1;
       current = current.parent;
@@ -77,13 +77,17 @@ class PlutoRow<T> {
   }
 
   bool? get _tristateCheckedRow {
-    if (!type.isGroup) return false;
+    if (!type.isGroup) {
+      return false;
+    }
 
-    final children = type.group.children;
+    final FilteredList<PlutoRow> children = type.group.children;
 
-    final length = children.length;
+    final int length = children.length;
 
-    if (length == 0) return _checked;
+    if (length == 0) {
+      return _checked;
+    }
 
     int countTrue = 0;
 
@@ -91,7 +95,7 @@ class PlutoRow<T> {
 
     int countTristate = 0;
 
-    for (var i = 0; i < length; i += 1) {
+    for (int i = 0; i < length; i += 1) {
       if (children[i].type.isGroup) {
         switch (children[i]._tristateCheckedRow) {
           case true:
@@ -108,7 +112,9 @@ class PlutoRow<T> {
         children[i].checked == true ? ++countTrue : ++countFalse;
       }
 
-      if ((countTrue > 0 && countFalse > 0) || countTristate > 0) return null;
+      if ((countTrue > 0 && countFalse > 0) || countTristate > 0) {
+        return null;
+      }
     }
 
     return countTrue == length;
@@ -134,7 +140,7 @@ class PlutoRow<T> {
     _checked = flag;
     _checkedViaSelect = viaSelect;
     if (type.isGroup) {
-      for (final child in type.group.children) {
+      for (final PlutoRow child in type.group.children) {
         child.setChecked(flag);
       }
     }
@@ -142,6 +148,14 @@ class PlutoRow<T> {
 
   void setState(PlutoRowState state) {
     _state = state;
+  }
+
+  /// Clears references to help garbage collection when this row is removed.
+  void clear() {
+    for (final PlutoCell cell in cells.values) {
+      cell.clear();
+    }
+    _parent = null;
   }
 
   /// Create PlutoRow in json type.
@@ -185,18 +199,20 @@ class PlutoRow<T> {
     Map<String, dynamic> json, {
     String? childrenField,
   }) {
-    final Map<String, PlutoCell> cells = {};
+    final Map<String, PlutoCell> cells = <String, PlutoCell>{};
 
     final bool hasChildren =
         childrenField != null && json.containsKey(childrenField);
 
-    final entries = hasChildren
-        ? json.entries.where((e) => e.key != childrenField)
+    final Iterable<MapEntry<String, dynamic>> entries = hasChildren
+        ? json.entries.where(
+            (MapEntry<String, dynamic> e) => e.key != childrenField,
+          )
         : json.entries;
 
     assert(!hasChildren || json.length - 1 == entries.length);
 
-    for (final item in entries) {
+    for (final MapEntry<String, dynamic> item in entries) {
       cells[item.key] = PlutoCell(value: item.value);
     }
 
@@ -205,7 +221,7 @@ class PlutoRow<T> {
     if (hasChildren) {
       assert(json[childrenField] is List<Map<String, dynamic>>);
 
-      final children = <PlutoRow>[];
+      final List<PlutoRow> children = <PlutoRow>[];
 
       for (final child in json[childrenField]) {
         children.add(PlutoRow.fromJson(child, childrenField: childrenField));
@@ -291,13 +307,17 @@ class PlutoRow<T> {
     bool includeChildren = true,
     String childrenField = 'children',
   }) {
-    final json = cells.map((key, value) => MapEntry(key, value.valueFormatted));
+    final Map<String, dynamic> json = cells.map(
+      (String key, PlutoCell value) => MapEntry(key, value.valueFormatted),
+    );
 
-    if (!includeChildren || !type.isGroup) return json;
+    if (!includeChildren || !type.isGroup) {
+      return json;
+    }
 
     final List<Map<String, dynamic>> children = type.group.children
         .map(
-          (e) => e.toJson(childrenField: childrenField),
+          (PlutoRow e) => e.toJson(childrenField: childrenField),
         )
         .toList();
 

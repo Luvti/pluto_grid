@@ -114,6 +114,13 @@ class PlutoCell {
     _row = row;
   }
 
+  /// Clears references to column and row to help garbage collection
+  /// when this cell is removed from the grid.
+  void clear() {
+    _column = null;
+    _row = null;
+  }
+
   dynamic _getValueForSorting() {
     if (_column == null) {
       return _value;

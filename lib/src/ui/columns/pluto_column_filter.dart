@@ -137,6 +137,8 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
   void dispose() {
     unawaited(_event.cancel());
 
+    widget.column.setFilterFocusNode(null);
+
     _controller.dispose();
     _betweenStartController.dispose();
     _betweenEndController.dispose();
