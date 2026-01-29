@@ -78,10 +78,8 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
       _changeValue();
     }
 
-    if (!widget.stateManager.isEditing ||
-        widget.stateManager.currentColumn?.enableEditingMode != true) {
-      widget.stateManager.setTextEditingController(null);
-    }
+    // Always clear the reference to prevent memory leaks
+    widget.stateManager.setTextEditingController(null);
 
     _debounce.dispose();
 
@@ -174,10 +172,7 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
   }
 
   KeyEventResult _handleOnKey(FocusNode node, KeyEvent event) {
-    var keyManager = PlutoKeyManagerEvent(
-      focusNode: node,
-      event: event,
-    );
+    var keyManager = PlutoKeyManagerEvent(focusNode: node, event: event);
 
     if (keyManager.isKeyUpEvent) {
       return KeyEventResult.handled;
@@ -243,9 +238,7 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
       onTap: _handleOnTap,
       style: widget.stateManager.configuration.style.cellTextStyle,
       decoration: const InputDecoration(
-        border: OutlineInputBorder(
-          borderSide: BorderSide.none,
-        ),
+        border: OutlineInputBorder(borderSide: BorderSide.none),
         contentPadding: EdgeInsets.zero,
       ),
       maxLines: 1,

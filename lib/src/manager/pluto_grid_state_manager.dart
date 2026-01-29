@@ -454,6 +454,13 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
     scroll.setBodyRowsHorizontal(null);
     scroll.setBodyRowsVertical(null);
 
+    // Clear TextEditingController reference to prevent leaks
+    setTextEditingController(null);
+
+    // Break circular references: keyManager and eventManager hold stateManager
+    setKeyManager(null);
+    setEventManager(null);
+
     resetCurrentState(notify: false);
     super.dispose();
   }
@@ -465,10 +472,7 @@ class PlutoGridScrollController {
 
   LinkedScrollControllerGroup? horizontal;
 
-  PlutoGridScrollController({
-    this.vertical,
-    this.horizontal,
-  });
+  PlutoGridScrollController({this.vertical, this.horizontal});
 
   ScrollController? get bodyRowsHorizontal => _bodyRowsHorizontal;
 
@@ -509,10 +513,7 @@ class PlutoGridCellPosition {
   final int? columnIdx;
   final int? rowIdx;
 
-  const PlutoGridCellPosition({
-    this.columnIdx,
-    this.rowIdx,
-  });
+  const PlutoGridCellPosition({this.columnIdx, this.rowIdx});
 
   bool get hasPosition => columnIdx != null && rowIdx != null;
 
@@ -533,10 +534,7 @@ class PlutoGridSelectingCellPosition {
   final String? field;
   final int? rowIdx;
 
-  const PlutoGridSelectingCellPosition({
-    this.field,
-    this.rowIdx,
-  });
+  const PlutoGridSelectingCellPosition({this.field, this.rowIdx});
 
   @override
   bool operator ==(covariant Object other) {
