@@ -233,7 +233,7 @@ mixin EditingState implements IPlutoGridState {
 
     final currentRow = cell.row;
 
-    final dynamic oldValue = cell.originalValue;
+    final dynamic oldValue = cell.currentValue;
 
     value = filteredCellValue(
       column: currentColumn,
@@ -346,7 +346,7 @@ mixin EditingState implements IPlutoGridState {
 
         dynamic newValue = textList[textRowIdx][textColumnIdx];
 
-        final dynamic oldValue = currentCell.originalValue;
+        final dynamic oldValue = currentCell.currentValue;
 
         newValue = filteredCellValue(
           column: currentColumn,

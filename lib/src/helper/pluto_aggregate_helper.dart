@@ -24,7 +24,7 @@ class PlutoAggregateHelper {
 
     final Iterable<num> numbers = foundItems
         .map(
-          (PlutoRow<dynamic> e) => e.cells[column.field]?.originalValue as num?,
+          (PlutoRow<dynamic> e) => e.cells[column.field]?.currentValue as num?,
         )
         .nonNulls;
 
@@ -75,7 +75,7 @@ class PlutoAggregateHelper {
 
     final Iterable<num> numbers = foundItems
         .map(
-          (PlutoRow<dynamic> e) => e.cells[column.field]?.originalValue as num?,
+          (PlutoRow<dynamic> e) => e.cells[column.field]?.currentValue as num?,
         )
         .nonNulls;
 
@@ -101,7 +101,7 @@ class PlutoAggregateHelper {
         : rows;
 
     final Iterable<num> mapValues = foundItems.map(
-      (PlutoRow<dynamic> e) => e.cells[column.field]!.originalValue,
+      (PlutoRow<dynamic> e) => e.cells[column.field]!.currentValue,
     );
 
     return mapValues.minOrNull;
@@ -124,7 +124,7 @@ class PlutoAggregateHelper {
         : rows;
 
     final Iterable<num> mapValues = foundItems.map(
-      (PlutoRow<dynamic> e) => e.cells[column.field]!.originalValue,
+      (PlutoRow<dynamic> e) => e.cells[column.field]!.currentValue,
     );
 
     return mapValues.maxOrNull;
@@ -171,7 +171,7 @@ class PlutoAggregateHelper {
         : rows;
 
     return foundItems
-        .map((PlutoRow<dynamic> c) => c.cells[column.field]?.originalValue)
+        .map((PlutoRow<dynamic> c) => c.cells[column.field]?.currentValue)
         .toSet()
         .length;
   }

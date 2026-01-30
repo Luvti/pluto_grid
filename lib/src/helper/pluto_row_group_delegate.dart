@@ -310,7 +310,7 @@ class PlutoRowGroupByColumnDelegate extends PlutoRowGroupDelegate {
     Iterator<MapEntry<String, List<PlutoRow>>>? currentIter;
     currentIter = groupBy<PlutoRow, String>(
       rows,
-      (r) => r.cells[groupFields[depth]]!.originalValue.toString(),
+      (r) => r.cells[groupFields[depth]]!.currentValue.toString(),
     ).entries.iterator;
 
     while (currentIter != null || stack.isNotEmpty) {

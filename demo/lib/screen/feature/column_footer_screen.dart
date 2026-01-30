@@ -124,7 +124,7 @@ class _ColumnFooterScreenState extends State<ColumnFooterScreen> {
           return PlutoAggregateColumnFooter(
             rendererContext: rendererContext,
             type: PlutoAggregateColumnType.count,
-            filter: (cell) => cell.originalValue == 'Android',
+            filter: (cell) => cell.currentValue == 'Android',
             format: 'Android : #,###',
             alignment: Alignment.center,
           );

@@ -88,11 +88,11 @@ class _ExportScreenState extends State<ExportScreen> {
         renderer: (rendererContext) {
           Color textColor = Colors.black;
 
-          if (rendererContext.cell.originalValue == 'red') {
+          if (rendererContext.cell.currentValue == 'red') {
             textColor = Colors.red;
-          } else if (rendererContext.cell.originalValue == 'blue') {
+          } else if (rendererContext.cell.currentValue == 'blue') {
             textColor = Colors.blue;
-          } else if (rendererContext.cell.originalValue == 'green') {
+          } else if (rendererContext.cell.currentValue == 'green') {
             textColor = Colors.green;
           }
 

@@ -38,14 +38,14 @@ class _State {
 
 extension PlutoRowFilterX on PlutoRow {
   PlutoColumn? get filterColumn =>
-      cells[FilterHelper.filterFieldColumn]?.originalValue as PlutoColumn;
+      cells[FilterHelper.filterFieldColumn]?.currentValue as PlutoColumn;
   PlutoFilterType? get filterType =>
-      cells[FilterHelper.filterFieldType]?.originalValue as PlutoFilterType;
+      cells[FilterHelper.filterFieldType]?.currentValue as PlutoFilterType;
   String? get filterValue =>
-      cells[FilterHelper.filterFieldValue]?.originalValue?.toString();
+      cells[FilterHelper.filterFieldValue]?.currentValue?.toString();
   // can be null
   dynamic get filterValueObject =>
-      cells[FilterHelper.filterFieldValue]?.originalValue;
+      cells[FilterHelper.filterFieldValue]?.currentValue;
 
   bool get canApplyFilter =>
       filterType is PlutoFilterTypeIsEmpty ||
@@ -144,7 +144,7 @@ mixin FilteringRowState implements IPlutoGridState {
     return filterColumns
         .where(
           (PlutoRow element) =>
-              element.cells[FilterHelper.filterFieldColumn]!.originalValue ==
+              element.cells[FilterHelper.filterFieldColumn]!.currentValue ==
               columnField,
         )
         .toList();
@@ -170,7 +170,7 @@ mixin FilteringRowState implements IPlutoGridState {
 
     filterRows.removeWhere((PlutoRow filterRow) {
       return columnFields.contains(
-        filterRow.cells[FilterHelper.filterFieldColumn]!.originalValue,
+        filterRow.cells[FilterHelper.filterFieldColumn]!.currentValue,
       );
     });
 

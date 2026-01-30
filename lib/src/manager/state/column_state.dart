@@ -592,7 +592,7 @@ mixin ColumnState implements IPlutoGridState {
                 element.key == column.field,
           )
           .value;
-      String value = column.formattedValueForDisplay(cell.value);
+      String value = column.formattedValueForDisplay(cell.currentValue);
       if (hasRowGroups) {
         if (PlutoDefaultCell.showGroupCount(rowGroupDelegate!, cell)) {
           final String groupCountValue = PlutoDefaultCell.groupCountText(
@@ -808,10 +808,7 @@ mixin ColumnState implements IPlutoGridState {
       if (event.isAll) {
         hideColumns(refColumns.originalList, event.isChecked != true);
       } else {
-        final String? checkedField = event
-            .row!
-            .cells[columnField]
-            ?.originalValue
+        final String? checkedField = event.row!.cells[columnField]?.currentValue
             .toString();
         final PlutoColumn checkedColumn = refColumns.originalList.firstWhere(
           (PlutoColumn column) => column.field == checkedField,

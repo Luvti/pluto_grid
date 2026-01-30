@@ -30,7 +30,7 @@ class PlutoGridChangeColumnFilterEvent extends PlutoGridEvent {
     return <PlutoRow>[
       ...stateManager!.filterColumns.where(
         (element) =>
-            element.cells[FilterHelper.filterFieldColumn]!.originalValue !=
+            element.cells[FilterHelper.filterFieldColumn]!.currentValue !=
             column.field,
       ),
       FilterHelper.createFilterRow(

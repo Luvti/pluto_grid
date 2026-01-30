@@ -25,7 +25,8 @@
             "name": "demo",
             "cwd": "demo",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "program": "lib/main.dart"
         },
         {
             "name": "demo (profile mode)",
@@ -42,17 +43,18 @@
             "flutterMode": "release"
         },
         {
-            "name": "example",
+            "name": "example (root)",
             "cwd": "example",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "program": "lib/main.dart"
         },
         {
             "name": "example (big)",
             "cwd": "example",
             "request": "launch",
             "type": "dart",
-            "program":"lib/big.dart",
+            "program": "lib/big.dart",
             "flutterMode": "profile"
         },
         {
@@ -90,7 +92,7 @@
             "flutterMode": "release"
         },
         {
-            "name": "example",
+            "name": "example (export package)",
             "cwd": "packages/pluto_grid_export/example",
             "request": "launch",
             "type": "dart"

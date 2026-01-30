@@ -69,7 +69,7 @@ class PlutoCell {
   }
 
   // deprecated
-  @Deprecated('Use valueFormatted instead or originalValue')
+  @Deprecated('Use valueFormatted instead or currentValue')
   dynamic get value {
     // if (canUseOriginalValueForSorting) {
     //   return _originalValue;
@@ -82,8 +82,13 @@ class PlutoCell {
     return _value;
   }
 
+  @Deprecated('Use currentValue instead')
   dynamic get originalValue {
     return _originalValue;
+  }
+
+  dynamic get currentValue {
+    return _value;
   }
 
   set value(dynamic changed) {
