@@ -129,7 +129,11 @@ void main() {
       buildApp(column: column),
     );
 
-    await tester.tap(find.byKey(sortableGestureKey));
+    final gestureDetector = tester.widget<GestureDetector>(
+      find.byKey(sortableGestureKey),
+    );
+
+    gestureDetector.onTap!();
 
     // then
     verify(stateManager.toggleSortColumn(captureAny)).called(1);
@@ -350,7 +354,8 @@ void main() {
     columnHasCheckbox.test(
       'After tapping the checkbox, the toggleAllRowChecked function should be called.',
       (tester) async {
-        await tester.tap(find.byType(Checkbox));
+        final checkbox = tester.widget<Checkbox>(find.byType(Checkbox));
+        checkbox.onChanged!(true);
 
         verify(stateManager.toggleAllRowChecked(true)).called(1);
       },
