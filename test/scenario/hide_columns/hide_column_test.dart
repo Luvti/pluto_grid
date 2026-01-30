@@ -7,6 +7,8 @@ import '../../helper/column_helper.dart';
 import '../../helper/pluto_widget_test_helper.dart';
 import '../../helper/row_helper.dart';
 
+// flutter test test/scenario/hide_columns/hide_column_test.dart
+
 void main() {
   group('Without hidden columns', () {
     late List<PlutoColumn> columns;
@@ -78,11 +80,24 @@ void main() {
         await tester.pumpAndSettle();
 
         final allCheckbox = find.descendant(
-          of: find.byType(PlutoBaseColumn),
-          matching: find.byType(PlutoScaledCheckbox),
+          of: find.ancestor(
+            of: find.text(
+              stateManager.configuration.localeText.setColumnsTitle
+                  .toUpperCase(),
+            ),
+            matching: find.byType(PlutoBaseColumn),
+          ),
+          matching: find.byType(Checkbox),
         );
 
-        await tester.tap(allCheckbox, warnIfMissed: false);
+        await tester.ensureVisible(allCheckbox);
+        await tester.pumpAndSettle();
+
+        final checkbox = tester.widget<Checkbox>(allCheckbox);
+        // Simulate tap: value is true -> next is null (tristate)
+        checkbox.onChanged!((checkbox.value ?? false) == true ? null : true);
+
+        await tester.pumpAndSettle();
 
         expect(stateManager.refColumns.length, 0);
       },
@@ -200,11 +215,18 @@ void main() {
         await tester.pumpAndSettle();
 
         final allCheckbox = find.descendant(
-          of: find.byType(PlutoColumn),
-          matching: find.byType(PlutoScaledCheckbox),
+          of: find.ancestor(
+            of: find.text(
+              stateManager.configuration.localeText.setColumnsTitle
+                  .toUpperCase(),
+            ),
+            matching: find.byType(PlutoBaseColumn),
+          ),
+          matching: find.byType(Checkbox),
         );
 
-        await tester.tap(allCheckbox, warnIfMissed: false);
+        final checkbox = tester.widget<Checkbox>(allCheckbox);
+        checkbox.onChanged!((checkbox.value ?? false) == true ? null : true);
 
         await tester.pump();
 
