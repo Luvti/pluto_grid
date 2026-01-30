@@ -33,6 +33,7 @@ void main() {
     when(stateManager.hasFocus).thenReturn(true);
 
     keyboardFocusNode = FocusNode();
+    when(stateManager.refColumns).thenReturn(FilteredList(initialList: []));
   });
 
   testWidgets(

@@ -323,7 +323,12 @@ void main() {
       await tester.pumpAndSettle();
 
       final cell = find.text('title2');
-      await tester.tap(cell);
+      final gestureDetectorFinder = find.ancestor(
+        of: cell,
+        matching: find.byKey(const ValueKey('ColumnTitleSortableGesture')),
+      );
+
+      tester.widget<GestureDetector>(gestureDetectorFinder).onTap!();
       await tester.pump();
 
       expect(event, isNotNull);
@@ -331,7 +336,7 @@ void main() {
       expect(event!.column.sort, PlutoColumnSort.ascending);
       expect(event!.oldSort, PlutoColumnSort.none);
 
-      await tester.tap(cell);
+      tester.widget<GestureDetector>(gestureDetectorFinder).onTap!();
       await tester.pump();
 
       expect(event, isNotNull);
@@ -339,7 +344,7 @@ void main() {
       expect(event!.column.sort, PlutoColumnSort.descending);
       expect(event!.oldSort, PlutoColumnSort.ascending);
 
-      await tester.tap(cell);
+      tester.widget<GestureDetector>(gestureDetectorFinder).onTap!();
       await tester.pump();
 
       expect(event, isNotNull);
