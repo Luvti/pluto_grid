@@ -117,12 +117,8 @@ mixin FilteringRowState implements IPlutoGridState {
   void setFilterWithFilterRows(List<PlutoRow> rows, {bool notify = true}) {
     setFilterRows(rows);
 
-    List<PlutoColumn> enabledFilterColumnFields = refColumns
-        .where((PlutoColumn element) => element.enableFilterMenuItem)
-        .toList();
-
     setFilter(
-      FilterHelper.convertRowsToFilter(filterRows, enabledFilterColumnFields),
+      FilterHelper.convertRowsToFilter(filterRows, refColumns),
       notify: isPaginated ? false : notify,
     );
 
