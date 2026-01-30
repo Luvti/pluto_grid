@@ -27,28 +27,19 @@ class PlutoGridChangeColumnFilterEvent extends PlutoGridEvent {
        );
 
   List<PlutoRow> _getFilterRows(PlutoGridStateManager? stateManager) {
-    final List<PlutoRow> foundFilterRows = stateManager!.filterRowsByField(
-      column.field,
-    );
-
-    if (foundFilterRows.isEmpty) {
-      return <PlutoRow>[
-        ...stateManager.filterColumns,
-        FilterHelper.createFilterRow(
-          columnField: column.field,
-          filterType: filterType,
-          filterValue: filterValue,
-          filterValueObject: filterValueObject,
-        ),
-      ];
-    }
-
-    final PlutoCell? row =
-        foundFilterRows.first.cells[FilterHelper.filterFieldValue];
-    row?.value = filterValue;
-    row?.filterValue = filterValueObject;
-
-    return stateManager.filterColumns;
+    return <PlutoRow>[
+      ...stateManager!.filterColumns.where(
+        (element) =>
+            element.cells[FilterHelper.filterFieldColumn]!.originalValue !=
+            column.field,
+      ),
+      FilterHelper.createFilterRow(
+        columnField: column.field,
+        filterType: filterType,
+        filterValue: filterValue,
+        filterValueObject: filterValueObject,
+      ),
+    ];
   }
 
   @override
