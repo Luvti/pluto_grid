@@ -592,7 +592,7 @@ mixin ColumnState implements IPlutoGridState {
                 element.key == column.field,
           )
           .value;
-      String value = column.formattedValueForDisplay(cell.originalValue);
+      String value = column.formattedValueForDisplay(cell.value);
       if (hasRowGroups) {
         if (PlutoDefaultCell.showGroupCount(rowGroupDelegate!, cell)) {
           final String groupCountValue = PlutoDefaultCell.groupCountText(

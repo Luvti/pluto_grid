@@ -1061,8 +1061,8 @@ void main() {
         expect(GROUP_B_2.type.group.children.length, 1);
 
         stateManager.insertRows(5, [
-          createRow('C', '2', '006'),
-          createRow('C', '3', '007'),
+          createRow('B', '2', '006'),
+          createRow('B', '3', '007'),
         ]);
 
         expect(GROUP_B_2.type.group.children.length, 2);
@@ -1161,8 +1161,8 @@ void main() {
           expect(stateManager.refRows[5].cells['column1']!.value, 'A');
 
           stateManager.insertRows(2, [
-            createRow('C', '1', '006'),
-            createRow('C', '3', '007'),
+            createRow('B', '1', '006'),
+            createRow('B', '3', '007'),
           ]);
 
           expect(stateManager.refRows[0].cells['column1']!.value, 'B');
