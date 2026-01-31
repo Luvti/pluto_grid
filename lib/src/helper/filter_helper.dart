@@ -104,7 +104,12 @@ class FilterHelper {
     final Map<String, PlutoColumn> capturedColumns = {
       if (enabledFilterColumns != null)
         for (final PlutoColumn element in enabledFilterColumns)
-          element.field: element,
+          element.field: PlutoColumn(
+            title: element.title,
+            field: element.field,
+            type: element.type,
+            formatter: element.formatter,
+          ),
     };
 
     return (PlutoRow? row) {
