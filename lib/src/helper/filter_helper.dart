@@ -101,6 +101,12 @@ class FilterHelper {
       return null;
     }
 
+    final Map<String, PlutoColumn> capturedColumns = {
+      if (enabledFilterColumns != null)
+        for (final PlutoColumn element in enabledFilterColumns)
+          element.field: element,
+    };
+
     return (PlutoRow? row) {
       bool? flag;
       if (row == null) {
@@ -123,10 +129,7 @@ class FilterHelper {
           bool? flagAllColumns;
 
           row.cells.forEach((String key, PlutoCell value) {
-            final PlutoColumn? foundColumn = enabledFilterColumns
-                ?.firstWhereOrNull(
-                  (PlutoColumn element) => element.field == key,
-                );
+            final PlutoColumn? foundColumn = capturedColumns[key];
 
             if (foundColumn != null) {
               flagAllColumns = compareOr(
@@ -146,11 +149,8 @@ class FilterHelper {
 
           flag = compareAnd(flag, flagAllColumns);
         } else {
-          final PlutoColumn? foundColumn = enabledFilterColumns
-              ?.firstWhereOrNull(
-                (PlutoColumn element) =>
-                    element.field == e.cells[filterFieldColumn]?.currentValue,
-              );
+          final PlutoColumn? foundColumn =
+              capturedColumns[e.cells[filterFieldColumn]?.currentValue];
 
           if (foundColumn != null) {
             flag = compareAnd(

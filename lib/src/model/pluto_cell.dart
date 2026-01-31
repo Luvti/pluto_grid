@@ -166,6 +166,9 @@ class PlutoCell {
   }
 
   void _applyFormatOnInit() {
+    if (_column == null) {
+      return;
+    }
     _value = _column!.type.applyFormat(_value);
 
     if (_column!.type is PlutoColumnTypeWithNumberFormat) {
