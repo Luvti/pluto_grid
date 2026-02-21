@@ -47,7 +47,10 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       cells: {
         'id': PlutoCell(value: 'user1'),
         'name': PlutoCell(value: 'Mike'),
-        'set': PlutoCell(value: 'set1', filterValue: {'1', '2', '3', '4'}),
+        'set': PlutoCell(
+          value: 'set (1,2,3,4)',
+          filterValue: {'1', '2', '3', '4'},
+        ),
         'age': PlutoCell(value: 0.20),
         'age2': PlutoCell(value: 4.9),
         'age_double': PlutoCell(value: 10),
@@ -63,7 +66,10 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       cells: {
         'id': PlutoCell(value: 'user2'),
         'name': PlutoCell(value: 'Jack'),
-        'set': PlutoCell(value: 'set2', filterValue: {'5', '6', '7', '8'}),
+        'set': PlutoCell(
+          value: 'set (5,6,7,8)',
+          filterValue: {'5', '6', '7', '8'},
+        ),
         'age': PlutoCell(value: 2.0),
         'age2': PlutoCell(value: 12.0),
         'age_double': PlutoCell(value: 0.9),
@@ -79,7 +85,10 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       cells: {
         'id': PlutoCell(value: 'user3'),
         'name': PlutoCell(value: 'Suzi'),
-        'set': PlutoCell(value: 'set3', filterValue: {'9', '10', '11', '12'}),
+        'set': PlutoCell(
+          value: 'set (9,10,11,12)',
+          filterValue: {'9', '10', '11', '12'},
+        ),
         'age': PlutoCell(value: 2.1),
         'age2': PlutoCell(value: 17.2),
         'age_double': PlutoCell(value: 0.39),

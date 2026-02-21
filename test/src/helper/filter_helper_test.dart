@@ -431,6 +431,15 @@ void main() {
       PlutoColumn? column,
     })
     makeCompareFunction;
+    late bool Function({
+      required PlutoFilterType filterType,
+      dynamic baseObject,
+      String? base,
+      dynamic searchObject,
+      String? search,
+      PlutoColumn? column,
+    })
+    compareByFilterTypeWithObject;
 
     setUp(() {
       makeCompareFunction =
@@ -452,6 +461,31 @@ void main() {
               );
             };
           };
+
+      compareByFilterTypeWithObject =
+          ({
+            required PlutoFilterType filterType,
+            dynamic baseObject,
+            String? base,
+            dynamic searchObject,
+            String? search,
+            PlutoColumn? column,
+          }) {
+            column ??= PlutoColumn(
+              title: 'column',
+              field: 'column',
+              type: PlutoColumnType.text(),
+            );
+
+            return FilterHelper.compareByFilterType(
+              filterType: filterType,
+              searchObject: searchObject,
+              baseObject: baseObject,
+              base: base,
+              search: search ?? '',
+              column: column,
+            );
+          };
     });
 
     group('Contains', () {
@@ -467,6 +501,65 @@ void main() {
 
       test('apple is not contains banana', () {
         expect(compare('apple', 'banana'), isFalse);
+      });
+    });
+
+    group('ContainsSet', () {
+      test('returns true when set values intersect', () {
+        expect(
+          compareByFilterTypeWithObject(
+            filterType: const PlutoFilterTypeContainsSet(),
+            baseObject: <String>{'1', '2'},
+            searchObject: <String>{'2'},
+          ),
+          isTrue,
+        );
+      });
+
+      test('parses search set from string values', () {
+        expect(
+          compareByFilterTypeWithObject(
+            filterType: const PlutoFilterTypeContainsSet(),
+            baseObject: <String>{'1', '2'},
+            search: '{3}; 2',
+          ),
+          isTrue,
+        );
+      });
+    });
+
+    group('NotContainsSet', () {
+      test('returns true when set values do not intersect', () {
+        expect(
+          compareByFilterTypeWithObject(
+            filterType: const PlutoFilterTypeNotContainsSet(),
+            baseObject: <String>{'1', '2'},
+            searchObject: <String>{'3'},
+          ),
+          isTrue,
+        );
+      });
+
+      test('returns false when set values intersect', () {
+        expect(
+          compareByFilterTypeWithObject(
+            filterType: const PlutoFilterTypeNotContainsSet(),
+            baseObject: <String>{'1', '2'},
+            searchObject: <String>{'2'},
+          ),
+          isFalse,
+        );
+      });
+
+      test('supports nullable strings in base set', () {
+        expect(
+          compareByFilterTypeWithObject(
+            filterType: const PlutoFilterTypeNotContainsSet(),
+            baseObject: <String?>{null, '2'},
+            searchObject: <String>{'2'},
+          ),
+          isFalse,
+        );
       });
     });
 

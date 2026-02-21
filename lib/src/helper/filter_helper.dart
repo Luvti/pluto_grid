@@ -358,30 +358,20 @@ class FilterHelper {
     required String? search,
     required PlutoColumn column,
   }) {
-    Set<String>? searchSet;
-    if (searchObject != null && searchObject is Set<String>) {
-      searchSet = searchObject;
-    }
-    if (searchSet == null && search != null && search.isNotEmpty) {
-      searchSet = search
-          .split(RegExp('[;,]'))
-          .map((String e) => e.trim().replaceAll('{', '').replaceAll('}', ''))
-          .where((String e) => e.isNotEmpty)
-          .toSet();
-      if (searchSet.isEmpty) {
-        searchSet = <String>{search};
-      }
-    }
-    if (searchSet == null || (searchSet.isEmpty)) {
+    final Set<String>? searchSet = _resolveSearchSet(
+      searchObject: searchObject,
+      search: search,
+    );
+
+    if (searchSet == null || searchSet.isEmpty) {
       return true;
     }
-    if (baseObject != null && baseObject is Set<String>) {
-      return baseObject.any((String e) => searchSet!.contains(e));
-    }
-    if (baseObject != null && baseObject is Set<String?>) {
-      return baseObject.any((String? e) => e != null && searchSet!.contains(e));
-    }
-    return true;
+
+    return _setContainsAny(
+          baseObject: baseObject,
+          searchSet: searchSet,
+        ) ??
+        true;
   }
 
   static bool compareNotContainsSet({
@@ -391,32 +381,67 @@ class FilterHelper {
     required String? search,
     required PlutoColumn column,
   }) {
-    Set<String>? searchSet;
-    if (searchObject != null && searchObject is Set<String>) {
-      searchSet = searchObject;
+    final Set<String>? searchSet = _resolveSearchSet(
+      searchObject: searchObject,
+      search: search,
+    );
+
+    if (searchSet == null || searchSet.isEmpty) {
+      return true;
     }
+
+    final bool? containsAny = _setContainsAny(
+      baseObject: baseObject,
+      searchSet: searchSet,
+    );
+
+    if (containsAny == null) {
+      return true;
+    }
+
+    return !containsAny;
+  }
+
+  static Set<String>? _resolveSearchSet({
+    required dynamic searchObject,
+    required String? search,
+  }) {
+    Set<String>? searchSet;
+
+    if (searchObject is Set<String>) {
+      searchSet = searchObject;
+    } else if (searchObject is Set<String?>) {
+      searchSet = searchObject.whereType<String>().toSet();
+    }
+
     if (searchSet == null && search != null && search.isNotEmpty) {
       searchSet = search
           .split(RegExp('[;,]'))
           .map((String e) => e.trim().replaceAll('{', '').replaceAll('}', ''))
           .where((String e) => e.isNotEmpty)
           .toSet();
+
       if (searchSet.isEmpty) {
         searchSet = <String>{search};
       }
     }
-    if (searchSet == null || (searchSet.isEmpty)) {
-      return true;
+
+    return searchSet;
+  }
+
+  static bool? _setContainsAny({
+    required dynamic baseObject,
+    required Set<String> searchSet,
+  }) {
+    if (baseObject is Set<String>) {
+      return baseObject.any((String e) => searchSet.contains(e));
     }
-    if (baseObject != null && baseObject is Set<String>) {
-      return !baseObject.any((String e) => searchSet!.contains(e));
+
+    if (baseObject is Set<String?>) {
+      return baseObject.any((String? e) => e != null && searchSet.contains(e));
     }
-    if (baseObject != null && baseObject is Set<String?>) {
-      return !baseObject.any(
-        (String? e) => e != null && searchSet!.contains(e),
-      );
-    }
-    return true;
+
+    return null;
   }
 
   static bool compareIsEmptySet({
