@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 import '../../../helper/column_helper.dart';
@@ -158,5 +159,90 @@ void main() {
         );
       },
     );
+  });
+
+  group('레이아웃 전 maxWidth 가 null 인 상태', () {
+    late PlutoGridStateManager stateManager;
+    late MockPlutoGridScrollController scroll;
+    late MockLinkedScrollControllerGroup horizontal;
+
+    setUp(() {
+      final columns = [
+        ...ColumnHelper.textColumn(
+          'left',
+          count: 1,
+          frozen: PlutoColumnFrozen.start,
+          width: 150,
+        ),
+        ...ColumnHelper.textColumn(
+          'body',
+          count: 2,
+          width: 150,
+        ),
+        ...ColumnHelper.textColumn(
+          'right',
+          count: 1,
+          frozen: PlutoColumnFrozen.end,
+          width: 150,
+        ),
+      ];
+
+      scroll = MockPlutoGridScrollController();
+      horizontal = MockLinkedScrollControllerGroup();
+
+      when(scroll.horizontal).thenReturn(horizontal);
+      when(horizontal.offset).thenReturn(0);
+
+      stateManager = PlutoGridStateManager(
+        columns: columns,
+        rows: RowHelper.count(1, columns),
+        gridFocusNode: MockFocusNode(),
+        scroll: scroll,
+      );
+
+      stateManager.setEventManager(MockPlutoGridEventManager());
+    });
+
+    testWidgets('고정 컬럼 offset 계산이 안전한 기본값을 리턴해야 한다.', (
+      WidgetTester tester,
+    ) async {
+      expect(stateManager.maxWidth, isNull);
+      expect(stateManager.maxHeight, isNull);
+      expect(stateManager.columnRowContainerHeight, 0);
+      expect(stateManager.rowContainerHeight, 0);
+      expect(stateManager.headerBottomOffset, 0);
+      expect(stateManager.footerTopOffset, 0);
+      expect(stateManager.columnBottomOffset, 0);
+      expect(
+        stateManager.bodyTopOffset,
+        stateManager.gridPadding +
+            stateManager.headerHeight +
+            stateManager.gridBorderWidth +
+            stateManager.columnGroupHeight +
+            stateManager.columnHeight +
+            stateManager.columnFilterHeight,
+      );
+      expect(
+        stateManager.bodyLeftScrollOffset,
+        stateManager.gridPadding +
+            stateManager.gridBorderWidth +
+            PlutoGridSettings.offsetScrollingFromEdge,
+      );
+      expect(stateManager.bodyRightScrollOffset, double.infinity);
+      expect(stateManager.bodyDownScrollOffset, double.infinity);
+      expect(
+        stateManager.leftFrozenRightOffset,
+        stateManager.leftFrozenColumnsWidth,
+      );
+      expect(
+        stateManager.rightFrozenLeftOffset,
+        stateManager.leftFrozenColumnsWidth + stateManager.bodyColumnsWidth,
+      );
+      expect(stateManager.rightBlankOffset, 0);
+
+      stateManager.resetShowFrozenColumn();
+
+      expect(stateManager.showFrozenColumn, false);
+    });
   });
 }

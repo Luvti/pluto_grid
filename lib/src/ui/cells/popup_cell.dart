@@ -233,6 +233,9 @@ mixin PopupCellState<T extends PopupCell> on State<T>
         suffixIcon: icon == null
             ? null
             : IconButton(
+                style: IconButton.styleFrom(
+                  splashFactory: InkRipple.splashFactory,
+                ),
                 icon: Icon(icon),
                 color: widget.stateManager.configuration.style.iconColor,
                 iconSize: widget.stateManager.configuration.style.iconSize,

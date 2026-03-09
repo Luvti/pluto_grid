@@ -908,7 +908,13 @@ mixin ColumnState implements IPlutoGridState {
       return false;
     }
 
-    return !enoughFrozenColumnsWidth(maxWidth! - offsetWidth);
+    final double? currentMaxWidth = maxWidth;
+
+    if (currentMaxWidth == null) {
+      return true;
+    }
+
+    return !enoughFrozenColumnsWidth(currentMaxWidth - offsetWidth);
   }
 
   void _updateBeforeColumnSort() {

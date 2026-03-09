@@ -35,6 +35,9 @@ void main() {
               child: Builder(
                 builder: (BuildContext context) {
                   return TextButton(
+                    style: TextButton.styleFrom(
+                      splashFactory: InkRipple.splashFactory,
+                    ),
                     onPressed: () {
                       PlutoDualGridPopup(
                         context: context,
@@ -102,6 +105,9 @@ void main() {
           child: Builder(
             builder: (BuildContext context) {
               return TextButton(
+                style: TextButton.styleFrom(
+                  splashFactory: InkRipple.splashFactory,
+                ),
                 onPressed: () {
                   PlutoDualGridPopup(
                     context: context,

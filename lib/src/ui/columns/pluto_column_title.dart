@@ -116,7 +116,11 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
     _columnRightPosition = event.position;
   }
 
-  void _handleOnPointUp(PointerUpEvent event, ShapeBorder? shape) {
+  void _handleOnPointUp(
+    BuildContext context,
+    PointerUpEvent event,
+    ShapeBorder? shape,
+  ) {
     if (_isPointMoving) {
       stateManager.updateCorrectScrollOffset();
     } else if (mounted && widget.column.enableContextMenu) {
@@ -129,7 +133,6 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
   @override
   Widget build(BuildContext context) {
     final PlutoGridStyleConfig style = stateManager.configuration.style;
-
     final _SortableWidget columnWidget = _SortableWidget(
       stateManager: stateManager,
       column: widget.column,
@@ -140,77 +143,88 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
       ),
     );
 
-    final ThemeData theme = Theme.of(context);
+    return Theme(
+      data: Theme.of(context).copyWith(splashFactory: InkRipple.splashFactory),
+      child: Builder(
+        builder: (BuildContext themedContext) {
+          final ThemeData theme = Theme.of(themedContext);
 
-    final SizedBox contextMenuIcon = SizedBox(
-      height: widget.height,
-      child: Align(
-        alignment: Alignment.center,
-        child: IconButton(
-          icon: PlutoGridColumnIcon(
-            sort: _sort,
-            color: style.iconColor,
-            icon: widget.column.enableContextMenu
-                ? style.columnContextIcon
-                : style.columnResizeIcon,
-            ascendingIcon: style.columnAscendingIcon,
-            descendingIcon: style.columnDescendingIcon,
-            successColor: style.activatedColor,
-            errorColor: style.removeIconColor ?? theme.colorScheme.error,
-          ),
-          iconSize: style.iconSize,
-          mouseCursor: contextMenuCursor,
-          onPressed: null,
-        ),
+          final SizedBox contextMenuIcon = SizedBox(
+            height: widget.height,
+            child: Align(
+              alignment: Alignment.center,
+              child: IconButton(
+                icon: PlutoGridColumnIcon(
+                  sort: _sort,
+                  color: style.iconColor,
+                  icon: widget.column.enableContextMenu
+                      ? style.columnContextIcon
+                      : style.columnResizeIcon,
+                  ascendingIcon: style.columnAscendingIcon,
+                  descendingIcon: style.columnDescendingIcon,
+                  successColor: style.activatedColor,
+                  errorColor: style.removeIconColor ?? theme.colorScheme.error,
+                ),
+                iconSize: style.iconSize,
+                mouseCursor: contextMenuCursor,
+                onPressed: null,
+              ),
+            ),
+          );
+
+          Offset position = Offset.zero;
+
+          return Stack(
+            children: <Widget>[
+              Positioned(
+                left: 0,
+                right: 0,
+                child: widget.column.enableColumnDrag
+                    ? Listener(
+                        onPointerUp: (PointerUpEvent event) {
+                          position = event.position;
+                        },
+                        child: GestureDetector(
+                          onSecondaryTap: () {
+                            if (mounted && widget.column.enableContextMenu) {
+                              _showContextMenu(themedContext, position, null);
+                            }
+                          },
+                          child: _DraggableWidget(
+                            stateManager: stateManager,
+                            column: widget.column,
+                            child: columnWidget,
+                          ),
+                        ),
+                      )
+                    : columnWidget,
+              ),
+              if (showContextIcon)
+                Positioned.directional(
+                  textDirection: stateManager.textDirection,
+                  end: -3,
+                  child: enableGesture
+                      ? Listener(
+                          onPointerDown: _handleOnPointDown,
+                          onPointerMove: _handleOnPointMove,
+                          onPointerUp: (PointerUpEvent event) =>
+                              _handleOnPointUp(
+                                themedContext,
+                                event,
+                                RoundedRectangleBorder(
+                                  borderRadius:
+                                      widget.stateManager.gridPopupBorderRadius ??
+                                      BorderRadius.zero,
+                                ),
+                              ),
+                          child: contextMenuIcon,
+                        )
+                      : contextMenuIcon,
+                ),
+            ],
+          );
+        },
       ),
-    );
-    Offset position = Offset.zero;
-    return Stack(
-      children: <Widget>[
-        Positioned(
-          left: 0,
-          right: 0,
-          child: widget.column.enableColumnDrag
-              ? Listener(
-                  onPointerUp: (PointerUpEvent event) {
-                    position = event.position;
-                  },
-                  child: GestureDetector(
-                    onSecondaryTap: () {
-                      if (mounted && widget.column.enableContextMenu) {
-                        _showContextMenu(context, position, null);
-                      }
-                    },
-                    child: _DraggableWidget(
-                      stateManager: stateManager,
-                      column: widget.column,
-                      child: columnWidget,
-                    ),
-                  ),
-                )
-              : columnWidget,
-        ),
-        if (showContextIcon)
-          Positioned.directional(
-            textDirection: stateManager.textDirection,
-            end: -3,
-            child: enableGesture
-                ? Listener(
-                    onPointerDown: _handleOnPointDown,
-                    onPointerMove: _handleOnPointMove,
-                    onPointerUp: (PointerUpEvent event) => _handleOnPointUp(
-                      event,
-                      RoundedRectangleBorder(
-                        borderRadius:
-                            widget.stateManager.gridPopupBorderRadius ??
-                            BorderRadius.zero,
-                      ),
-                    ),
-                    child: contextMenuIcon,
-                  )
-                : contextMenuIcon,
-          ),
-      ],
     );
   }
 }

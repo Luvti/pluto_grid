@@ -68,6 +68,34 @@ void main() {
     expect(result, [0, 1, 2]);
   });
 
+  testWidgets('limitToggleFrozenColumn - 레이아웃 전이면 true 를 리턴 해야 한다.', (
+    WidgetTester tester,
+  ) async {
+    // given
+    final PlutoColumn column = PlutoColumn(
+      title: '',
+      field: '',
+      type: PlutoColumnType.text(),
+    );
+
+    final PlutoGridStateManager stateManager = getStateManager(
+      columns: [column],
+      rows: [],
+      gridFocusNode: null,
+      scroll: scroll,
+    );
+
+    // when
+    final bool result = stateManager.limitToggleFrozenColumn(
+      column,
+      PlutoColumnFrozen.start,
+    );
+
+    // then
+    expect(stateManager.maxWidth, isNull);
+    expect(result, true);
+  });
+
   testWidgets('columnIndexesForShowFrozen - 고정 컬럼 순서에 맞게 리턴 되어야 한다.', (
     WidgetTester tester,
   ) async {

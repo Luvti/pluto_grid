@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 import '../../../helper/column_helper.dart';
@@ -31,6 +32,53 @@ void main() {
 
     return stateManager;
   }
+
+  testWidgets('레이아웃 전 RTL 상태면 directional offset 이 안전한 기본값이어야 한다.', (
+    WidgetTester tester,
+  ) async {
+    final columns = ColumnHelper.textColumn('body', count: 1, width: 150);
+    final rows = RowHelper.count(1, columns);
+
+    final stateManager = createStateManager(
+      columns: columns,
+      rows: rows,
+      gridFocusNode: null,
+      scroll: null,
+    );
+
+    stateManager.setTextDirection(TextDirection.rtl);
+
+    expect(stateManager.maxWidth, isNull);
+    expect(stateManager.gridGlobalOffset, isNull);
+    expect(stateManager.directionalScrollEdgeOffset, Offset.zero);
+    expect(
+      stateManager.toDirectionalOffset(const Offset(10, 20)),
+      const Offset(10, 20),
+    );
+  });
+
+  testWidgets('레이아웃 전 moveScrollByRow 는 no-op 이어야 한다.', (
+    WidgetTester tester,
+  ) async {
+    final columns = ColumnHelper.textColumn('body', count: 1, width: 150);
+    final rows = RowHelper.count(3, columns);
+    final scroll = MockPlutoGridScrollController();
+    final vertical = MockLinkedScrollControllerGroup();
+
+    when(scroll.vertical).thenReturn(vertical);
+    when(scroll.verticalOffset).thenReturn(0);
+
+    final stateManager = createStateManager(
+      columns: columns,
+      rows: rows,
+      gridFocusNode: null,
+      scroll: scroll,
+    );
+
+    stateManager.moveScrollByRow(PlutoMoveDirection.down, 0);
+
+    verifyNever(vertical.jumpTo(any));
+  });
 
   group('고정 컬럼이 있는 상태에서 needMovingScroll', () {
     late PlutoGridStateManager stateManager;

@@ -57,7 +57,7 @@ mixin ScrollState implements IPlutoGridState {
 
   @override
   Offset get directionalScrollEdgeOffset =>
-      isLTR ? Offset.zero : Offset(gridGlobalOffset!.dx, 0);
+      isLTR ? Offset.zero : Offset(gridGlobalOffset?.dx ?? 0, 0);
 
   @override
   Offset toDirectionalOffset(Offset offset) {
@@ -65,8 +65,15 @@ mixin ScrollState implements IPlutoGridState {
       return offset;
     }
 
+    final currentMaxWidth = maxWidth;
+    final currentGridGlobalOffset = gridGlobalOffset;
+
+    if (currentMaxWidth == null || currentGridGlobalOffset == null) {
+      return offset;
+    }
+
     return Offset(
-      (maxWidth! + gridGlobalOffset!.dx) - offset.dx,
+      (currentMaxWidth + currentGridGlobalOffset.dx) - offset.dx,
       offset.dy,
     );
   }
@@ -92,6 +99,10 @@ mixin ScrollState implements IPlutoGridState {
   @override
   void moveScrollByRow(PlutoMoveDirection direction, int? rowIdx) {
     if (!direction.vertical) {
+      return;
+    }
+
+    if (maxHeight == null) {
       return;
     }
 
@@ -130,6 +141,12 @@ mixin ScrollState implements IPlutoGridState {
       return;
     }
 
+    final currentMaxWidth = maxWidth;
+
+    if (currentMaxWidth == null) {
+      return;
+    }
+
     final List<int> columnIndexes = columnIndexesByShowFrozen;
 
     final PlutoColumn columnToMove =
@@ -144,13 +161,13 @@ mixin ScrollState implements IPlutoGridState {
 
     double offsetToMove = columnToMove.startPosition;
 
-    final double? screenOffset = showFrozenColumn == true
-        ? maxWidth! - leftFrozenColumnsWidth - rightFrozenColumnsWidth
-        : maxWidth;
+    final double screenOffset = showFrozenColumn == true
+        ? currentMaxWidth - leftFrozenColumnsWidth - rightFrozenColumnsWidth
+        : currentMaxWidth;
 
     if (direction.isRight) {
       if (offsetToMove > scroll.horizontal!.offset) {
-        offsetToMove -= screenOffset!;
+        offsetToMove -= screenOffset;
         offsetToMove += columnToMove.width;
         offsetToMove += scrollOffsetByFrozenColumn;
 
@@ -161,7 +178,7 @@ mixin ScrollState implements IPlutoGridState {
     } else {
       final double offsetToNeed = offsetToMove + columnToMove.width;
 
-      final double currentOffset = screenOffset! + scroll.horizontal!.offset;
+      final double currentOffset = screenOffset + scroll.horizontal!.offset;
 
       if (offsetToNeed > currentOffset) {
         offsetToMove = scroll.horizontal!.offset + offsetToNeed - currentOffset;
@@ -176,7 +193,10 @@ mixin ScrollState implements IPlutoGridState {
 
   @override
   bool needMovingScroll(Offset? offset, PlutoMoveDirection move) {
-    if (selectingMode.isNone) {
+    if (selectingMode.isNone ||
+        maxWidth == null ||
+        maxHeight == null ||
+        gridGlobalOffset == null) {
       return false;
     }
 
@@ -213,13 +233,15 @@ mixin ScrollState implements IPlutoGridState {
 
   @override
   void updateScrollViewport() {
-    if (maxWidth == null ||
+    final currentMaxWidth = maxWidth;
+
+    if (currentMaxWidth == null ||
         scroll.bodyRowsHorizontal?.hasClients != true ||
         scroll.bodyRowsHorizontal?.position.hasViewportDimension != true) {
       return;
     }
 
-    final double bodyWidth = maxWidth! - bodyLeftOffset - bodyRightOffset;
+    final double bodyWidth = currentMaxWidth - bodyLeftOffset - bodyRightOffset;
 
     scroll.horizontal!.applyViewportDimension(bodyWidth);
 

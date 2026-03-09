@@ -901,12 +901,17 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final ButtonStyle buttonStyle = IconButton.styleFrom(
+      splashFactory: InkRipple.splashFactory,
+    );
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Row(
           children: <Widget>[
             IconButton(
+              style: buttonStyle,
               icon: Icon(
                 Icons.add,
                 size: configuration!.style.iconSize,
@@ -920,6 +925,7 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
             ),
             SizedBox(width: configuration!.style.iconSize),
             IconButton(
+              style: buttonStyle,
               icon: Icon(
                 Icons.remove,
                 size: configuration!.style.iconSize,
@@ -933,6 +939,7 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
             ),
             SizedBox(width: configuration!.style.iconSize),
             IconButton(
+              style: buttonStyle,
               icon: Icon(
                 Icons.delete_forever,
                 size: configuration!.style.iconSize,
@@ -950,6 +957,7 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
           ],
         ),
         IconButton(
+          style: buttonStyle,
           icon: const Icon(Icons.close),
           color: configuration!.style.iconColor,
           iconSize: configuration!.style.iconSize,

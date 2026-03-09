@@ -163,6 +163,7 @@ class PlutoPaginationState extends _PlutoPaginationStateWithChange {
 
   ButtonStyle _getNumberButtonStyle(bool isCurrentIndex) {
     return TextButton.styleFrom(
+      splashFactory: InkRipple.splashFactory,
       disabledForegroundColor: Colors.transparent,
       shadowColor: Colors.transparent,
       padding: const EdgeInsets.fromLTRB(5, 0, 0, 10),
@@ -200,71 +201,76 @@ class PlutoPaginationState extends _PlutoPaginationStateWithChange {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (_, size) {
-        _maxWidth = size.maxWidth;
+    return Theme(
+      data: Theme.of(
+        context,
+      ).copyWith(splashFactory: InkRipple.splashFactory),
+      child: LayoutBuilder(
+        builder: (_, size) {
+          _maxWidth = size.maxWidth;
 
-        final Color iconColor = stateManager.configuration.style.iconColor;
+          final Color iconColor = stateManager.configuration.style.iconColor;
 
-        final Color disabledIconColor =
-            stateManager.configuration.style.disabledIconColor;
+          final Color disabledIconColor =
+              stateManager.configuration.style.disabledIconColor;
 
-        return SizedBox(
-          width: _maxWidth,
-          height: stateManager.footerHeight,
-          child: Align(
-            alignment: Alignment.center,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: _isFirstPage ? null : _firstPage,
-                    icon: const Icon(Icons.first_page),
-                    color: iconColor,
-                    disabledColor: disabledIconColor,
-                    splashRadius: _iconSplashRadius,
-                    mouseCursor: _isFirstPage
-                        ? SystemMouseCursors.basic
-                        : SystemMouseCursors.click,
-                  ),
-                  IconButton(
-                    onPressed: _isFirstPage ? null : _beforePage,
-                    icon: const Icon(Icons.navigate_before),
-                    color: iconColor,
-                    disabledColor: disabledIconColor,
-                    splashRadius: _iconSplashRadius,
-                    mouseCursor: _isFirstPage
-                        ? SystemMouseCursors.basic
-                        : SystemMouseCursors.click,
-                  ),
-                  ..._pageNumbers.map(_makeNumberButton),
-                  IconButton(
-                    onPressed: _isLastPage ? null : _nextPage,
-                    icon: const Icon(Icons.navigate_next),
-                    color: iconColor,
-                    disabledColor: disabledIconColor,
-                    splashRadius: _iconSplashRadius,
-                    mouseCursor: _isLastPage
-                        ? SystemMouseCursors.basic
-                        : SystemMouseCursors.click,
-                  ),
-                  IconButton(
-                    onPressed: _isLastPage ? null : _lastPage,
-                    icon: const Icon(Icons.last_page),
-                    color: iconColor,
-                    disabledColor: disabledIconColor,
-                    splashRadius: _iconSplashRadius,
-                    mouseCursor: _isLastPage
-                        ? SystemMouseCursors.basic
-                        : SystemMouseCursors.click,
-                  ),
-                ],
+          return SizedBox(
+            width: _maxWidth,
+            height: stateManager.footerHeight,
+            child: Align(
+              alignment: Alignment.center,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: _isFirstPage ? null : _firstPage,
+                      icon: const Icon(Icons.first_page),
+                      color: iconColor,
+                      disabledColor: disabledIconColor,
+                      splashRadius: _iconSplashRadius,
+                      mouseCursor: _isFirstPage
+                          ? SystemMouseCursors.basic
+                          : SystemMouseCursors.click,
+                    ),
+                    IconButton(
+                      onPressed: _isFirstPage ? null : _beforePage,
+                      icon: const Icon(Icons.navigate_before),
+                      color: iconColor,
+                      disabledColor: disabledIconColor,
+                      splashRadius: _iconSplashRadius,
+                      mouseCursor: _isFirstPage
+                          ? SystemMouseCursors.basic
+                          : SystemMouseCursors.click,
+                    ),
+                    ..._pageNumbers.map(_makeNumberButton),
+                    IconButton(
+                      onPressed: _isLastPage ? null : _nextPage,
+                      icon: const Icon(Icons.navigate_next),
+                      color: iconColor,
+                      disabledColor: disabledIconColor,
+                      splashRadius: _iconSplashRadius,
+                      mouseCursor: _isLastPage
+                          ? SystemMouseCursors.basic
+                          : SystemMouseCursors.click,
+                    ),
+                    IconButton(
+                      onPressed: _isLastPage ? null : _lastPage,
+                      icon: const Icon(Icons.last_page),
+                      color: iconColor,
+                      disabledColor: disabledIconColor,
+                      splashRadius: _iconSplashRadius,
+                      mouseCursor: _isLastPage
+                          ? SystemMouseCursors.basic
+                          : SystemMouseCursors.click,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

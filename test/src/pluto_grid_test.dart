@@ -1494,6 +1494,9 @@ void main() {
                 onLoaded: (e) => stateManager = e.stateManager,
                 createHeader: (s) => TextButton(
                   key: buttonKey,
+                  style: TextButton.styleFrom(
+                    splashFactory: InkRipple.splashFactory,
+                  ),
                   onPressed: () {
                     setState(() {
                       mode = PlutoGridMode.readOnly;

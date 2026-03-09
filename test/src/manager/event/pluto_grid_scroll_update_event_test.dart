@@ -88,6 +88,37 @@ void main() {
       );
     });
 
+    test('maxWidth 가 null 이면 scroll animation 을 호출하지 않아야 한다.', () {
+      const offset = Offset(0, 0);
+
+      when(stateManager.maxWidth).thenReturn(null);
+      when(stateManager.toDirectionalOffset(any)).thenReturn(offset);
+
+      when(
+        stateManager.needMovingScroll(offset, PlutoMoveDirection.left),
+      ).thenReturn(true);
+      when(
+        stateManager.needMovingScroll(offset, PlutoMoveDirection.right),
+      ).thenReturn(false);
+      when(
+        stateManager.needMovingScroll(offset, PlutoMoveDirection.up),
+      ).thenReturn(false);
+      when(
+        stateManager.needMovingScroll(offset, PlutoMoveDirection.down),
+      ).thenReturn(false);
+
+      var event = eventBuilder(offset: offset);
+      event.handler(stateManager);
+
+      verifyNever(
+        horizontalController.animateTo(
+          any,
+          curve: anyNamed('curve'),
+          duration: anyNamed('duration'),
+        ),
+      );
+    });
+
     test('needMovingScroll(offset, PlutoMoveDirection.right) 가 true 면, '
         'horizontal scroll 의 animateTo 가 maxScrollExtent 으로 호출 되어야 한다.', () {
       const offset = Offset(10, 10);

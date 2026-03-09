@@ -34,6 +34,32 @@ void main() {
     return stateManager;
   }
 
+  testWidgets('레이아웃 전 setCurrentSelectingPositionWithOffset 는 no-op 이어야 한다.', (
+    WidgetTester tester,
+  ) async {
+    final columns = ColumnHelper.textColumn('text', count: 2, width: 150);
+    final rows = RowHelper.count(3, columns);
+
+    final stateManager = createStateManager(
+      columns: columns,
+      rows: rows,
+      gridFocusNode: null,
+      scroll: null,
+    );
+
+    stateManager.setSelectingMode(PlutoGridSelectingMode.cell);
+    stateManager.setCurrentCell(rows[0].cells['text0'], 0);
+
+    expect(stateManager.gridGlobalOffset, isNull);
+    expect(
+      () => stateManager.setCurrentSelectingPositionWithOffset(
+        const Offset(20, 20),
+      ),
+      returnsNormally,
+    );
+    expect(stateManager.currentSelectingPosition, isNull);
+  });
+
   group('currentSelectingPositionList', () {
     testWidgets(
       'selectingMode.Row 상태에서'

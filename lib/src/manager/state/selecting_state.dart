@@ -285,12 +285,16 @@ mixin SelectingState implements IPlutoGridState {
 
   @override
   void setCurrentSelectingPositionWithOffset(Offset? offset) {
-    if (currentCell == null) {
+    final currentGridGlobalOffset = gridGlobalOffset;
+
+    if (currentCell == null ||
+        offset == null ||
+        currentGridGlobalOffset == null) {
       return;
     }
 
     final double gridBodyOffsetDy =
-        gridGlobalOffset!.dy +
+        currentGridGlobalOffset.dy +
         gridBorderWidth +
         headerHeight +
         columnGroupHeight +
@@ -314,7 +318,7 @@ mixin SelectingState implements IPlutoGridState {
     int? columnIdx;
 
     final directionalOffset = toDirectionalOffset(offset);
-    double currentWidth = isLTR ? gridGlobalOffset!.dx : 0.0;
+    double currentWidth = isLTR ? currentGridGlobalOffset.dx : 0.0;
 
     final columnIndexes = columnIndexesByShowFrozen;
 

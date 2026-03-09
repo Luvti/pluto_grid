@@ -163,6 +163,7 @@ class _PlutoDefaultCellState extends PlutoStateWithChange<PlutoDefaultCell> {
       widget.cell,
     )) {
       expandIcon = IconButton(
+        style: IconButton.styleFrom(splashFactory: InkRipple.splashFactory),
         padding: const EdgeInsets.only(bottom: 0.0),
         onPressed: _isEmptyGroup ? null : _handleToggleExpandedRowGroup,
         icon: _isEmptyGroup

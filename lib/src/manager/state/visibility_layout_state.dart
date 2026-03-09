@@ -32,6 +32,10 @@ mixin VisibilityLayoutState implements IPlutoGridState {
   void _updateColumnSize() {
     if (!activatedColumnsAutoSize) return;
 
+    final currentMaxWidth = maxWidth;
+
+    if (currentMaxWidth == null) return;
+
     double offset = 0;
 
     if (showFrozenColumn) {
@@ -46,7 +50,7 @@ mixin VisibilityLayoutState implements IPlutoGridState {
 
     getColumnsAutoSizeHelper(
       columns: refColumns,
-      maxWidth: maxWidth! - offset,
+      maxWidth: currentMaxWidth - offset,
     ).update();
   }
 

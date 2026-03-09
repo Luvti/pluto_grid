@@ -146,7 +146,13 @@ class PlutoGridScrollUpdateEvent extends PlutoGridEvent {
     final double remainingOffset = (offsetToReachEndOfScroll - scroll.offset)
         .abs();
 
-    final double offsetInSecond = stateManager.maxWidth! / 2;
+    final double? maxWidth = stateManager.maxWidth;
+
+    if (maxWidth == null || maxWidth <= 0) {
+      return;
+    }
+
+    final double offsetInSecond = maxWidth / 2;
 
     int msToReachEndOfScroll = (remainingOffset / offsetInSecond * 1000)
         .toInt();
