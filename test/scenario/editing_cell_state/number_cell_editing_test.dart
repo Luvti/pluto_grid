@@ -291,4 +291,54 @@ void main() {
       expect(stateManager.rows.first.cells['column']?.value, 12345.99);
     });
   });
+
+  group('PlutoColumnType.double', () {
+    setUp(() {
+      PlutoGrid.setDefaultLocale('en_US');
+    });
+
+    testWidgets('편집 상태에서 값을 변경하면 double 로 저장되어야 한다.', (
+      tester,
+    ) async {
+      final columns = [
+        PlutoColumn(
+          title: 'column',
+          field: 'column',
+          type: PlutoColumnType.double(format: '#,###.##'),
+        ),
+      ];
+
+      final rows = [
+        PlutoRow(cells: {'column': PlutoCell(value: 12345.01)}),
+        PlutoRow(cells: {'column': PlutoCell(value: 12345.02)}),
+        PlutoRow(cells: {'column': PlutoCell(value: 12345.11)}),
+      ];
+
+      final mock = MockMethods();
+
+      await tester.pumpWidget(
+        buildGrid(
+          columns: columns,
+          rows: rows,
+          onChanged: mock.oneParamReturnVoid,
+        ),
+      );
+
+      final cellWidget = find.text('12,345.01');
+
+      await tester.tap(cellWidget);
+      await tester.tap(cellWidget);
+      await tester.pump();
+
+      expect(stateManager.isEditing, true);
+      expect(find.text('12345.01'), findsOneWidget);
+
+      await tester.enterText(find.text('12345.01'), '12345.99');
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+
+      verify(mock.oneParamReturnVoid(any)).called(1);
+      expect(stateManager.rows.first.cells['column']?.value, 12345.99);
+      expect(stateManager.rows.first.cells['column']?.value, isA<double>());
+    });
+  });
 }

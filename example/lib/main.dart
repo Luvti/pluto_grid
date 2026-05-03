@@ -143,7 +143,7 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       title: 'Age',
       field: 'age',
       defaultFilter: const PlutoFilterTypeBetween(),
-      type: PlutoColumnType.number(defaultValue: 11.1, format: '#.##'),
+      type: PlutoColumnType.double(defaultValue: 11.1, format: '#.##'),
     );
 
     final age2Column = PlutoColumn(

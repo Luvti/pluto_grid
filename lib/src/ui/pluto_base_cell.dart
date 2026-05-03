@@ -366,7 +366,7 @@ class _CellState extends PlutoStateWithChange<_Cell> {
           column: widget.column,
           row: widget.row,
         );
-      } else if (widget.column.type.isNumber) {
+      } else if (widget.column.type.isNumber || widget.column.type.isDouble) {
         return PlutoNumberCell(
           stateManager: stateManager,
           cell: widget.cell,

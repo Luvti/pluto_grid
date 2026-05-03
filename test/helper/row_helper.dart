@@ -27,7 +27,9 @@ class RowHelper {
               return cellOfTimeColumn(column, rowIdx);
             } else if (column.type.isSelect) {
               return cellOfTimeColumn(column, rowIdx);
-            } else if (column.type.isNumber || column.type.isCurrency) {
+            } else if (column.type.isNumber ||
+                column.type.isDouble ||
+                column.type.isCurrency) {
               return cellOfNumberColumn(column, rowIdx);
             }
 

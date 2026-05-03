@@ -218,6 +218,12 @@ mixin EditingState implements IPlutoGridState {
       );
     }
 
+    if (column.type is PlutoColumnTypeWithDoubleFormat) {
+      return (column.type as PlutoColumnTypeWithDoubleFormat).toDouble(
+        column.type.applyFormat(value),
+      );
+    }
+
     return value;
   }
 

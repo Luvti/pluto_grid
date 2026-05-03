@@ -318,6 +318,49 @@ void main() {
     expect(find.byType(PlutoTextCell), findsNothing);
   });
 
+  testWidgets('WHEN If double type cell is CurrentCell and in Editing state'
+      'THEN [NumberCellWidget] should be rendered', (
+    WidgetTester tester,
+  ) async {
+    // given
+    final PlutoCell cell = PlutoCell(value: 1234.5);
+
+    final PlutoColumn column = PlutoColumn(
+      title: 'header',
+      field: 'header',
+      type: PlutoColumnType.double(),
+    );
+
+    final PlutoRow row = PlutoRow(
+      cells: {
+        'header': cell,
+      },
+    );
+
+    const rowIdx = 0;
+
+    // when
+    when(stateManager.isCurrentCell(any)).thenReturn(true);
+    when(stateManager.isEditing).thenReturn(true);
+
+    await tester.pumpWidget(
+      buildApp(
+        cell: cell,
+        column: column,
+        rowIdx: rowIdx,
+        row: row,
+      ),
+    );
+
+    // then
+    expect(find.text('1234.5'), findsOneWidget);
+    expect(find.byType(PlutoSelectCell), findsNothing);
+    expect(find.byType(PlutoNumberCell), findsOneWidget);
+    expect(find.byType(PlutoDateCell), findsNothing);
+    expect(find.byType(PlutoTimeCell), findsNothing);
+    expect(find.byType(PlutoTextCell), findsNothing);
+  });
+
   testWidgets('WHEN If it is CurrentCell and in Editing state'
       'THEN [SelectCellWidget] should be rendered', (
     WidgetTester tester,

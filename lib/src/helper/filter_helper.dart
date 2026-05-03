@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_asserts_with_message, avoid_annotating_with_dynamic
 
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
@@ -315,6 +314,26 @@ class FilterHelper {
 
       search = search.replaceFirst(
         numberColumn.numberFormat.symbols.DECIMAL_SEP,
+        '.',
+      );
+    }
+
+    if (column.type is PlutoColumnTypeWithDoubleFormat) {
+      final PlutoColumnTypeWithDoubleFormat doubleColumn =
+          column.type as PlutoColumnTypeWithDoubleFormat;
+
+      compare =
+          compare ||
+          filterType.compare(
+            base: doubleColumn.applyFormat(base),
+            search: search,
+            searchObject: searchObject,
+            baseObject: baseObject,
+            column: column,
+          );
+
+      search = search.replaceFirst(
+        doubleColumn.numberFormat.symbols.DECIMAL_SEP,
         '.',
       );
     }

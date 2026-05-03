@@ -177,6 +177,12 @@ class PlutoCell {
       );
     }
 
+    if (_column!.type is PlutoColumnTypeWithDoubleFormat) {
+      _value = (_column!.type as PlutoColumnTypeWithDoubleFormat).toDouble(
+        _value,
+      );
+    }
+
     _needToApplyFormatOnInit = false;
   }
 }

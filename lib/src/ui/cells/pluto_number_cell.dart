@@ -50,15 +50,33 @@ class PlutoNumberCellState extends State<PlutoNumberCell>
   void initState() {
     super.initState();
 
-    final numberColumn = widget.column.type.number;
+    final PlutoColumnType columnType = widget.column.type;
 
-    decimalRange = numberColumn.decimalPoint;
+    if (columnType is PlutoColumnTypeWithNumberFormat) {
+      final PlutoColumnTypeWithNumberFormat numberColumn =
+          columnType as PlutoColumnTypeWithNumberFormat;
 
-    activatedNegative = numberColumn.negative;
+      decimalRange = numberColumn.decimalPoint;
 
-    allowFirstDot = numberColumn.allowFirstDot;
+      activatedNegative = numberColumn.negative;
 
-    decimalSeparator = numberColumn.numberFormat.symbols.DECIMAL_SEP;
+      allowFirstDot = numberColumn.allowFirstDot;
+
+      decimalSeparator = numberColumn.numberFormat.symbols.DECIMAL_SEP;
+    } else if (columnType is PlutoColumnTypeWithDoubleFormat) {
+      final PlutoColumnTypeWithDoubleFormat doubleColumn =
+          columnType as PlutoColumnTypeWithDoubleFormat;
+
+      decimalRange = doubleColumn.decimalPoint;
+
+      activatedNegative = doubleColumn.negative;
+
+      allowFirstDot = doubleColumn.allowFirstDot;
+
+      decimalSeparator = doubleColumn.numberFormat.symbols.DECIMAL_SEP;
+    } else {
+      throw TypeError();
+    }
 
     inputFormatters = [
       DecimalTextInputFormatter(

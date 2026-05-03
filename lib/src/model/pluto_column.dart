@@ -326,6 +326,10 @@ class PlutoColumn {
       return type.applyFormat(value);
     }
 
+    if (type is PlutoColumnTypeWithDoubleFormat) {
+      return type.applyFormat(value);
+    }
+
     return value.toString();
   }
 
@@ -342,6 +346,16 @@ class PlutoColumn {
       return value.toString().replaceFirst(
         '.',
         (type as PlutoColumnTypeWithNumberFormat)
+            .numberFormat
+            .symbols
+            .DECIMAL_SEP,
+      );
+    }
+
+    if (type is PlutoColumnTypeWithDoubleFormat) {
+      return value.toString().replaceFirst(
+        '.',
+        (type as PlutoColumnTypeWithDoubleFormat)
             .numberFormat
             .symbols
             .DECIMAL_SEP,

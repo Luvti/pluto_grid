@@ -207,6 +207,8 @@ extension PlutoColumnTypeExtension on PlutoColumnType {
 
   bool get isNumber => this is PlutoColumnTypeNumber;
 
+  bool get isDouble => this is PlutoColumnTypeDouble;
+
   bool get isCurrency => this is PlutoColumnTypeCurrency;
 
   bool get isSelect => this is PlutoColumnTypeSelect;
