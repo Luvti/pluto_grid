@@ -150,4 +150,43 @@ void main() {
       expect(horizontalScroll.offset, greaterThanOrEqualTo(moveOffset));
     },
   );
+
+  testWidgets(
+    '스크롤바 드래그 중 스크롤 activity 가 취소되어도 예외가 발생하지 않아야 한다.',
+    (tester) async {
+      await buildWidget(tester, enableHover: true);
+
+      bool dragCanceled = false;
+      verticalScroll.addListener(() {
+        if (dragCanceled || !verticalScroll.hasClients) {
+          return;
+        }
+
+        dragCanceled = true;
+        (verticalScroll.position as ScrollPositionWithSingleContext).goIdle();
+      });
+
+      const Offset scrollbarPosition = Offset(
+        screenWidth - (PlutoScrollbar.defaultScrollbarHoverWidth / 2),
+        50,
+      );
+      final TestGesture gesture = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+
+      await gesture.moveTo(scrollbarPosition);
+      await tester.pumpAndSettle(const Duration(seconds: 1));
+      await gesture.down(scrollbarPosition);
+      await tester.pumpAndSettle();
+      await gesture.moveTo(scrollbarPosition + const Offset(0, 60));
+      await tester.pumpAndSettle();
+      await gesture.moveTo(scrollbarPosition + const Offset(0, 120));
+      await tester.pumpAndSettle();
+      await gesture.up();
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(dragCanceled, isTrue);
+    },
+  );
 }

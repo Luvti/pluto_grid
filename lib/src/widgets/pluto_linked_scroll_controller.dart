@@ -295,17 +295,21 @@ class _LinkedScrollPosition extends ScrollPositionWithSingleContext {
           : ScrollDirection.reverse,
     );
 
-    if (owner.canLinkWithPeers) {
+    final double oldPixels = pixels;
+    final double overscroll = setPixelsInternal(newPixels);
+    final double linkedPixels = pixels;
+
+    if (linkedPixels != oldPixels && owner.canLinkWithPeers) {
       _peerActivities.addAll(owner.linkWithPeers(this));
       for (final _LinkedScrollActivity activity
           in List<_LinkedScrollActivity>.of(_peerActivities)) {
         if (_peerActivities.contains(activity)) {
-          activity.moveTo(newPixels);
+          activity.moveTo(linkedPixels);
         }
       }
     }
 
-    return setPixelsInternal(newPixels);
+    return overscroll;
   }
 
   double setPixelsInternal(double newPixels) {

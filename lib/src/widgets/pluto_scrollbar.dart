@@ -297,14 +297,20 @@ class PlutoGridCupertinoScrollbarState extends State<PlutoScrollbar>
     final Axis direction = _currentController!.position.axis;
 
     if (_drag == null) {
-      _drag = _currentController!.position.drag(
+      late final Drag drag;
+      drag = _currentController!.position.drag(
         DragStartDetails(
           globalPosition: direction == Axis.vertical
               ? Offset(0.0, scrollOffsetGlobal)
               : Offset(scrollOffsetGlobal, 0.0),
         ),
-        () {},
+        () {
+          if (identical(_drag, drag)) {
+            _drag = null;
+          }
+        },
       );
+      _drag = drag;
     } else {
       _drag!.update(
         DragUpdateDetails(
