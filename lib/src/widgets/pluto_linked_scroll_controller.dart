@@ -273,7 +273,9 @@ class _LinkedScrollPosition extends ScrollPositionWithSingleContext {
     if (newActivity == null) {
       return;
     }
-    for (_LinkedScrollActivity activity in _peerActivities) {
+    for (final _LinkedScrollActivity activity in List<_LinkedScrollActivity>.of(
+      _peerActivities,
+    )) {
       activity.unlink(this);
     }
 
@@ -295,8 +297,11 @@ class _LinkedScrollPosition extends ScrollPositionWithSingleContext {
 
     if (owner.canLinkWithPeers) {
       _peerActivities.addAll(owner.linkWithPeers(this));
-      for (_LinkedScrollActivity activity in _peerActivities) {
-        activity.moveTo(newPixels);
+      for (final _LinkedScrollActivity activity
+          in List<_LinkedScrollActivity>.of(_peerActivities)) {
+        if (_peerActivities.contains(activity)) {
+          activity.moveTo(newPixels);
+        }
       }
     }
 
@@ -318,8 +323,11 @@ class _LinkedScrollPosition extends ScrollPositionWithSingleContext {
 
     if (owner.canLinkWithPeers) {
       _peerActivities.addAll(owner.linkWithPeers(this));
-      for (_LinkedScrollActivity activity in _peerActivities) {
-        activity.jumpTo(value);
+      for (final _LinkedScrollActivity activity
+          in List<_LinkedScrollActivity>.of(_peerActivities)) {
+        if (_peerActivities.contains(activity)) {
+          activity.jumpTo(value);
+        }
       }
     }
 
@@ -411,9 +419,12 @@ class _LinkedScrollActivity extends ScrollActivity {
 
   @override
   void dispose() {
-    for (_LinkedScrollPosition driver in drivers) {
+    for (final _LinkedScrollPosition driver in List<_LinkedScrollPosition>.of(
+      drivers,
+    )) {
       driver.unlink(this);
     }
+    drivers.clear();
     super.dispose();
   }
 }
