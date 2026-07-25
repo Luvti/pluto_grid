@@ -405,6 +405,11 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
     );
 
     Timer.periodic(duration, (Timer timer) {
+      if (completer.isCompleted) {
+        timer.cancel();
+        return;
+      }
+
       if (chunksIndexes.isEmpty) {
         return;
       }
@@ -422,19 +427,33 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
             increase: increase,
             start: start + (chunkIndex * chunkSize),
           );
-        }).then((List<PlutoRow> value) {
-          splayMapRows[chunkIndex] = value;
+        }).then<void>(
+          (List<PlutoRow> value) {
+            if (completer.isCompleted) {
+              return;
+            }
 
-          if (splayMapRows.length == chunksLength) {
-            completer.complete(
-              splayMapRows.values
-                  .expand((List<PlutoRow> element) => element)
-                  .toList(),
-            );
+            splayMapRows[chunkIndex] = value;
+
+            if (splayMapRows.length == chunksLength) {
+              completer.complete(
+                splayMapRows.values
+                    .expand((List<PlutoRow> element) => element)
+                    .toList(),
+              );
+
+              timer.cancel();
+            }
+          },
+          onError: (Object error, StackTrace stackTrace) {
+            if (completer.isCompleted) {
+              return;
+            }
 
             timer.cancel();
-          }
-        }),
+            completer.completeError(error, stackTrace);
+          },
+        ),
       );
     });
 

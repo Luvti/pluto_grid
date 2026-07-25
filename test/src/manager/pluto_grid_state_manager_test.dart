@@ -8,6 +8,18 @@ import '../../helper/row_helper.dart';
 
 class _MockScrollController extends Mock implements ScrollController {}
 
+class _ThrowingPlutoRow extends PlutoRow<void> {
+  _ThrowingPlutoRow()
+    : super(
+        cells: <String, PlutoCell>{
+          'title': PlutoCell(value: 'broken'),
+        },
+      );
+
+  @override
+  bool get initialized => throw StateError('row initialization failed');
+}
+
 void main() {
   group('selectingModes', () {
     test('Square, Row, None 이 리턴 되야 한다.', () {
@@ -517,5 +529,30 @@ void main() {
 
       expect(initializedRows.first.sortIdx, 99);
     });
+
+    test(
+      'chunk initialization error completes the future with the same error',
+      () async {
+        final List<PlutoColumn> columns = ColumnHelper.textColumn('title');
+
+        final Future<List<PlutoRow>> initializedRows =
+            PlutoGridStateManager.initializeRowsAsync(
+              columns,
+              <PlutoRow>[_ThrowingPlutoRow()],
+              duration: const Duration(milliseconds: 1),
+            );
+
+        await expectLater(
+          initializedRows.timeout(const Duration(seconds: 1)),
+          throwsA(
+            isA<StateError>().having(
+              (StateError error) => error.message,
+              'message',
+              'row initialization failed',
+            ),
+          ),
+        );
+      },
+    );
   });
 }
