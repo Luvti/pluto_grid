@@ -235,6 +235,9 @@ enum PlutoColumnResizeIndicatorMode {
 
   /// Highlight one continuous boundary through the column header and all
   /// visible rows, stopping at the last row when it is inside the viewport.
+  ///
+  /// When column footers are enabled, their matching boundary is highlighted
+  /// as a separate segment so an empty rows area is not painted through.
   fullHeight,
 }
 
@@ -294,6 +297,15 @@ class PlutoGridStyleConfig {
     this.showColumnHeaderIcon = true,
     this.showColumnFilterIcon = true,
     this.columnResizeIndicatorMode = PlutoColumnResizeIndicatorMode.cell,
+    this.columnResizeIndicatorColor = Colors.grey,
+    this.columnResizeHandleWidth = PlutoGridSettings.columnResizeHandleWidth,
+    this.columnResizeIndicatorWidth =
+        PlutoGridSettings.columnResizeHandleActiveWidth,
+    this.columnResizeIndicatorAnimationDuration =
+        PlutoGridSettings.columnResizeIndicatorAnimationDuration,
+    this.columnResizeCursorDelay = PlutoGridSettings.columnResizeCursorDelay,
+    this.columnResizeIndicatorHoverDelay =
+        PlutoGridSettings.columnResizeIndicatorHoverDelay,
     this.columnAscendingIcon,
     this.columnDescendingIcon,
     this.rowGroupExpandedIcon = Icons.keyboard_arrow_down,
@@ -316,7 +328,15 @@ class PlutoGridStyleConfig {
     this.filterTextStyle,
     this.filterHintTextStyle,
     //
-  }) : columnCheckedColor = columnCheckedColor ?? activatedColor,
+  }) : assert(
+         columnResizeHandleWidth > 0,
+         'columnResizeHandleWidth must be greater than zero.',
+       ),
+       assert(
+         columnResizeIndicatorWidth >= 0,
+         'columnResizeIndicatorWidth must not be negative.',
+       ),
+       columnCheckedColor = columnCheckedColor ?? activatedColor,
        cellCheckedColor = cellCheckedColor ?? activatedColor,
        columnUnselectedColor = columnUnselectedColor ?? iconColor,
        columnActiveColor = columnActiveColor ?? activatedBorderColor,
@@ -378,6 +398,15 @@ class PlutoGridStyleConfig {
     this.showColumnHeaderIcon = true,
     this.showColumnFilterIcon = true,
     this.columnResizeIndicatorMode = PlutoColumnResizeIndicatorMode.cell,
+    this.columnResizeIndicatorColor = Colors.grey,
+    this.columnResizeHandleWidth = PlutoGridSettings.columnResizeHandleWidth,
+    this.columnResizeIndicatorWidth =
+        PlutoGridSettings.columnResizeHandleActiveWidth,
+    this.columnResizeIndicatorAnimationDuration =
+        PlutoGridSettings.columnResizeIndicatorAnimationDuration,
+    this.columnResizeCursorDelay = PlutoGridSettings.columnResizeCursorDelay,
+    this.columnResizeIndicatorHoverDelay =
+        PlutoGridSettings.columnResizeIndicatorHoverDelay,
     this.columnAscendingIcon,
     this.columnDescendingIcon,
     this.rowGroupExpandedIcon = Icons.keyboard_arrow_down,
@@ -400,7 +429,15 @@ class PlutoGridStyleConfig {
     //
     this.gridPadding = PlutoGridSettings.gridPadding,
     this.gridBorderWidth = PlutoGridSettings.gridBorderWidth,
-  }) : columnCheckedColor = columnCheckedColor ?? activatedColor,
+  }) : assert(
+         columnResizeHandleWidth > 0,
+         'columnResizeHandleWidth must be greater than zero.',
+       ),
+       assert(
+         columnResizeIndicatorWidth >= 0,
+         'columnResizeIndicatorWidth must not be negative.',
+       ),
+       columnCheckedColor = columnCheckedColor ?? activatedColor,
        cellCheckedColor = cellCheckedColor ?? activatedColor,
        columnUnselectedColor = columnUnselectedColor ?? iconColor,
        columnActiveColor = columnActiveColor ?? activatedBorderColor,
@@ -595,6 +632,32 @@ class PlutoGridStyleConfig {
   /// [PlutoColumn.columnResizeIndicatorMode].
   final PlutoColumnResizeIndicatorMode columnResizeIndicatorMode;
 
+  /// Color of the active column resize divider.
+  final Color columnResizeIndicatorColor;
+
+  /// Total width of the invisible pointer target around a column boundary.
+  ///
+  /// Half of this width is placed on each side of the painted divider.
+  final double columnResizeHandleWidth;
+
+  /// Width of the painted divider while the boundary is active.
+  final double columnResizeIndicatorWidth;
+
+  /// Duration of the active divider width transition.
+  final Duration columnResizeIndicatorAnimationDuration;
+
+  /// Time the pointer must remain over a boundary before the resize cursor
+  /// appears.
+  ///
+  /// Dragging bypasses this delay.
+  final Duration columnResizeCursorDelay;
+
+  /// Time the pointer must remain over a boundary before its divider appears.
+  ///
+  /// An actual drag bypasses this delay so the interaction never feels
+  /// unresponsive.
+  final Duration columnResizeIndicatorHoverDelay;
+
   /// Ascending icon when sorting a column.
   ///
   /// If no value is specified, the default icon is set.
@@ -679,6 +742,12 @@ class PlutoGridStyleConfig {
     bool? showColumnHeaderIcon,
     bool? showColumnFilterIcon,
     PlutoColumnResizeIndicatorMode? columnResizeIndicatorMode,
+    Color? columnResizeIndicatorColor,
+    double? columnResizeHandleWidth,
+    double? columnResizeIndicatorWidth,
+    Duration? columnResizeIndicatorAnimationDuration,
+    Duration? columnResizeCursorDelay,
+    Duration? columnResizeIndicatorHoverDelay,
     PlutoOptional<Icon?>? columnAscendingIcon,
     PlutoOptional<Icon?>? columnDescendingIcon,
     IconData? rowGroupExpandedIcon,
@@ -752,6 +821,20 @@ class PlutoGridStyleConfig {
       showColumnFilterIcon: showColumnFilterIcon ?? this.showColumnFilterIcon,
       columnResizeIndicatorMode:
           columnResizeIndicatorMode ?? this.columnResizeIndicatorMode,
+      columnResizeIndicatorColor:
+          columnResizeIndicatorColor ?? this.columnResizeIndicatorColor,
+      columnResizeHandleWidth:
+          columnResizeHandleWidth ?? this.columnResizeHandleWidth,
+      columnResizeIndicatorWidth:
+          columnResizeIndicatorWidth ?? this.columnResizeIndicatorWidth,
+      columnResizeIndicatorAnimationDuration:
+          columnResizeIndicatorAnimationDuration ??
+          this.columnResizeIndicatorAnimationDuration,
+      columnResizeCursorDelay:
+          columnResizeCursorDelay ?? this.columnResizeCursorDelay,
+      columnResizeIndicatorHoverDelay:
+          columnResizeIndicatorHoverDelay ??
+          this.columnResizeIndicatorHoverDelay,
       columnAscendingIcon: columnAscendingIcon == null
           ? this.columnAscendingIcon
           : columnAscendingIcon.value,
@@ -825,6 +908,14 @@ class PlutoGridStyleConfig {
             showColumnHeaderIcon == other.showColumnHeaderIcon &&
             showColumnFilterIcon == other.showColumnFilterIcon &&
             columnResizeIndicatorMode == other.columnResizeIndicatorMode &&
+            columnResizeIndicatorColor == other.columnResizeIndicatorColor &&
+            columnResizeHandleWidth == other.columnResizeHandleWidth &&
+            columnResizeIndicatorWidth == other.columnResizeIndicatorWidth &&
+            columnResizeIndicatorAnimationDuration ==
+                other.columnResizeIndicatorAnimationDuration &&
+            columnResizeCursorDelay == other.columnResizeCursorDelay &&
+            columnResizeIndicatorHoverDelay ==
+                other.columnResizeIndicatorHoverDelay &&
             columnAscendingIcon == other.columnAscendingIcon &&
             columnDescendingIcon == other.columnDescendingIcon &&
             rowGroupExpandedIcon == other.rowGroupExpandedIcon &&
@@ -884,6 +975,12 @@ class PlutoGridStyleConfig {
     showColumnHeaderIcon,
     showColumnFilterIcon,
     columnResizeIndicatorMode,
+    columnResizeIndicatorColor,
+    columnResizeHandleWidth,
+    columnResizeIndicatorWidth,
+    columnResizeIndicatorAnimationDuration,
+    columnResizeCursorDelay,
+    columnResizeIndicatorHoverDelay,
     columnAscendingIcon,
     columnDescendingIcon,
     rowGroupExpandedIcon,

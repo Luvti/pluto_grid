@@ -15,6 +15,12 @@ void main() {
   const ValueKey<String> overlayKey = ValueKey<String>(
     'ColumnResizeIndicatorOverlay',
   );
+  const ValueKey<String> footerIndicatorKey = ValueKey<String>(
+    'ColumnFooterResizeIndicator',
+  );
+  const ValueKey<String> footerContentKey = ValueKey<String>(
+    'ResizeIndicatorTestFooter',
+  );
 
   late List<PlutoColumn> columns;
   late List<PlutoRow<dynamic>> rows;
@@ -31,7 +37,20 @@ void main() {
     TextDirection textDirection = TextDirection.ltr,
     PlutoColumnResizeIndicatorMode indicatorMode =
         PlutoColumnResizeIndicatorMode.fullHeight,
+    Color indicatorColor = Colors.grey,
+    double handleWidth = PlutoGridSettings.columnResizeHandleWidth,
+    double indicatorWidth = PlutoGridSettings.columnResizeHandleActiveWidth,
+    Duration indicatorAnimationDuration =
+        PlutoGridSettings.columnResizeIndicatorAnimationDuration,
+    Duration cursorDelay = Duration.zero,
+    Duration indicatorHoverDelay = Duration.zero,
+    bool showColumnFooter = false,
   }) async {
+    if (showColumnFooter) {
+      columns.first.footerRenderer = (_) =>
+          const SizedBox.expand(key: footerContentKey);
+    }
+
     await TestHelperUtil.changeWidth(
       tester: tester,
       width: 700,
@@ -50,6 +69,13 @@ void main() {
               configuration: PlutoGridConfiguration(
                 style: PlutoGridStyleConfig(
                   columnResizeIndicatorMode: indicatorMode,
+                  columnResizeIndicatorColor: indicatorColor,
+                  columnResizeHandleWidth: handleWidth,
+                  columnResizeIndicatorWidth: indicatorWidth,
+                  columnResizeIndicatorAnimationDuration:
+                      indicatorAnimationDuration,
+                  columnResizeCursorDelay: cursorDelay,
+                  columnResizeIndicatorHoverDelay: indicatorHoverDelay,
                   rowBorderWidth: 0.5,
                 ),
               ),
@@ -120,9 +146,184 @@ void main() {
   );
 
   testWidgets(
+    'hover delay prevents transient indicators and uses configured styling',
+    (WidgetTester tester) async {
+      const Duration cursorDelay = Duration(milliseconds: 100);
+      const Duration hoverDelay = Duration(milliseconds: 180);
+      const Duration animationDuration = Duration(milliseconds: 200);
+      const Color indicatorColor = Colors.deepOrange;
+
+      await buildGrid(
+        tester,
+        indicatorColor: indicatorColor,
+        indicatorAnimationDuration: animationDuration,
+        cursorDelay: cursorDelay,
+        indicatorHoverDelay: hoverDelay,
+      );
+
+      final Finder handle = find.byKey(
+        const ValueKey<String>('cell_resize_handle_column0_0'),
+      );
+      final Finder indicator = find.byKey(indicatorKey);
+      final TestGesture mouse = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+
+      await mouse.addPointer(location: Offset.zero);
+      await mouse.moveTo(tester.getCenter(handle));
+      await tester.pump();
+
+      expect(
+        RendererBinding.instance.mouseTracker.debugDeviceActiveCursor(1),
+        isNot(SystemMouseCursors.resizeLeftRight),
+      );
+      expect(indicator, findsNothing);
+
+      await tester.pump(cursorDelay - const Duration(milliseconds: 1));
+      expect(
+        RendererBinding.instance.mouseTracker.debugDeviceActiveCursor(1),
+        isNot(SystemMouseCursors.resizeLeftRight),
+      );
+      expect(indicator, findsNothing);
+
+      await tester.pump(const Duration(milliseconds: 1));
+      expect(
+        RendererBinding.instance.mouseTracker.debugDeviceActiveCursor(1),
+        SystemMouseCursors.resizeLeftRight,
+      );
+      expect(indicator, findsNothing);
+
+      await tester.pump(
+        hoverDelay - cursorDelay - const Duration(milliseconds: 1),
+      );
+      expect(indicator, findsNothing);
+
+      await tester.pump(const Duration(milliseconds: 1));
+      expect(indicator, findsOneWidget);
+
+      final AnimatedContainer indicatorWidget = tester.widget(indicator);
+      final BoxDecoration decoration =
+          indicatorWidget.decoration! as BoxDecoration;
+
+      expect(indicatorWidget.duration, animationDuration);
+      expect(decoration.color, indicatorColor);
+
+      await mouse.removePointer();
+    },
+  );
+
+  testWidgets(
+    'leaving a resize boundary before the hover delay shows no indicator',
+    (WidgetTester tester) async {
+      const Duration hoverDelay = Duration(milliseconds: 120);
+
+      await buildGrid(
+        tester,
+        cursorDelay: hoverDelay,
+        indicatorHoverDelay: hoverDelay,
+      );
+
+      final Finder handle = find.byKey(
+        const ValueKey<String>('cell_resize_handle_column0_0'),
+      );
+      final TestGesture mouse = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+
+      await mouse.addPointer(location: Offset.zero);
+      await mouse.moveTo(tester.getCenter(handle));
+      await tester.pump(const Duration(milliseconds: 40));
+      await mouse.moveTo(const Offset(350, 450));
+      await tester.pump(hoverDelay);
+
+      expect(find.byKey(indicatorKey), findsNothing);
+      expect(
+        RendererBinding.instance.mouseTracker.debugDeviceActiveCursor(1),
+        isNot(SystemMouseCursors.resizeLeftRight),
+      );
+
+      await mouse.removePointer();
+    },
+  );
+
+  testWidgets(
+    'dragging shows the indicator without waiting for the hover delay',
+    (WidgetTester tester) async {
+      const Duration hoverDelay = Duration(seconds: 1);
+
+      await buildGrid(
+        tester,
+        indicatorAnimationDuration: Duration.zero,
+        cursorDelay: hoverDelay,
+        indicatorHoverDelay: hoverDelay,
+      );
+
+      final Finder handle = find.byKey(
+        const ValueKey<String>('cell_resize_handle_column0_0'),
+      );
+      final TestGesture mouse = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+
+      await mouse.addPointer(location: Offset.zero);
+      await mouse.moveTo(tester.getCenter(handle));
+      await tester.pump();
+      expect(find.byKey(indicatorKey), findsNothing);
+
+      await mouse.down(tester.getCenter(handle));
+      await mouse.moveBy(const Offset(20, 0));
+      await tester.pump();
+
+      expect(find.byKey(indicatorKey), findsOneWidget);
+      expect(
+        RendererBinding.instance.mouseTracker.debugDeviceActiveCursor(1),
+        SystemMouseCursors.resizeLeftRight,
+      );
+
+      await mouse.up();
+      await mouse.removePointer();
+    },
+  );
+
+  testWidgets(
+    'fullHeight indicator also highlights the column footer',
+    (WidgetTester tester) async {
+      await buildGrid(
+        tester,
+        indicatorAnimationDuration: Duration.zero,
+        showColumnFooter: true,
+      );
+
+      final TestGesture mouse = await hoverHandle(tester, 'column0');
+      final Finder rowIndicator = find.byKey(indicatorKey);
+      final Finder footerIndicator = find.byKey(footerIndicatorKey);
+      final Rect footerRect = tester.getRect(find.byKey(footerContentKey));
+      final Rect footerIndicatorRect = tester.getRect(footerIndicator);
+
+      expect(rowIndicator, findsOneWidget);
+      expect(footerIndicator, findsOneWidget);
+      expect(footerIndicatorRect.top, closeTo(footerRect.top, 0.01));
+      expect(footerIndicatorRect.bottom, closeTo(footerRect.bottom, 0.01));
+      expect(
+        tester.getRect(rowIndicator).bottom,
+        lessThan(footerIndicatorRect.top),
+      );
+
+      await mouse.removePointer();
+    },
+  );
+
+  testWidgets(
     'column boundary has an equal hit area on both sides',
     (WidgetTester tester) async {
-      await buildGrid(tester);
+      const double handleWidth = 20;
+      const double indicatorWidth = 5;
+
+      await buildGrid(
+        tester,
+        handleWidth: handleWidth,
+        indicatorWidth: indicatorWidth,
+      );
 
       final Finder endHalf = find.byKey(
         const ValueKey<String>('cell_resize_handle_column0_0'),
@@ -149,11 +350,11 @@ void main() {
 
       expect(
         endRect.width,
-        PlutoGridSettings.columnResizeHandleWidth / 2,
+        handleWidth / 2,
       );
       expect(
         startRect.width,
-        PlutoGridSettings.columnResizeHandleWidth / 2,
+        handleWidth / 2,
       );
       expect(startRect.left, closeTo(boundaryX, 0.01));
       expect(headerEndRect.width, endRect.width);
@@ -172,6 +373,7 @@ void main() {
         RendererBinding.instance.mouseTracker.debugDeviceActiveCursor(1),
         SystemMouseCursors.resizeLeftRight,
       );
+      expect(tester.getSize(indicator).width, indicatorWidth);
       expect(tester.getCenter(indicator).dx, closeTo(boundaryX, 0.01));
 
       await mouse.moveTo(startRect.center);
@@ -244,7 +446,9 @@ void main() {
   testWidgets(
     'last column boundary remains centered over the trailing blank area',
     (WidgetTester tester) async {
-      await buildGrid(tester);
+      const double handleWidth = 20;
+
+      await buildGrid(tester, handleWidth: handleWidth);
 
       final Finder endHalf = find.byKey(
         const ValueKey<String>('cell_resize_handle_column2_0'),
@@ -266,7 +470,9 @@ void main() {
       final double boundaryX = endRect.right;
 
       expect(gutterRect.left, closeTo(boundaryX, 0.01));
+      expect(gutterRect.width, handleWidth / 2);
       expect(headerGutterRect.left, closeTo(headerEndRect.right, 0.01));
+      expect(headerGutterRect.width, handleWidth / 2);
 
       final TestGesture mouse = await tester.createGesture(
         kind: PointerDeviceKind.mouse,
@@ -296,9 +502,12 @@ void main() {
   testWidgets(
     'cell indicator stays centered when hovering the start half',
     (WidgetTester tester) async {
+      const double indicatorWidth = 5;
+
       await buildGrid(
         tester,
         indicatorMode: PlutoColumnResizeIndicatorMode.cell,
+        indicatorWidth: indicatorWidth,
       );
 
       final Finder startHalf = find.byKey(
@@ -323,7 +532,7 @@ void main() {
 
       expect(
         tester.getSize(localIndicator).width,
-        PlutoGridSettings.columnResizeHandleActiveWidth,
+        indicatorWidth,
       );
       expect(
         tester.getCenter(localIndicator).dx,

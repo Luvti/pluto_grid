@@ -83,6 +83,9 @@ void main() {
                   showColumnHeaderIcon: false,
                   columnResizeIndicatorMode:
                       PlutoColumnResizeIndicatorMode.fullHeight,
+                  // Keep interaction latency outside the frame-cost benchmark.
+                  columnResizeCursorDelay: Duration.zero,
+                  columnResizeIndicatorHoverDelay: Duration.zero,
                 ),
               ),
             ),

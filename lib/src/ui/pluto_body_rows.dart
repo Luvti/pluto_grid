@@ -157,7 +157,7 @@ class ListResizeDelegate extends SingleChildLayoutDelegate {
 
     return columnsWidth +
         (showTrailingResizeGutter
-            ? PlutoGridSettings.columnResizeHandleWidth / 2
+            ? stateManager.style.columnResizeHandleWidth / 2
             : 0);
   }
 

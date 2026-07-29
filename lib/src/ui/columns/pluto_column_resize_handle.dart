@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/gestures.dart'
     show
@@ -109,7 +111,7 @@ class PlutoColumnResizeGutter extends StatelessWidget
   });
 
   @override
-  double get width => PlutoGridSettings.columnResizeHandleWidth / 2;
+  double get width => stateManager.style.columnResizeHandleWidth / 2;
 
   @override
   double get startPosition => boundaryPosition;
@@ -137,6 +139,10 @@ class _PlutoColumnResizeHandleState extends State<PlutoColumnResizeHandle> {
 
   bool _isHovered = false;
 
+  bool _isPointerInside = false;
+
+  bool _showResizeCursor = false;
+
   bool _isDragging = false;
 
   bool _isPointMoving = false;
@@ -146,6 +152,10 @@ class _PlutoColumnResizeHandleState extends State<PlutoColumnResizeHandle> {
   bool _isPrimaryPointer = false;
 
   double _dragSlopSquared = 0;
+
+  Timer? _hoverDelayTimer;
+
+  Timer? _cursorDelayTimer;
 
   _ResizeTapState get _tapState =>
       _tapStates[widget.column] ??= _ResizeTapState();
@@ -169,6 +179,55 @@ class _PlutoColumnResizeHandleState extends State<PlutoColumnResizeHandle> {
     _syncOverlayIndicator();
   }
 
+  void _handleEnter() {
+    _isPointerInside = true;
+    _hoverDelayTimer?.cancel();
+    _cursorDelayTimer?.cancel();
+
+    final PlutoGridStyleConfig style = widget.stateManager.style;
+    final Duration indicatorDelay =
+        widget.stateManager.style.columnResizeIndicatorHoverDelay;
+    final Duration cursorDelay = style.columnResizeCursorDelay;
+
+    if (indicatorDelay <= Duration.zero) {
+      _setHovered(true);
+    } else {
+      _hoverDelayTimer = Timer(indicatorDelay, () {
+        if (mounted && _isPointerInside) {
+          _setHovered(true);
+        }
+      });
+    }
+
+    if (cursorDelay <= Duration.zero) {
+      _setResizeCursorVisible(true);
+    } else {
+      _cursorDelayTimer = Timer(cursorDelay, () {
+        if (mounted && _isPointerInside) {
+          _setResizeCursorVisible(true);
+        }
+      });
+    }
+  }
+
+  void _handleExit() {
+    _isPointerInside = false;
+    _hoverDelayTimer?.cancel();
+    _cursorDelayTimer?.cancel();
+    _setHovered(false);
+    _setResizeCursorVisible(false);
+  }
+
+  void _setResizeCursorVisible(bool value) {
+    if (_showResizeCursor == value) {
+      return;
+    }
+
+    setState(() {
+      _showResizeCursor = value;
+    });
+  }
+
   void _handlePointerDown(PointerDownEvent event) {
     _columnRightPosition = event.position;
     _isPointMoving = false;
@@ -190,8 +249,13 @@ class _PlutoColumnResizeHandleState extends State<PlutoColumnResizeHandle> {
     }
 
     if (!_isDragging) {
+      _hoverDelayTimer?.cancel();
+      _cursorDelayTimer?.cancel();
+
       setState(() {
         _isDragging = true;
+        _isHovered = _isPointerInside;
+        _showResizeCursor = true;
       });
       _syncOverlayIndicator();
     }
@@ -271,6 +335,8 @@ class _PlutoColumnResizeHandleState extends State<PlutoColumnResizeHandle> {
 
     setState(() {
       _isDragging = false;
+      _isHovered = _isPointerInside;
+      _showResizeCursor = _isPointerInside;
     });
 
     _syncOverlayIndicator();
@@ -347,6 +413,9 @@ class _PlutoColumnResizeHandleState extends State<PlutoColumnResizeHandle> {
 
   @override
   void deactivate() {
+    _hoverDelayTimer?.cancel();
+    _cursorDelayTimer?.cancel();
+
     if (_indicatorMode != PlutoColumnResizeIndicatorMode.cell && _isActive) {
       PlutoColumnResizeIndicatorNotification.hide(source: this).dispatch(
         context,
@@ -354,6 +423,13 @@ class _PlutoColumnResizeHandleState extends State<PlutoColumnResizeHandle> {
     }
 
     super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    _hoverDelayTimer?.cancel();
+    _cursorDelayTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -369,9 +445,11 @@ class _PlutoColumnResizeHandleState extends State<PlutoColumnResizeHandle> {
     final double directionalTranslation = boundaryAtStart ? -0.5 : 0.5;
 
     return MouseRegion(
-      cursor: SystemMouseCursors.resizeLeftRight,
-      onEnter: (_) => _setHovered(true),
-      onExit: (_) => _setHovered(false),
+      cursor: _showResizeCursor
+          ? SystemMouseCursors.resizeLeftRight
+          : MouseCursor.defer,
+      onEnter: (_) => _handleEnter(),
+      onExit: (_) => _handleExit(),
       child: Listener(
         behavior: HitTestBehavior.translucent,
         onPointerDown: _handlePointerDown,
@@ -387,12 +465,15 @@ class _PlutoColumnResizeHandleState extends State<PlutoColumnResizeHandle> {
             ),
             child: AnimatedContainer(
               key: const ValueKey<String>('ColumnResizeHandleIndicator'),
-              duration: const Duration(milliseconds: 100),
+              duration: widget
+                  .stateManager
+                  .style
+                  .columnResizeIndicatorAnimationDuration,
               curve: Curves.easeOut,
               width: showLocalIndicator
-                  ? PlutoGridSettings.columnResizeHandleActiveWidth
+                  ? widget.stateManager.style.columnResizeIndicatorWidth
                   : 0,
-              color: widget.stateManager.style.activatedBorderColor,
+              color: widget.stateManager.style.columnResizeIndicatorColor,
             ),
           ),
         ),
@@ -481,31 +562,49 @@ class _PlutoColumnResizeIndicatorOverlayState
     }
 
     final _ResizeIndicatorGeometry geometry = _resolveGeometry(data);
+    final _ResizeIndicatorGeometry? footerGeometry =
+        _resolveColumnFooterGeometry(data);
 
     return IgnorePointer(
       child: Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          Positioned(
-            left: data.x,
-            top: geometry.top,
-            height: geometry.height,
-            child: FractionalTranslation(
-              translation: const Offset(-0.5, 0),
-              child: AnimatedContainer(
-                key: const ValueKey<String>(
-                  'FullHeightColumnResizeIndicator',
-                ),
-                duration: const Duration(milliseconds: 100),
-                curve: Curves.easeOut,
-                width: _visible
-                    ? PlutoGridSettings.columnResizeHandleActiveWidth
-                    : 0,
-                color: widget.stateManager.style.activatedBorderColor,
-              ),
-            ),
+          _buildIndicator(
+            key: const ValueKey<String>('FullHeightColumnResizeIndicator'),
+            x: data.x,
+            geometry: geometry,
           ),
+          if (footerGeometry != null)
+            _buildIndicator(
+              key: const ValueKey<String>('ColumnFooterResizeIndicator'),
+              x: data.x,
+              geometry: footerGeometry,
+            ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildIndicator({
+    required Key key,
+    required double x,
+    required _ResizeIndicatorGeometry geometry,
+  }) {
+    final PlutoGridStyleConfig style = widget.stateManager.style;
+
+    return Positioned(
+      left: x,
+      top: geometry.top,
+      height: geometry.height,
+      child: FractionalTranslation(
+        translation: const Offset(-0.5, 0),
+        child: AnimatedContainer(
+          key: key,
+          duration: style.columnResizeIndicatorAnimationDuration,
+          curve: Curves.easeOut,
+          width: _visible ? style.columnResizeIndicatorWidth : 0,
+          color: style.columnResizeIndicatorColor,
+        ),
       ),
     );
   }
@@ -541,6 +640,25 @@ class _PlutoColumnResizeIndicatorOverlayState
     return _ResizeIndicatorGeometry(
       top: top,
       height: (bottom - top).clamp(0.0, double.infinity),
+    );
+  }
+
+  _ResizeIndicatorGeometry? _resolveColumnFooterGeometry(
+    PlutoColumnResizeIndicatorData data,
+  ) {
+    final PlutoGridStateManager stateManager = widget.stateManager;
+    final double footerHeight = stateManager.columnFooterHeight;
+
+    if (data.mode != PlutoColumnResizeIndicatorMode.fullHeight ||
+        footerHeight <= 0) {
+      return null;
+    }
+
+    final double gridHeight = stateManager.maxHeight ?? 0;
+
+    return _ResizeIndicatorGeometry(
+      top: gridHeight - stateManager.footerHeight - footerHeight,
+      height: footerHeight,
     );
   }
 

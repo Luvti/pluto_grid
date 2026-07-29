@@ -2005,7 +2005,10 @@ void main() {
       'auto fit accounts for header and cell chrome independently',
       (WidgetTester tester) async {
         const PlutoGridConfiguration configuration = PlutoGridConfiguration(
-          style: PlutoGridStyleConfig(showColumnHeaderIcon: false),
+          style: PlutoGridStyleConfig(
+            showColumnHeaderIcon: false,
+            columnResizeHandleWidth: 20,
+          ),
         );
         final PlutoColumn column = PlutoColumn(
           title: 'Updated',
@@ -2087,7 +2090,7 @@ void main() {
             (headerPainter.width +
                     configuration.style.defaultColumnTitlePadding.horizontal +
                     configuration.style.iconSize +
-                    PlutoGridSettings.columnResizeHandleWidth / 2)
+                    configuration.style.columnResizeHandleWidth / 2)
                 .ceilToDouble();
 
         stateManager.autoFitColumn(context, column);

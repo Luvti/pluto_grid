@@ -157,7 +157,7 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
     final PlutoGridStyleConfig style = stateManager.configuration.style;
     final bool shouldShowRightIcon = showRightIcon;
     final double resizeHandleInset = showResizeHandle
-        ? PlutoGridSettings.columnResizeHandleWidth / 2
+        ? style.columnResizeHandleWidth / 2
         : 0;
     final double actionIconSpacing = shouldShowRightIcon
         ? style.iconSize + resizeHandleInset
@@ -272,7 +272,7 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
                   top: 0,
                   bottom: 0,
                   end: 0,
-                  width: PlutoGridSettings.columnResizeHandleWidth / 2,
+                  width: style.columnResizeHandleWidth / 2,
                   child: PlutoColumnResizeHandle(
                     key: ValueKey<String>(
                       'column_resize_handle_${widget.column.field}',
@@ -287,7 +287,7 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
                   top: 0,
                   bottom: 0,
                   start: 0,
-                  width: PlutoGridSettings.columnResizeHandleWidth / 2,
+                  width: style.columnResizeHandleWidth / 2,
                   child: PlutoColumnResizeHandle(
                     key: ValueKey<String>(
                       'column_resize_handle_start_${widget.column.field}_for_'

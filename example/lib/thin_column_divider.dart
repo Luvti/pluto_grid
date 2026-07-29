@@ -171,6 +171,19 @@ class _ThinColumnDividerExamplePageState
                     showColumnHeaderIcon: false,
                     columnResizeIndicatorMode:
                         PlutoColumnResizeIndicatorMode.fullHeight,
+                    columnResizeIndicatorColor: Colors.grey,
+                    // Total invisible hit target: 6 px on either side.
+                    columnResizeHandleWidth: 12,
+                    columnResizeIndicatorWidth: 3,
+                    columnResizeIndicatorAnimationDuration: Duration(
+                      milliseconds: 200,
+                    ),
+                    columnResizeCursorDelay: Duration(milliseconds: 100),
+                    // The guide starts shortly after the cursor, then eases in
+                    // slowly enough to remain calm while crossing the grid.
+                    columnResizeIndicatorHoverDelay: Duration(
+                      milliseconds: 180,
+                    ),
                     gridBorderWidth: 0.5,
                     borderColor: Color(0xFF94A3B8),
                     gridBorderColor: Color(0xFF94A3B8),

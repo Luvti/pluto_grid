@@ -48,6 +48,14 @@ void main() {
         showColumnFilterIcon: false,
         columnFilterIcon: Icons.filter_list,
         columnResizeIndicatorMode: PlutoColumnResizeIndicatorMode.fullHeight,
+        columnResizeIndicatorColor: Colors.deepOrange,
+        columnResizeHandleWidth: 20,
+        columnResizeIndicatorWidth: 4,
+        columnResizeIndicatorAnimationDuration: const Duration(
+          milliseconds: 180,
+        ),
+        columnResizeCursorDelay: const Duration(milliseconds: 80),
+        columnResizeIndicatorHoverDelay: const Duration(milliseconds: 700),
       );
 
       expect(copiedStyle.columnBorderWidth, 0.5);
@@ -58,6 +66,53 @@ void main() {
       expect(
         copiedStyle.columnResizeIndicatorMode,
         PlutoColumnResizeIndicatorMode.fullHeight,
+      );
+      expect(copiedStyle.columnResizeIndicatorColor, Colors.deepOrange);
+      expect(copiedStyle.columnResizeHandleWidth, 20);
+      expect(copiedStyle.columnResizeIndicatorWidth, 4);
+      expect(
+        copiedStyle.columnResizeIndicatorAnimationDuration,
+        const Duration(milliseconds: 180),
+      );
+      expect(
+        copiedStyle.columnResizeCursorDelay,
+        const Duration(milliseconds: 80),
+      );
+      expect(
+        copiedStyle.columnResizeIndicatorHoverDelay,
+        const Duration(milliseconds: 700),
+      );
+    });
+
+    test('resize interaction defaults are theme-independent', () {
+      const PlutoGridStyleConfig style = PlutoGridStyleConfig(
+        activatedBorderColor: Colors.purple,
+      );
+      const PlutoGridStyleConfig darkStyle = PlutoGridStyleConfig.dark(
+        activatedBorderColor: Colors.amber,
+      );
+
+      expect(style.columnResizeIndicatorColor, Colors.grey);
+      expect(darkStyle.columnResizeIndicatorColor, Colors.grey);
+      expect(
+        style.columnResizeCursorDelay,
+        const Duration(milliseconds: 100),
+      );
+      expect(
+        style.columnResizeIndicatorHoverDelay,
+        const Duration(milliseconds: 180),
+      );
+      expect(
+        style.columnResizeIndicatorAnimationDuration,
+        const Duration(milliseconds: 200),
+      );
+      expect(
+        style.columnResizeHandleWidth,
+        PlutoGridSettings.columnResizeHandleWidth,
+      );
+      expect(
+        style.columnResizeIndicatorWidth,
+        PlutoGridSettings.columnResizeHandleActiveWidth,
       );
     });
   });

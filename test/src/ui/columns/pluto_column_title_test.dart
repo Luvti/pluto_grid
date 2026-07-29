@@ -309,6 +309,7 @@ void main() {
             defaultColumnTitlePadding: EdgeInsets.zero,
             showColumnHeaderIcon: showHeaderAction,
             showColumnFilterIcon: showFilterAction,
+            columnResizeHandleWidth: 20,
           ),
         );
         when(stateManager.configuration).thenReturn(configuration);
@@ -394,7 +395,7 @@ void main() {
               actionRect.right,
               closeTo(
                 spacerRect.right -
-                    PlutoGridSettings.columnResizeHandleWidth / 2,
+                    configuration.style.columnResizeHandleWidth / 2,
                 0.01,
               ),
             );
@@ -418,7 +419,8 @@ void main() {
             expect(
               actionRect.left,
               closeTo(
-                spacerRect.left + PlutoGridSettings.columnResizeHandleWidth / 2,
+                spacerRect.left +
+                    configuration.style.columnResizeHandleWidth / 2,
                 0.01,
               ),
             );
@@ -431,10 +433,6 @@ void main() {
 
         return tester.getSize(headerText).width;
       }
-
-      final double actionSpacing =
-          configuration.style.iconSize +
-          PlutoGridSettings.columnResizeHandleWidth / 2;
 
       for (final TextDirection textDirection in TextDirection.values) {
         final double hiddenWidth = await pumpHeader(
@@ -461,6 +459,9 @@ void main() {
           showFilterAction: true,
           caseIndex: 3,
         );
+        final double actionSpacing =
+            configuration.style.iconSize +
+            configuration.style.columnResizeHandleWidth / 2;
 
         expect(hiddenWidth, columnWidth);
         expect(
@@ -1137,7 +1138,11 @@ void main() {
     'column boundary hover 시 resize indicator 가 표시되어야 한다.',
     (WidgetTester tester) async {
       configuration = const PlutoGridConfiguration(
-        style: PlutoGridStyleConfig(showColumnHeaderIcon: false),
+        style: PlutoGridStyleConfig(
+          showColumnHeaderIcon: false,
+          columnResizeCursorDelay: Duration.zero,
+          columnResizeIndicatorHoverDelay: Duration.zero,
+        ),
       );
       when(stateManager.configuration).thenReturn(configuration);
       when(stateManager.style).thenReturn(configuration.style);
@@ -1170,7 +1175,7 @@ void main() {
 
       expect(
         tester.getSize(indicator).width,
-        PlutoGridSettings.columnResizeHandleActiveWidth,
+        configuration.style.columnResizeIndicatorWidth,
       );
 
       await mouse.removePointer();

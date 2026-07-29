@@ -237,7 +237,7 @@ class _RowCellsLayoutDelegate extends MultiChildLayoutDelegate {
       !stateManager.columnsResizeMode.isNone;
 
   double get _trailingGutterWidth => _showTrailingResizeGutter
-      ? PlutoGridSettings.columnResizeHandleWidth / 2
+      ? stateManager.style.columnResizeHandleWidth / 2
       : 0;
 
   @override

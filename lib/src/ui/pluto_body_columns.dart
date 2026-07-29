@@ -211,7 +211,7 @@ class MainColumnLayoutDelegate extends MultiChildLayoutDelegate {
 
   double get _trailingGutterWidth => trailingResizeColumn == null
       ? 0
-      : PlutoGridSettings.columnResizeHandleWidth / 2;
+      : stateManager.style.columnResizeHandleWidth / 2;
 
   @override
   Size getSize(BoxConstraints constraints) {

@@ -36,6 +36,21 @@ abstract class PlutoGridSettings {
   /// Visible divider width while a column boundary is hovered or dragged.
   static const double columnResizeHandleActiveWidth = 3.0;
 
+  /// Default duration of the active resize divider width transition.
+  static const Duration columnResizeIndicatorAnimationDuration = Duration(
+    milliseconds: 200,
+  );
+
+  /// Default hover dwell time before the resize cursor is shown.
+  static const Duration columnResizeCursorDelay = Duration(milliseconds: 100);
+
+  /// Default hover dwell time before the active resize divider is shown.
+  ///
+  /// Dragging bypasses this delay.
+  static const Duration columnResizeIndicatorHoverDelay = Duration(
+    milliseconds: 180,
+  );
+
   static const double gridInnerSpacing =
       (gridPadding * 2) + (gridBorderWidth * 2);
 

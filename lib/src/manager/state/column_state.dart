@@ -641,9 +641,7 @@ mixin ColumnState implements IPlutoGridState {
         column.enableDropToResize && !columnsResizeMode.isNone;
     final double actionIconSpacing = showRightIcon
         ? style.iconSize +
-              (showResizeHandle
-                  ? PlutoGridSettings.columnResizeHandleWidth / 2
-                  : 0)
+              (showResizeHandle ? style.columnResizeHandleWidth / 2 : 0)
         : 0;
 
     // Header and cell chrome must be accounted for separately. In particular,

@@ -172,7 +172,7 @@ class PlutoBaseCell extends StatelessWidget
             top: 0,
             bottom: 0,
             start: 0,
-            width: PlutoGridSettings.columnResizeHandleWidth / 2,
+            width: stateManager.style.columnResizeHandleWidth / 2,
             child: PlutoColumnResizeHandle(
               key: ValueKey<String>(
                 'cell_resize_handle_start_${column.field}_for_'
@@ -189,7 +189,7 @@ class PlutoBaseCell extends StatelessWidget
             top: 0,
             bottom: 0,
             end: 0,
-            width: PlutoGridSettings.columnResizeHandleWidth / 2,
+            width: stateManager.style.columnResizeHandleWidth / 2,
             child: PlutoColumnResizeHandle(
               key: ValueKey<String>(
                 'cell_resize_handle_${column.field}_$rowIdx',
