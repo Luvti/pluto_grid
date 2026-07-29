@@ -113,7 +113,9 @@ abstract class IColumnState {
   ///
   /// Header text may wrap at whitespace, so its minimum fitted width is based
   /// on the widest unbreakable word. Cell content and header chrome are
-  /// measured independently and the larger requirement wins.
+  /// measured independently and the larger requirement wins. A column with a
+  /// custom renderer can provide [PlutoColumn.autoFitCellWidth] to report its
+  /// complete rendered cell width.
   void autoFitColumn(BuildContext context, PlutoColumn column);
 
   /// Hide or show the [column] with [hide] value.
@@ -591,8 +593,15 @@ mixin ColumnState implements IPlutoGridState {
 
   @override
   void autoFitColumn(BuildContext context, PlutoColumn column) {
+    final PlutoColumnAutoFitCellWidthCallback? autoFitCellWidth =
+        column.autoFitCellWidth;
+    final PlutoGridStateManager? callbackStateManager = autoFitCellWidth == null
+        ? null
+        : this as PlutoGridStateManager;
     String maxValue = '';
+    double maxRenderedCellWidth = 0;
     bool hasExpandableRowGroup = false;
+    int rowIdx = 0;
     for (final PlutoRow row in refRows) {
       final PlutoCell cell = row.cells[column.field]!;
       String value = column.formattedValueForDisplay(cell.currentValue);
@@ -612,9 +621,39 @@ mixin ColumnState implements IPlutoGridState {
           cell,
         );
       }
-      if (maxValue.length < value.length) {
+
+      if (autoFitCellWidth != null) {
+        final double defaultTextWidth = _visualTextWidth(
+          value,
+          style.cellTextStyle,
+        );
+        final double renderedCellWidth = autoFitCellWidth(
+          PlutoColumnAutoFitCellWidthContext(
+            buildContext: context,
+            column: column,
+            row: row,
+            cell: cell,
+            rowIdx: rowIdx,
+            stateManager: callbackStateManager!,
+            formattedValue: value,
+            defaultTextWidth: defaultTextWidth,
+          ),
+        );
+        assert(
+          renderedCellWidth.isFinite && renderedCellWidth >= 0,
+          'PlutoColumn.autoFitCellWidth must return a finite, non-negative '
+          'width.',
+        );
+        maxRenderedCellWidth = math.max(
+          maxRenderedCellWidth,
+          renderedCellWidth.isFinite && renderedCellWidth >= 0
+              ? renderedCellWidth
+              : defaultTextWidth,
+        );
+      } else if (maxValue.length < value.length) {
         maxValue = value;
       }
+      rowIdx++;
     }
 
     // Measure the same text styles that the header and cells render with.
@@ -626,10 +665,12 @@ mixin ColumnState implements IPlutoGridState {
       column.title,
       titleStyle,
     );
-    final double maxValueTextWidth = _visualTextWidth(
-      maxValue,
-      style.cellTextStyle,
-    );
+    // Custom renderers opt in to exact per-row measurement. The default path
+    // still creates a single TextPainter after selecting a candidate, keeping
+    // explicit auto-fit inexpensive for very large data sets.
+    final double maxValueTextWidth = autoFitCellWidth == null
+        ? _visualTextWidth(maxValue, style.cellTextStyle)
+        : maxRenderedCellWidth;
     final bool showFilterIcon =
         column.resolveShowColumnFilterIcon(style) &&
         (isFilteredColumn(column) ||
@@ -673,7 +714,6 @@ mixin ColumnState implements IPlutoGridState {
         )
         .ceilToDouble();
 
-    // todo : Handle (renderer) width
     resizeColumn(column, targetWidth - column.width);
   }
 

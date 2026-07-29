@@ -542,7 +542,12 @@ void main() {
     final containers = find
         .descendant(
           of: find.byType(PlutoBaseRow),
-          matching: find.byType(AnimatedContainer),
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is AnimatedContainer &&
+                widget.key !=
+                    const ValueKey<String>('ColumnResizeHandleIndicator'),
+          ),
         )
         .evaluate();
 

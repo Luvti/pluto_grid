@@ -6,6 +6,24 @@ typedef PlutoColumnValueFormatter = String Function(dynamic value);
 typedef PlutoColumnRenderer =
     Widget Function(PlutoColumnRendererContext rendererContext);
 
+/// Calculates the content width required by a custom column cell.
+///
+/// This callback is evaluated for every row considered by
+/// [PlutoGridStateManager.autoFitColumn]. Return the complete width, in logical
+/// pixels, of the widget produced by [PlutoColumn.renderer]. Structural grid
+/// chrome outside the renderer, such as row checkboxes and group expand
+/// controls, is added by PlutoGrid.
+///
+/// [PlutoColumnAutoFitCellWidthContext.defaultTextWidth] contains the width
+/// PlutoGrid would use for the cell's formatted text. A renderer that only adds
+/// fixed leading or trailing content can usually return that width plus its
+/// icons, gaps, and padding.
+///
+/// Keep the callback inexpensive because an explicit auto-fit can inspect a
+/// large filtered data set.
+typedef PlutoColumnAutoFitCellWidthCallback =
+    double Function(PlutoColumnAutoFitCellWidthContext context);
+
 typedef PlutoColumnFooterRenderer =
     Widget Function(PlutoColumnFooterRendererContext context);
 
@@ -131,6 +149,25 @@ class PlutoColumn {
   /// Consider wrapping a RepaintBoundary widget
   /// if you are defining custom cells with high paint cost.
   PlutoColumnRenderer? renderer;
+
+  /// Measures cells rendered by [renderer] during column auto-fit.
+  ///
+  /// PlutoGrid cannot infer the intrinsic width of an arbitrary renderer
+  /// without laying its widgets out offstage. Use this callback when the
+  /// renderer adds content that is not represented by the formatted cell
+  /// value, such as icons, flags, badges, secondary labels, or custom spacing.
+  ///
+  /// ```dart
+  /// autoFitCellWidth: (context) {
+  ///   const double flagWidth = 24;
+  ///   const double gapsAndPadding = 20;
+  ///   return context.defaultTextWidth + flagWidth + gapsAndPadding;
+  /// },
+  /// ```
+  ///
+  /// The callback must return a finite, non-negative width in logical pixels.
+  /// When omitted, auto-fit keeps its fast text-only measurement path.
+  PlutoColumnAutoFitCellWidthCallback? autoFitCellWidth;
 
   /// A callback that returns a widget
   /// for expressing aggregate values at the bottom.
@@ -285,6 +322,7 @@ class PlutoColumn {
     this.applyFormatterInEditing = false,
     this.backgroundColor,
     this.renderer,
+    this.autoFitCellWidth,
     this.footerRenderer,
     this.suppressedAutoSize = false,
     this.enableColumnDrag = true,
@@ -470,6 +508,46 @@ class PlutoColumnRendererContext {
     required this.row,
     required this.cell,
     required this.stateManager,
+  });
+}
+
+/// Data passed to [PlutoColumn.autoFitCellWidth].
+class PlutoColumnAutoFitCellWidthContext {
+  /// Build context used by the auto-fit gesture.
+  final BuildContext buildContext;
+
+  /// Column being auto-fitted.
+  final PlutoColumn column;
+
+  /// Row whose rendered cell is being measured.
+  final PlutoRow row;
+
+  /// Cell whose rendered content is being measured.
+  final PlutoCell cell;
+
+  /// Index of [row] in the filtered and ranged row view used by auto-fit.
+  final int rowIdx;
+
+  /// State manager that owns the column and row.
+  final PlutoGridStateManager stateManager;
+
+  /// Text produced by the column formatter for this cell.
+  final String formattedValue;
+
+  /// Width of [formattedValue] using the configured cell text style.
+  ///
+  /// This width does not include custom renderer icons, gaps, or padding.
+  final double defaultTextWidth;
+
+  const PlutoColumnAutoFitCellWidthContext({
+    required this.buildContext,
+    required this.column,
+    required this.row,
+    required this.cell,
+    required this.rowIdx,
+    required this.stateManager,
+    required this.formattedValue,
+    required this.defaultTextWidth,
   });
 }
 

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -2096,6 +2098,160 @@ void main() {
         stateManager.autoFitColumn(context, column);
 
         expect(column.width, expectedHeaderWidth);
+      },
+    );
+
+    testWidgets(
+      'custom renderer width callback controls the widest cell requirement',
+      (WidgetTester tester) async {
+        const PlutoGridConfiguration configuration = PlutoGridConfiguration(
+          style: PlutoGridStyleConfig(
+            showColumnHeaderIcon: false,
+            showColumnFilterIcon: false,
+          ),
+        );
+        final List<String> values = <String>[
+          'Brunei Darussalam',
+          'Russia',
+        ];
+        final List<String> measuredValues = <String>[];
+        final List<int> measuredRowIndexes = <int>[];
+        final List<double> requiredWidths = <double>[];
+        late final PlutoGridStateManager stateManager;
+        final PlutoColumn column = PlutoColumn(
+          // Keep the header deliberately narrower than the custom cell result;
+          // header and cell requirements are validated independently.
+          title: 'C',
+          field: 'country',
+          type: PlutoColumnType.text(),
+          width: 300,
+          minWidth: 1,
+          renderer: (PlutoColumnRendererContext context) =>
+              Text(context.cell.value.toString()),
+          autoFitCellWidth: (PlutoColumnAutoFitCellWidthContext context) {
+            measuredValues.add(context.formattedValue);
+            measuredRowIndexes.add(context.rowIdx);
+            expect(context.stateManager, same(stateManager));
+            expect(context.column.field, 'country');
+            expect(context.cell, same(context.row.cells['country']));
+
+            // Simulate per-row renderer chrome such as a flag, country code,
+            // and gaps around the formatted country name.
+            final double rendererChrome = context.formattedValue == 'Russia'
+                ? 80
+                : 40;
+            final double requiredWidth =
+                context.defaultTextWidth + rendererChrome;
+            requiredWidths.add(requiredWidth);
+            return requiredWidth;
+          },
+        );
+        final List<PlutoRow> rows = <PlutoRow>[
+          for (final String value in values)
+            PlutoRow(
+              cells: <String, PlutoCell>{
+                column.field: PlutoCell(value: value),
+              },
+            ),
+        ];
+        late final BuildContext context;
+        stateManager = getStateManager(
+          columns: <PlutoColumn>[column],
+          rows: rows,
+          gridFocusNode: null,
+          scroll: scroll,
+          configuration: configuration,
+        );
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Builder(
+              builder: (BuildContext builderContext) {
+                context = builderContext;
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        );
+
+        stateManager.autoFitColumn(context, column);
+
+        expect(measuredValues, values);
+        expect(measuredRowIndexes, <int>[0, 1]);
+        expect(
+          column.width,
+          requiredWidths.reduce(math.max).ceilToDouble(),
+        );
+      },
+    );
+
+    testWidgets(
+      'custom renderer width callback only measures rows left by a filter',
+      (WidgetTester tester) async {
+        const PlutoGridConfiguration configuration = PlutoGridConfiguration(
+          style: PlutoGridStyleConfig(
+            showColumnHeaderIcon: false,
+            showColumnFilterIcon: false,
+          ),
+        );
+        final List<String> measuredValues = <String>[];
+        final List<double> requiredWidths = <double>[];
+        final PlutoColumn column = PlutoColumn(
+          title: 'C',
+          field: 'country',
+          type: PlutoColumnType.text(),
+          width: 300,
+          minWidth: 1,
+          autoFitCellWidth: (PlutoColumnAutoFitCellWidthContext context) {
+            measuredValues.add(context.formattedValue);
+            final double requiredWidth = context.defaultTextWidth + 30;
+            requiredWidths.add(requiredWidth);
+            return requiredWidth;
+          },
+        );
+        final List<PlutoRow> rows = <PlutoRow>[
+          for (final String value in <String>[
+            'Brunei Darussalam',
+            'Guinea-Bissau',
+            'Russia',
+          ])
+            PlutoRow(
+              cells: <String, PlutoCell>{
+                column.field: PlutoCell(value: value),
+              },
+            ),
+        ];
+        late final BuildContext context;
+        final PlutoGridStateManager stateManager = getStateManager(
+          columns: <PlutoColumn>[column],
+          rows: rows,
+          gridFocusNode: null,
+          scroll: scroll,
+          configuration: configuration,
+        );
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Builder(
+              builder: (BuildContext builderContext) {
+                context = builderContext;
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        );
+
+        stateManager.setFilterWithFilterRows(<PlutoRow>[
+          FilterHelper.createFilterRow(
+            columnField: column.field,
+            filterType: const PlutoFilterTypeContains(),
+            filterValue: 'Russia',
+          ),
+        ]);
+        stateManager.autoFitColumn(context, column);
+
+        expect(measuredValues, <String>['Russia']);
+        expect(column.width, requiredWidths.single.ceilToDouble());
       },
     );
 
