@@ -42,6 +42,8 @@ abstract class IGridState {
 
   PlutoSelectDateCallBack? get selectDateCallback;
 
+  PlutoShowFilterPopupCallback? get showFilterPopupCustom;
+
   PlutoGridLocaleText get localeText;
 
   PlutoGridStyleConfig get style;

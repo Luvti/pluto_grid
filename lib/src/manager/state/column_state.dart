@@ -109,6 +109,11 @@ abstract class IColumnState {
   /// it is not changed if the width constraint of the frozen column is narrow.
   void resizeColumn(PlutoColumn column, double offset);
 
+  /// Automatically fits [column] to its rendered header and cell content.
+  ///
+  /// Header text may wrap at whitespace, so its minimum fitted width is based
+  /// on the widest unbreakable word. Cell content and header chrome are
+  /// measured independently and the larger requirement wins.
   void autoFitColumn(BuildContext context, PlutoColumn column);
 
   /// Hide or show the [column] with [hide] value.
@@ -554,11 +559,14 @@ mixin ColumnState implements IPlutoGridState {
     bool updated = false;
 
     if (columnsResizeMode.isNormal) {
-      final double setWidth = column.width + offset;
+      final double previousWidth = column.width;
+      final double requestedWidth = previousWidth + offset;
+      final double effectiveWidth = requestedWidth > column.minWidth
+          ? requestedWidth
+          : column.minWidth;
 
-      column.width = setWidth > column.minWidth ? setWidth : column.minWidth;
-
-      updated = setWidth == column.width;
+      column.width = effectiveWidth;
+      updated = effectiveWidth != previousWidth;
     } else {
       updated = _updateResizeColumns(column: column, offset: offset);
     }
@@ -586,12 +594,7 @@ mixin ColumnState implements IPlutoGridState {
     String maxValue = '';
     bool hasExpandableRowGroup = false;
     for (final PlutoRow row in refRows) {
-      final PlutoCell cell = row.cells.entries
-          .firstWhere(
-            (MapEntry<String, PlutoCell> element) =>
-                element.key == column.field,
-          )
-          .value;
+      final PlutoCell cell = row.cells[column.field]!;
       String value = column.formattedValueForDisplay(cell.currentValue);
       if (hasRowGroups) {
         if (PlutoDefaultCell.showGroupCount(rowGroupDelegate!, cell)) {
@@ -614,43 +617,77 @@ mixin ColumnState implements IPlutoGridState {
       }
     }
 
-    // Get size after rendering virtually
-    // https://stackoverflow.com/questions/54351655/flutter-textfield-width-should-match-width-of-contained-text
-    final double titleTextWidth = _visualTextWidth(
+    // Measure the same text styles that the header and cells render with.
+    // Header text can wrap at whitespace, while cell values stay on one line.
+    final TextStyle titleStyle = DefaultTextStyle.of(
+      context,
+    ).style.merge(style.columnHeaderTextStyle);
+    final double titleWordWidth = _widestWordTextWidth(
       column.title,
-      style.columnTextStyle,
+      titleStyle,
     );
     final double maxValueTextWidth = _visualTextWidth(
       maxValue,
       style.cellTextStyle,
     );
+    final bool showFilterIcon =
+        column.resolveShowColumnFilterIcon(style) &&
+        (isFilteredColumn(column) ||
+            column.filterIconRenderer != null ||
+            column.onFilterIconTap != null ||
+            showFilterPopupCustom != null);
+    final bool showRightIcon = column.isShowRightIconForStyle(style);
+    final bool showResizeHandle =
+        column.enableDropToResize && !columnsResizeMode.isNone;
+    final double actionIconSpacing = showRightIcon
+        ? style.iconSize +
+              (showResizeHandle
+                  ? PlutoGridSettings.columnResizeHandleWidth / 2
+                  : 0)
+        : 0;
+
+    // Header and cell chrome must be accounted for separately. In particular,
+    // a header action must not make a cell-content-dominated column wider.
+    final double titleChromeWidth =
+        (column.titlePadding ?? style.defaultColumnTitlePadding).horizontal +
+        (column.enableRowChecked &&
+                column.rowCheckBoxGroupDepth == 0 &&
+                column.enableTitleChecked
+            ? _getEffectiveButtonWidth(context, checkBox: true)
+            : 0) +
+        (showFilterIcon ? style.iconSize : 0) +
+        actionIconSpacing;
+    // PlutoBaseCell renders its content directly inside the decorated cell in
+    // this branch. Count only chrome that is actually laid out beside the text;
+    // the legacy cellPadding value is not part of the rendered geometry.
+    final double cellChromeWidth =
+        (hasExpandableRowGroup ? _getEffectiveButtonWidth(context) : 0) +
+        (column.enableRowChecked
+            ? _getEffectiveButtonWidth(context, checkBox: true)
+            : 0);
+
+    // A whole logical pixel avoids fractional clipping without adding
+    // arbitrary breathing room to every auto-fitted column.
+    final double targetWidth = math
+        .max(
+          titleWordWidth + titleChromeWidth,
+          maxValueTextWidth + cellChromeWidth,
+        )
+        .ceilToDouble();
 
     // todo : Handle (renderer) width
+    resizeColumn(column, targetWidth - column.width);
+  }
 
-    final double calculatedTileWidth =
-        titleTextWidth -
-        column.width +
-        <num>[
-          (column.titlePadding ?? style.defaultColumnTitlePadding).horizontal,
-          if (column.enableRowChecked)
-            _getEffectiveButtonWidth(context, checkBox: true),
-          if (column.isShowRightIcon) style.iconSize,
-          8,
-        ].reduce((num acc, num a) => acc + a);
+  /// Returns the width of the widest segment that cannot wrap at whitespace.
+  double _widestWordTextWidth(String text, TextStyle style) {
+    double widestWord = 0;
 
-    final double calculatedCellWidth =
-        maxValueTextWidth -
-        column.width +
-        <num>[
-          (column.cellPadding ?? style.defaultCellPadding).horizontal,
-          if (hasExpandableRowGroup) _getEffectiveButtonWidth(context),
-          if (column.enableRowChecked)
-            _getEffectiveButtonWidth(context, checkBox: true),
-          if (column.isShowRightIcon) style.iconSize,
-          2,
-        ].reduce((num acc, num a) => acc + a);
+    for (final String word in text.trim().split(RegExp(r'\s+'))) {
+      widestWord = math.max(widestWord, _visualTextWidth(word, style));
+    }
 
-    resizeColumn(column, math.max(calculatedTileWidth, calculatedCellWidth));
+    return widestWord;
   }
 
   double _visualTextWidth(String text, TextStyle style) {

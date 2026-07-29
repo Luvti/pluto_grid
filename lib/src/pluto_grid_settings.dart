@@ -24,6 +24,18 @@ abstract class PlutoGridSettings {
   /// Grid - border width
   static const double gridBorderWidth = 1.0;
 
+  /// Column divider width
+  static const double columnBorderWidth = 1.0;
+
+  /// Invisible pointer target centered on a resizable column boundary.
+  ///
+  /// It intentionally remains wider than [columnBorderWidth], so thin dividers
+  /// are still easy to acquire with a mouse or trackpad.
+  static const double columnResizeHandleWidth = 12.0;
+
+  /// Visible divider width while a column boundary is hovered or dragged.
+  static const double columnResizeHandleActiveWidth = 3.0;
+
   static const double gridInnerSpacing =
       (gridPadding * 2) + (gridBorderWidth * 2);
 

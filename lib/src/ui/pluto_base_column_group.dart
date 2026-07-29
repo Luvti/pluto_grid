@@ -9,12 +9,15 @@ class PlutoBaseColumnGroup extends StatelessWidget
 
   final PlutoColumnGroupPair columnGroup;
 
+  final PlutoColumn? leadingResizeColumn;
+
   final int depth;
 
   PlutoBaseColumnGroup({
     required this.stateManager,
     required this.columnGroup,
     required this.depth,
+    this.leadingResizeColumn,
   }) : super(key: columnGroup.key);
 
   int get _childrenDepth => columnGroup.group.hasChildren
@@ -36,6 +39,7 @@ class PlutoBaseColumnGroup extends StatelessWidget
       return _ExpandedColumn(
         stateManager: stateManager,
         column: columnGroup.columns.first,
+        leadingResizeColumn: leadingResizeColumn,
         height: ((depth + 1) * stateManager.columnHeight),
       );
     }
@@ -52,6 +56,7 @@ class PlutoBaseColumnGroup extends StatelessWidget
         _ColumnGroup(
           stateManager: stateManager,
           columnGroup: columnGroup,
+          leadingResizeColumn: leadingResizeColumn,
           depth: _childrenDepth,
         ),
       ],
@@ -64,11 +69,14 @@ class _ExpandedColumn extends StatelessWidget {
 
   final PlutoColumn column;
 
+  final PlutoColumn? leadingResizeColumn;
+
   final double height;
 
   const _ExpandedColumn({
     required this.stateManager,
     required this.column,
+    required this.leadingResizeColumn,
     required this.height,
   });
 
@@ -77,6 +85,7 @@ class _ExpandedColumn extends StatelessWidget {
     return PlutoBaseColumn(
       stateManager: stateManager,
       column: column,
+      leadingResizeColumn: leadingResizeColumn,
       columnTitleHeight: height,
     );
   }
@@ -126,13 +135,13 @@ class _ColumnGroupTitle extends StatelessWidget {
             end: style.enableColumnBorderVertical
                 ? BorderSide(
                     color: style.borderColor,
-                    width: 1.0,
+                    width: style.columnBorderWidth,
                   )
                 : BorderSide.none,
             bottom: style.enableColumnBorderHorizontal
                 ? BorderSide(
                     color: style.borderColor,
-                    width: 1.0,
+                    width: style.rowBorderWidth,
                   )
                 : BorderSide.none,
           ),
@@ -164,11 +173,14 @@ class _ColumnGroup extends StatelessWidget {
 
   final PlutoColumnGroupPair columnGroup;
 
+  final PlutoColumn? leadingResizeColumn;
+
   final int depth;
 
   const _ColumnGroup({
     required this.stateManager,
     required this.columnGroup,
+    required this.leadingResizeColumn,
     required this.depth,
   });
 
@@ -178,12 +190,30 @@ class _ColumnGroup extends StatelessWidget {
         columns: columnGroup.columns,
       );
 
+  PlutoColumn? _previousField(PlutoColumn column) {
+    final int index = columnGroup.columns.indexWhere(
+      (PlutoColumn candidate) => candidate.key == column.key,
+    );
+
+    return index > 0 ? columnGroup.columns[index - 1] : leadingResizeColumn;
+  }
+
+  PlutoColumn? _previousChildGroup(PlutoColumnGroupPair childGroup) {
+    final List<PlutoColumnGroupPair> groups = _separateLinkedGroup;
+    final int index = groups.indexWhere(
+      (PlutoColumnGroupPair candidate) => candidate.key == childGroup.key,
+    );
+
+    return index > 0 ? groups[index - 1].columns.last : leadingResizeColumn;
+  }
+
   Widget _makeFieldWidget(PlutoColumn column) {
     return LayoutId(
       id: column.field,
       child: PlutoBaseColumn(
         stateManager: stateManager,
         column: column,
+        leadingResizeColumn: _previousField(column),
       ),
     );
   }
@@ -194,6 +224,7 @@ class _ColumnGroup extends StatelessWidget {
       child: PlutoBaseColumnGroup(
         stateManager: stateManager,
         columnGroup: columnGroupPair,
+        leadingResizeColumn: _previousChildGroup(columnGroupPair),
         depth: depth,
       ),
     );

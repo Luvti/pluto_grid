@@ -9,6 +9,17 @@ typedef PlutoColumnRenderer =
 typedef PlutoColumnFooterRenderer =
     Widget Function(PlutoColumnFooterRendererContext context);
 
+/// Builds the filter action displayed next to a column title.
+///
+/// The supplied [PlutoColumnFilterIconContext] can also be used to anchor a
+/// custom overlay to the filter action.
+typedef PlutoColumnFilterIconRenderer =
+    Widget Function(PlutoColumnFilterIconContext context);
+
+/// Handles a tap on the filter action displayed next to a column title.
+typedef PlutoColumnFilterIconTapCallback =
+    void Function(PlutoColumnFilterIconContext context);
+
 /// It dynamically determines whether the cells of the column are in the edit state.
 ///
 /// Once the [readOnly] value is set,
@@ -33,8 +44,13 @@ class PlutoColumn {
 
   bool readOnly;
 
+  /// The current width of the column in logical pixels.
   double width;
 
+  /// The minimum width enforced by manual resize and auto-fit.
+  ///
+  /// Lower this value for columns that are intentionally narrower than
+  /// [PlutoGridSettings.minColumnWidth].
   double minWidth;
 
   /// Customisable title padding.
@@ -156,13 +172,27 @@ class PlutoColumn {
   /// Tap this icon to bring up the context menu.
   ///
   /// If [enableDropToResize] is also activated,
-  /// you can adjust the column width by dragging this icon.
+  /// you can also adjust the column width from the column boundary.
   bool enableContextMenu;
+
+  /// Overrides [PlutoGridStyleConfig.showColumnHeaderIcon] for this column.
+  ///
+  /// When null, the grid style value is used. Active sort indicators remain
+  /// visible even when the context-menu or resize icon is hidden.
+  bool? showColumnHeaderIcon;
+
+  /// Overrides [PlutoGridStyleConfig.columnResizeIndicatorMode] for this
+  /// column.
+  ///
+  /// This can be set to [PlutoColumnResizeIndicatorMode.header] for columns
+  /// whose custom or merged cells should not be crossed by a full-height
+  /// resize guide.
+  PlutoColumnResizeIndicatorMode? columnResizeIndicatorMode;
 
   /// Display the right icon for drop to resize the column
   ///
   /// The [PlutoGridConfiguration.columnResizeIcon] icon appears.
-  /// By dragging this icon to the left or right, the width of the column can be adjusted.
+  /// The width can also be adjusted by dragging the column boundary.
   /// Can't narrow down to less than [minWidth].
   /// Also, if [frozen] is set,
   /// it can be expanded only within the limit of the width of the frozen column.
@@ -174,6 +204,30 @@ class PlutoColumn {
   /// Displays filter-related menus in the column context menu.
   /// Valid only when [enableContextMenu] is activated.
   bool enableFilterMenuItem;
+
+  /// Overrides [PlutoGridStyleConfig.showColumnFilterIcon] for this column.
+  ///
+  /// By default the icon is displayed while a filter is active. Providing
+  /// [filterIconRenderer], [onFilterIconTap], or
+  /// [PlutoGrid.showFilterPopupCustom] also exposes it as an action before a
+  /// filter is active.
+  bool? showColumnFilterIcon;
+
+  /// Builds the active-filter icon in the column header.
+  ///
+  /// The returned widget is constrained to
+  /// [PlutoGridStyleConfig.iconSize]. Use [onFilterIconTap] to override the
+  /// default action.
+  PlutoColumnFilterIconRenderer? filterIconRenderer;
+
+  /// Called when the active-filter icon is tapped.
+  ///
+  /// When null, PlutoGrid opens [PlutoGrid.showFilterPopupCustom] if it was
+  /// provided, otherwise it opens the default filter popup.
+  ///
+  /// The callback can insert a custom [OverlayEntry] with
+  /// [PlutoColumnFilterIconContext.buildContext].
+  PlutoColumnFilterIconTapCallback? onFilterIconTap;
 
   ///Set hint text for filter field
   String? filterHintText;
@@ -240,8 +294,13 @@ class PlutoColumn {
     this.enableTitleChecked = true,
     this.enableSorting = true,
     this.enableContextMenu = true,
+    this.showColumnHeaderIcon,
+    this.columnResizeIndicatorMode,
     this.enableDropToResize = true,
     this.enableFilterMenuItem = true,
+    this.showColumnFilterIcon,
+    this.filterIconRenderer,
+    this.onFilterIconTap,
     this.filterHintText,
     this.filterHintTextColor,
     this.filterSuffixIcon,
@@ -280,6 +339,25 @@ class PlutoColumn {
 
   bool get isShowRightIcon =>
       enableContextMenu || enableDropToResize || !sort.isNone;
+
+  /// Resolves the per-column header-action preference against the grid style.
+  bool resolveShowColumnHeaderIcon(PlutoGridStyleConfig style) =>
+      showColumnHeaderIcon ?? style.showColumnHeaderIcon;
+
+  /// Resolves the per-column filter-action preference against the grid style.
+  bool resolveShowColumnFilterIcon(PlutoGridStyleConfig style) =>
+      showColumnFilterIcon ?? style.showColumnFilterIcon;
+
+  /// Resolves the per-column resize-guide mode against the grid style.
+  PlutoColumnResizeIndicatorMode resolveColumnResizeIndicatorMode(
+    PlutoGridStyleConfig style,
+  ) => columnResizeIndicatorMode ?? style.columnResizeIndicatorMode;
+
+  /// Whether the title must reserve space for a visible action or sort icon.
+  bool isShowRightIconForStyle(PlutoGridStyleConfig style) =>
+      !sort.isNone ||
+      (resolveShowColumnHeaderIcon(style) &&
+          (enableContextMenu || enableDropToResize));
 
   PlutoColumnGroup? group;
 
@@ -393,6 +471,47 @@ class PlutoColumnRendererContext {
     required this.cell,
     required this.stateManager,
   });
+}
+
+/// Context passed to a column header's filter-icon renderer and tap callback.
+class PlutoColumnFilterIconContext {
+  /// The exact filter-action context.
+  ///
+  /// Use its [RenderObject] to position an [OverlayEntry] relative to the icon,
+  /// rather than relative to the whole column header.
+  final BuildContext buildContext;
+
+  final PlutoColumn column;
+
+  final PlutoGridStateManager stateManager;
+
+  const PlutoColumnFilterIconContext({
+    required this.buildContext,
+    required this.column,
+    required this.stateManager,
+  });
+
+  /// Opens the grid's custom filter popup when configured, otherwise the
+  /// default filter popup.
+  void showFilterPopup({VoidCallback? onClosed}) {
+    final PlutoShowFilterPopupCallback? showFilterPopupCustom =
+        stateManager.showFilterPopupCustom;
+
+    if (showFilterPopupCustom != null) {
+      showFilterPopupCustom(
+        buildContext,
+        calledColumn: column,
+        onClosed: onClosed,
+      );
+      return;
+    }
+
+    stateManager.showFilterPopup(
+      buildContext,
+      calledColumn: column,
+      onClosed: onClosed,
+    );
+  }
 }
 
 class PlutoColumnFooterRendererContext {

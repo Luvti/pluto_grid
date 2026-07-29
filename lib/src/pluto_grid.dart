@@ -7,8 +7,9 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart' show Intl;
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
-import 'helper/platform_helper.dart';
-import 'ui/ui.dart';
+import 'package:pluto_grid_plus/src/helper/platform_helper.dart';
+import 'package:pluto_grid_plus/src/ui/columns/pluto_column_resize_handle.dart';
+import 'package:pluto_grid_plus/src/ui/ui.dart';
 
 typedef PlutoOnLoadedEventCallback =
     void Function(PlutoGridOnLoadedEvent event);
@@ -60,6 +61,18 @@ typedef PlutoSelectDateCallBack =
 
 typedef PlutoOnFilteredEventCallback =
     void Function(PlutoGridSetColumnFilterEvent event);
+
+/// Opens a custom column-filter surface.
+///
+/// [context] is the header action that requested the popup, so it can be used
+/// as an overlay anchor. [calledColumn] identifies the target column and
+/// [onClosed] should be invoked after the custom surface is dismissed.
+typedef PlutoShowFilterPopupCallback =
+    void Function(
+      BuildContext context, {
+      PlutoColumn? calledColumn,
+      VoidCallback? onClosed,
+    });
 
 /// [PlutoGrid] is a widget that receives columns and rows and is expressed as a grid-type UI.
 ///
@@ -363,12 +376,12 @@ class PlutoGrid extends PlutoStatefulWidget {
   /// {@endtemplate}
   final PlutoColumnMenuDelegate? columnMenuDelegate;
 
-  final void Function(
-    BuildContext context, {
-    PlutoColumn? calledColumn,
-    void Function()? onClosed,
-  })?
-  showFilterPopupCustom;
+  /// Replaces the built-in filter popup for header and column-menu actions.
+  ///
+  /// A configured callback also makes the header filter action available
+  /// before a filter has been applied, unless that action is disabled by
+  /// [PlutoGridStyleConfig.showColumnFilterIcon] or the column override.
+  final PlutoShowFilterPopupCallback? showFilterPopupCustom;
 
   /// {@template pluto_grid_property_configuration}
   /// In [configuration], you can change the style and settings or text used in [PlutoGrid].
@@ -463,6 +476,10 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
 
   final List<Function()> _disposeList = <Function()>[];
 
+  final ValueNotifier<PlutoColumnResizeIndicatorData?>
+  _columnResizeIndicatorNotifier =
+      ValueNotifier<PlutoColumnResizeIndicatorData?>(null);
+
   late final PlutoGridStateManager _stateManager;
 
   late final PlutoGridKeyManager _keyManager;
@@ -487,6 +504,7 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
     _initHeaderFooter();
 
     _disposeList.add(_gridFocusNode.dispose);
+    _disposeList.add(_columnResizeIndicatorNotifier.dispose);
 
     super.initState();
   }
@@ -664,6 +682,43 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
     });
   }
 
+  bool _handleColumnResizeIndicatorNotification(
+    PlutoColumnResizeIndicatorNotification notification,
+  ) {
+    final PlutoColumnResizeIndicatorData? data = notification.data;
+
+    if (data == null) {
+      final Object source = notification.source;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted &&
+            identical(_columnResizeIndicatorNotifier.value?.source, source)) {
+          _columnResizeIndicatorNotifier.value = null;
+        }
+      });
+
+      return true;
+    }
+
+    final RenderBox? gridRenderBox =
+        stateManager.gridKey.currentContext?.findRenderObject() as RenderBox?;
+
+    if (gridRenderBox == null) {
+      return true;
+    }
+
+    final double localX = gridRenderBox.globalToLocal(Offset(data.x, 0)).dx;
+
+    _columnResizeIndicatorNotifier.value = PlutoColumnResizeIndicatorData(
+      source: data.source,
+      column: data.column,
+      mode: data.mode,
+      x: localX,
+    );
+
+    return true;
+  }
+
   void _initHeaderFooter() {
     if (_stateManager.showHeader) {
       _header = _stateManager.createHeader!(_stateManager);
@@ -719,7 +774,7 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
 
               final bool showColumnFooter = _stateManager.showColumnFooter;
 
-              return CustomMultiChildLayout(
+              final Widget gridLayout = CustomMultiChildLayout(
                 key: _stateManager.gridKey,
                 delegate: PlutoGridLayoutDelegate(
                   _stateManager,
@@ -843,6 +898,17 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
                     LayoutId(id: _StackName.footer, child: _footer!),
                   ],
 
+                  LayoutId(
+                    id: _StackName.columnResizeIndicator,
+                    child: PlutoColumnResizeIndicatorOverlay(
+                      key: const ValueKey<String>(
+                        'ColumnResizeIndicatorOverlay',
+                      ),
+                      stateManager: _stateManager,
+                      notifier: _columnResizeIndicatorNotifier,
+                    ),
+                  ),
+
                   /// Loading screen.
                   if (_stateManager.showLoading)
                     LayoutId(
@@ -866,6 +932,13 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
                       ),
                     ),
                 ],
+              );
+
+              return NotificationListener<
+                PlutoColumnResizeIndicatorNotification
+              >(
+                onNotification: _handleColumnResizeIndicatorNotification,
+                child: gridLayout,
               );
             },
           ),
@@ -1209,6 +1282,14 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
       );
     }
 
+    if (hasChild(_StackName.columnResizeIndicator)) {
+      layoutChild(
+        _StackName.columnResizeIndicator,
+        BoxConstraints.tight(size),
+      );
+      positionChild(_StackName.columnResizeIndicator, Offset.zero);
+    }
+
     if (hasChild(_StackName.loading)) {
       Size loadingSize;
 
@@ -1382,6 +1463,7 @@ enum _StackName {
   columnFooterDivider,
   footer,
   footerDivider,
+  columnResizeIndicator,
   loading,
   noRows,
 }

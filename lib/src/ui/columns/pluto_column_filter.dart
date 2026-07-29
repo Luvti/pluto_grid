@@ -402,9 +402,15 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
       child: DecoratedBox(
         decoration: BoxDecoration(
           border: BorderDirectional(
-            top: BorderSide(color: style.borderColor),
+            top: BorderSide(
+              color: style.borderColor,
+              width: style.rowBorderWidth,
+            ),
             end: style.enableColumnBorderVertical
-                ? BorderSide(color: style.borderColor)
+                ? BorderSide(
+                    color: style.borderColor,
+                    width: style.columnBorderWidth,
+                  )
                 : BorderSide.none,
           ),
         ),

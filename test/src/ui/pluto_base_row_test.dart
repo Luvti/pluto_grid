@@ -49,10 +49,16 @@ void main() {
     bool isSelectedRow = false,
     bool isCurrentCell = false,
     bool isSelectedCell = false,
+    double rowBorderWidth = PlutoGridSettings.rowBorderWidth,
   }) {
     return PlutoWidgetTestHelper(
       'build row widget.',
       (tester) async {
+        final configuration = PlutoGridConfiguration(
+          style: PlutoGridStyleConfig(rowBorderWidth: rowBorderWidth),
+        );
+        when(stateManager.configuration).thenReturn(configuration);
+        when(stateManager.style).thenReturn(configuration.style);
         when(stateManager.isDraggingRow).thenReturn(isDraggingRow);
         when(stateManager.isRowIdxDragTarget(any)).thenReturn(isDragTarget);
         when(
@@ -132,6 +138,7 @@ void main() {
     isDraggingRow: true,
     isDragTarget: true,
     isTopDragTarget: true,
+    rowBorderWidth: 0.5,
   ).test(
     'isDragTarget, isTopDragTarget 이 true 인 경우 border top 이 설정 되어야 한다.',
     (tester) async {
@@ -144,7 +151,7 @@ void main() {
 
       expect(
         rowContainerDecoration.border!.top.width,
-        PlutoGridSettings.rowBorderWidth,
+        0.5,
       );
     },
   );

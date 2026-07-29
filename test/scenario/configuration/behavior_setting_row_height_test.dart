@@ -20,6 +20,7 @@ void main() {
     int columnIdx = 0,
     int rowIdx = 0,
     double rowHeight = 45.0,
+    double rowBorderWidth = PlutoGridSettings.rowBorderWidth,
   }) {
     // given
     final safetyColumns =
@@ -47,6 +48,7 @@ void main() {
                 configuration: PlutoGridConfiguration(
                   style: PlutoGridStyleConfig(
                     rowHeight: rowHeight,
+                    rowBorderWidth: rowBorderWidth,
                   ),
                 ),
               ),
@@ -72,6 +74,16 @@ void main() {
           stateManager!.rowTotalHeight,
           rowHeight + PlutoGridSettings.rowBorderWidth,
         );
+      },
+    );
+
+    buildRowsWithSettingRowHeight(
+      rowHeight: rowHeight,
+      rowBorderWidth: 0.5,
+    ).test(
+      'rowBorderWidth 를 0.5로 설정하면 rowTotalHeight 에 반영되어야 한다.',
+      (tester) async {
+        expect(stateManager!.rowTotalHeight, rowHeight + 0.5);
       },
     );
   });

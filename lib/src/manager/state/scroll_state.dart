@@ -115,7 +115,7 @@ mixin ScrollState implements IPlutoGridState {
         columnHeight -
         columnFilterHeight -
         columnFooterHeight -
-        PlutoGridSettings.rowBorderWidth;
+        configuration.style.rowBorderWidth;
 
     double offsetToMove = direction.isUp
         ? (rowIdx! - 1) * rowSize

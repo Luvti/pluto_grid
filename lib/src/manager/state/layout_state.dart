@@ -345,7 +345,7 @@ mixin LayoutState implements IPlutoGridState {
   double get rowHeight => configuration.style.rowHeight;
 
   @override
-  double get rowTotalHeight => rowHeight + PlutoGridSettings.rowBorderWidth;
+  double get rowTotalHeight => rowHeight + configuration.style.rowBorderWidth;
 
   @override
   double get gridPadding => configuration.style.gridPadding;

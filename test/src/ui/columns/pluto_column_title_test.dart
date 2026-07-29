@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -45,6 +46,7 @@ void main() {
     when(stateManager.hasUnCheckedRow).thenReturn(false);
     when(stateManager.hasFilter).thenReturn(false);
     when(stateManager.columnHeight).thenReturn(45);
+    when(stateManager.columnsResizeMode).thenReturn(PlutoResizeMode.normal);
     when(stateManager.isHorizontalOverScrolled).thenReturn(false);
     when(stateManager.correctHorizontalOffset).thenReturn(0);
     when(stateManager.scroll).thenReturn(scroll);
@@ -67,12 +69,24 @@ void main() {
 
   MaterialApp buildApp({
     required PlutoColumn column,
+    TextDirection textDirection = TextDirection.ltr,
+    bool constrainToColumnWidth = false,
   }) {
+    final Widget columnTitle = PlutoColumnTitle(
+      stateManager: stateManager,
+      column: column,
+    );
+
     return MaterialApp(
-      home: Material(
-        child: PlutoColumnTitle(
-          stateManager: stateManager,
-          column: column,
+      home: Directionality(
+        textDirection: textDirection,
+        child: Material(
+          child: constrainToColumnWidth
+              ? Align(
+                  alignment: Alignment.topLeft,
+                  child: SizedBox(width: column.width, child: columnTitle),
+                )
+              : columnTitle,
         ),
       ),
     );
@@ -228,6 +242,402 @@ void main() {
 
       // then
       expect(find.byType(PlutoGridColumnIcon), findsNothing);
+      expect(
+        find.byKey(
+          const ValueKey<String>(
+            'column_resize_handle_column_field_name',
+          ),
+        ),
+        findsNothing,
+      );
+    },
+  );
+
+  testWidgets(
+    'showColumnHeaderIcon 이 false 면 action icon 없이 resize handle만 '
+    '출력되어야 한다.',
+    (WidgetTester tester) async {
+      configuration = const PlutoGridConfiguration(
+        style: PlutoGridStyleConfig(showColumnHeaderIcon: false),
+      );
+      when(stateManager.configuration).thenReturn(configuration);
+      when(stateManager.style).thenReturn(configuration.style);
+
+      final PlutoColumn column = PlutoColumn(
+        title: 'column title',
+        field: 'column_field_name',
+        type: PlutoColumnType.text(),
+      );
+
+      await tester.pumpWidget(buildApp(column: column));
+
+      expect(find.byType(PlutoGridColumnIcon), findsNothing);
+      expect(
+        find.byKey(
+          const ValueKey<String>(
+            'column_resize_handle_column_field_name',
+          ),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(
+          const ValueKey<String>(
+            'column_header_action_spacer_column_field_name',
+          ),
+        ),
+        findsNothing,
+      );
+    },
+  );
+
+  testWidgets(
+    'hidden header controls reserve no layout width in LTR and RTL.',
+    (WidgetTester tester) async {
+      const double columnWidth = 200;
+      const String title =
+          'AHeaderTitleThatIsLongEnoughToFillTheAvailableTextRegion';
+
+      Future<double> pumpHeader({
+        required TextDirection textDirection,
+        required bool showHeaderAction,
+        required bool showFilterAction,
+        required int caseIndex,
+      }) async {
+        configuration = PlutoGridConfiguration(
+          style: PlutoGridStyleConfig(
+            defaultColumnTitlePadding: EdgeInsets.zero,
+            showColumnHeaderIcon: showHeaderAction,
+            showColumnFilterIcon: showFilterAction,
+          ),
+        );
+        when(stateManager.configuration).thenReturn(configuration);
+        when(stateManager.style).thenReturn(configuration.style);
+        when(stateManager.textDirection).thenReturn(textDirection);
+        when(stateManager.isRTL).thenReturn(
+          textDirection == TextDirection.rtl,
+        );
+        when(stateManager.isLTR).thenReturn(
+          textDirection == TextDirection.ltr,
+        );
+
+        final String field = 'header_layout_${textDirection.name}_$caseIndex';
+        final PlutoColumn column = PlutoColumn(
+          title: title,
+          field: field,
+          type: PlutoColumnType.text(),
+          width: columnWidth,
+          onFilterIconTap: (_) {},
+        );
+
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pumpWidget(
+          buildApp(
+            column: column,
+            textDirection: textDirection,
+            constrainToColumnWidth: true,
+          ),
+        );
+
+        final Finder headerText = find.byKey(
+          ValueKey<String>('column_header_text_$field'),
+        );
+
+        expect(headerText, findsOneWidget);
+        expect(
+          find.byKey(ValueKey<String>('column_filter_icon_$field')),
+          showFilterAction ? findsOneWidget : findsNothing,
+        );
+        expect(
+          find.byKey(ValueKey<String>('column_header_action_spacer_$field')),
+          showHeaderAction ? findsOneWidget : findsNothing,
+        );
+        expect(
+          find.byKey(ValueKey<String>('column_header_action_$field')),
+          showHeaderAction ? findsOneWidget : findsNothing,
+        );
+
+        final Rect columnRect = tester.getRect(find.byType(PlutoColumnTitle));
+        final Rect textRect = tester.getRect(headerText);
+        final Finder filterAction = find.byKey(
+          ValueKey<String>('column_filter_icon_$field'),
+        );
+        final Finder actionSpacer = find.byKey(
+          ValueKey<String>('column_header_action_spacer_$field'),
+        );
+        final Finder headerAction = find.byKey(
+          ValueKey<String>('column_header_action_$field'),
+        );
+
+        if (showHeaderAction) {
+          expect(
+            tester.getSize(headerAction).width,
+            configuration.style.iconSize,
+          );
+        }
+
+        if (textDirection == TextDirection.ltr) {
+          double nextX = textRect.right;
+
+          if (showFilterAction) {
+            final Rect filterRect = tester.getRect(filterAction);
+            expect(filterRect.left, closeTo(nextX, 0.01));
+            nextX = filterRect.right;
+          }
+
+          if (showHeaderAction) {
+            final Rect spacerRect = tester.getRect(actionSpacer);
+            final Rect actionRect = tester.getRect(headerAction);
+            expect(spacerRect.left, closeTo(nextX, 0.01));
+            expect(actionRect.left, closeTo(spacerRect.left, 0.01));
+            expect(
+              actionRect.right,
+              closeTo(
+                spacerRect.right -
+                    PlutoGridSettings.columnResizeHandleWidth / 2,
+                0.01,
+              ),
+            );
+            nextX = spacerRect.right;
+          }
+
+          expect(nextX, closeTo(columnRect.right, 0.01));
+        } else {
+          double nextX = textRect.left;
+
+          if (showFilterAction) {
+            final Rect filterRect = tester.getRect(filterAction);
+            expect(filterRect.right, closeTo(nextX, 0.01));
+            nextX = filterRect.left;
+          }
+
+          if (showHeaderAction) {
+            final Rect spacerRect = tester.getRect(actionSpacer);
+            final Rect actionRect = tester.getRect(headerAction);
+            expect(spacerRect.right, closeTo(nextX, 0.01));
+            expect(
+              actionRect.left,
+              closeTo(
+                spacerRect.left + PlutoGridSettings.columnResizeHandleWidth / 2,
+                0.01,
+              ),
+            );
+            expect(actionRect.right, closeTo(spacerRect.right, 0.01));
+            nextX = spacerRect.left;
+          }
+
+          expect(nextX, closeTo(columnRect.left, 0.01));
+        }
+
+        return tester.getSize(headerText).width;
+      }
+
+      final double actionSpacing =
+          configuration.style.iconSize +
+          PlutoGridSettings.columnResizeHandleWidth / 2;
+
+      for (final TextDirection textDirection in TextDirection.values) {
+        final double hiddenWidth = await pumpHeader(
+          textDirection: textDirection,
+          showHeaderAction: false,
+          showFilterAction: false,
+          caseIndex: 0,
+        );
+        final double headerActionWidth = await pumpHeader(
+          textDirection: textDirection,
+          showHeaderAction: true,
+          showFilterAction: false,
+          caseIndex: 1,
+        );
+        final double filterActionWidth = await pumpHeader(
+          textDirection: textDirection,
+          showHeaderAction: false,
+          showFilterAction: true,
+          caseIndex: 2,
+        );
+        final double bothActionsWidth = await pumpHeader(
+          textDirection: textDirection,
+          showHeaderAction: true,
+          showFilterAction: true,
+          caseIndex: 3,
+        );
+
+        expect(hiddenWidth, columnWidth);
+        expect(
+          headerActionWidth,
+          columnWidth - actionSpacing,
+        );
+        expect(
+          filterActionWidth,
+          columnWidth - configuration.style.iconSize,
+        );
+        expect(
+          bothActionsWidth,
+          columnWidth - actionSpacing - configuration.style.iconSize,
+        );
+      }
+    },
+  );
+
+  testWidgets(
+    'column.showColumnHeaderIcon 이 global style 값을 재정의해야 한다.',
+    (WidgetTester tester) async {
+      configuration = const PlutoGridConfiguration(
+        style: PlutoGridStyleConfig(showColumnHeaderIcon: false),
+      );
+      when(stateManager.configuration).thenReturn(configuration);
+      when(stateManager.style).thenReturn(configuration.style);
+
+      final PlutoColumn column = PlutoColumn(
+        title: 'column title',
+        field: 'column_field_name',
+        type: PlutoColumnType.text(),
+        showColumnHeaderIcon: true,
+      );
+
+      await tester.pumpWidget(buildApp(column: column));
+
+      expect(find.byType(PlutoGridColumnIcon), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'active filter icon visibility can be configured globally and per column.',
+    (WidgetTester tester) async {
+      configuration = const PlutoGridConfiguration(
+        style: PlutoGridStyleConfig(
+          showColumnHeaderIcon: false,
+          showColumnFilterIcon: false,
+          columnFilterIcon: Icons.tune,
+        ),
+      );
+      when(stateManager.configuration).thenReturn(configuration);
+      when(stateManager.style).thenReturn(configuration.style);
+
+      final PlutoColumn column = PlutoColumn(
+        title: 'column title',
+        field: 'column_field_name',
+        type: PlutoColumnType.text(),
+      );
+      when(stateManager.isFilteredColumn(column)).thenReturn(true);
+
+      await tester.pumpWidget(buildApp(column: column));
+
+      final Finder filterIcon = find.byKey(
+        const ValueKey<String>(
+          'column_filter_icon_column_field_name',
+        ),
+      );
+      expect(filterIcon, findsNothing);
+
+      column.showColumnFilterIcon = true;
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpWidget(buildApp(column: column));
+
+      expect(filterIcon, findsOneWidget);
+      expect(find.byIcon(Icons.tune), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'filter icon remains tappable beside the header action and supports a '
+    'custom overlay.',
+    (WidgetTester tester) async {
+      configuration = const PlutoGridConfiguration();
+      when(stateManager.configuration).thenReturn(configuration);
+      when(stateManager.style).thenReturn(configuration.style);
+
+      OverlayEntry? overlayEntry;
+      bool actionCalled = false;
+      Size? actionContextSize;
+      final PlutoColumn column = PlutoColumn(
+        title: 'column title',
+        field: 'column_field_name',
+        type: PlutoColumnType.text(),
+        filterIconRenderer: (PlutoColumnFilterIconContext context) =>
+            const Icon(Icons.star, key: ValueKey<String>('custom_filter_icon')),
+        onFilterIconTap: (PlutoColumnFilterIconContext context) {
+          actionCalled = true;
+          actionContextSize =
+              (context.buildContext.findRenderObject()! as RenderBox).size;
+          overlayEntry = OverlayEntry(
+            builder: (BuildContext context) => const Positioned(
+              top: 10,
+              left: 10,
+              child: Material(child: Text('custom filter overlay')),
+            ),
+          );
+          Overlay.of(context.buildContext).insert(overlayEntry!);
+        },
+      );
+
+      await tester.pumpWidget(buildApp(column: column));
+
+      expect(
+        find.byKey(const ValueKey<String>('custom_filter_icon')),
+        findsOneWidget,
+      );
+      expect(find.byType(PlutoGridColumnIcon), findsOneWidget);
+      expect(find.byIcon(Icons.filter_alt_outlined), findsNothing);
+
+      await tester.tap(
+        find.byKey(
+          const ValueKey<String>(
+            'column_filter_icon_column_field_name',
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 50));
+
+      verifyNever(stateManager.toggleSortColumn(any));
+      expect(actionCalled, isTrue);
+      expect(actionContextSize, const Size(18, 18));
+      expect(find.text('custom filter overlay'), findsOneWidget);
+
+      overlayEntry?.remove();
+      await tester.pump();
+    },
+  );
+
+  testWidgets(
+    'filter icon uses PlutoGrid custom filter popup by default.',
+    (WidgetTester tester) async {
+      configuration = const PlutoGridConfiguration(
+        style: PlutoGridStyleConfig(showColumnHeaderIcon: false),
+      );
+      when(stateManager.configuration).thenReturn(configuration);
+      when(stateManager.style).thenReturn(configuration.style);
+
+      PlutoColumn? popupColumn;
+      when(stateManager.showFilterPopupCustom).thenReturn(
+        (
+          BuildContext context, {
+          PlutoColumn? calledColumn,
+          VoidCallback? onClosed,
+        }) {
+          popupColumn = calledColumn;
+        },
+      );
+      final PlutoColumn column = PlutoColumn(
+        title: 'column title',
+        field: 'column_field_name',
+        type: PlutoColumnType.text(),
+      );
+
+      await tester.pumpWidget(buildApp(column: column));
+
+      final Finder filterIcon = find.byKey(
+        const ValueKey<String>(
+          'column_filter_icon_column_field_name',
+        ),
+      );
+      expect(filterIcon, findsOneWidget);
+
+      await tester.tap(filterIcon);
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(popupColumn, same(column));
+      verifyNever(stateManager.toggleSortColumn(any));
     },
   );
 
@@ -636,6 +1046,137 @@ void main() {
     );
   });
 
+  testWidgets(
+    'column boundary resize handle 로 resizeColumn 이 호출되어야 한다.',
+    (WidgetTester tester) async {
+      configuration = const PlutoGridConfiguration(
+        style: PlutoGridStyleConfig(showColumnHeaderIcon: false),
+      );
+      when(stateManager.configuration).thenReturn(configuration);
+      when(stateManager.style).thenReturn(configuration.style);
+
+      final PlutoColumn column = PlutoColumn(
+        title: 'column title',
+        field: 'column_field_name',
+        type: PlutoColumnType.text(),
+      );
+
+      await tester.pumpWidget(buildApp(column: column));
+
+      final Finder resizeHandle = find.byKey(
+        const ValueKey<String>(
+          'column_resize_handle_column_field_name',
+        ),
+      );
+
+      await tester.drag(resizeHandle, const Offset(50, 0));
+
+      verify(
+        stateManager.resizeColumn(
+          column,
+          argThat(greaterThanOrEqualTo(30)),
+        ),
+      );
+    },
+  );
+
+  testWidgets(
+    'double tapping the column boundary should auto fit the column',
+    (WidgetTester tester) async {
+      configuration = const PlutoGridConfiguration(
+        style: PlutoGridStyleConfig(showColumnHeaderIcon: false),
+      );
+      when(stateManager.configuration).thenReturn(configuration);
+      when(stateManager.style).thenReturn(configuration.style);
+
+      final PlutoColumn column = PlutoColumn(
+        title: 'column title',
+        field: 'column_field_name',
+        type: PlutoColumnType.text(),
+      );
+
+      await tester.pumpWidget(buildApp(column: column));
+
+      final Finder resizeHandle = find.byKey(
+        const ValueKey<String>(
+          'column_resize_handle_column_field_name',
+        ),
+      );
+      final Offset handleCenter = tester.getCenter(resizeHandle);
+      final TestGesture mouse = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+
+      await mouse.addPointer(location: handleCenter);
+      await mouse.down(handleCenter);
+      await mouse.moveBy(
+        const Offset(1, 0),
+        timeStamp: const Duration(milliseconds: 1),
+      );
+      await mouse.up(timeStamp: const Duration(milliseconds: 2));
+      await mouse.down(
+        handleCenter + const Offset(1, 0),
+        timeStamp: const Duration(milliseconds: 100),
+      );
+      await mouse.moveBy(
+        const Offset(-1, 0),
+        timeStamp: const Duration(milliseconds: 101),
+      );
+      await mouse.up(timeStamp: const Duration(milliseconds: 102));
+      await tester.pumpAndSettle();
+
+      verify(stateManager.autoFitColumn(any, column)).called(1);
+      verify(stateManager.updateCorrectScrollOffset()).called(1);
+      verifyNever(stateManager.resizeColumn(any, any));
+
+      await mouse.removePointer();
+    },
+  );
+
+  testWidgets(
+    'column boundary hover 시 resize indicator 가 표시되어야 한다.',
+    (WidgetTester tester) async {
+      configuration = const PlutoGridConfiguration(
+        style: PlutoGridStyleConfig(showColumnHeaderIcon: false),
+      );
+      when(stateManager.configuration).thenReturn(configuration);
+      when(stateManager.style).thenReturn(configuration.style);
+
+      final PlutoColumn column = PlutoColumn(
+        title: 'column title',
+        field: 'column_field_name',
+        type: PlutoColumnType.text(),
+      );
+
+      await tester.pumpWidget(buildApp(column: column));
+
+      final Finder resizeHandle = find.byKey(
+        const ValueKey<String>(
+          'column_resize_handle_column_field_name',
+        ),
+      );
+      final Finder indicator = find.byKey(
+        const ValueKey<String>('ColumnResizeHandleIndicator'),
+      );
+
+      expect(tester.getSize(indicator).width, 0);
+
+      final TestGesture mouse = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+      await mouse.addPointer(location: Offset.zero);
+      await mouse.moveTo(tester.getCenter(resizeHandle));
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.getSize(indicator).width,
+        PlutoGridSettings.columnResizeHandleActiveWidth,
+      );
+
+      await mouse.removePointer();
+    },
+  );
+
   group('configuration', () {
     aColumnWithConfiguration(
       PlutoGridConfiguration configuration, {
@@ -665,6 +1206,7 @@ void main() {
         style: PlutoGridStyleConfig(
           enableColumnBorderVertical: true,
           borderColor: Colors.deepOrange,
+          columnBorderWidth: 0.5,
         ),
       ),
     ).test(
@@ -686,7 +1228,7 @@ void main() {
 
         final BorderDirectional border = decoration.border as BorderDirectional;
 
-        expect(border.end.width, 1.0);
+        expect(border.end.width, 0.5);
         expect(border.end.color, Colors.deepOrange);
       },
     );

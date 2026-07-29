@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -44,6 +45,9 @@ void main() {
     when(stateManager.keepFocus).thenReturn(true);
     when(stateManager.hasFocus).thenReturn(true);
     when(stateManager.selectingMode).thenReturn(PlutoGridSelectingMode.cell);
+    when(stateManager.columnsResizeMode).thenReturn(PlutoResizeMode.normal);
+    when(stateManager.textDirection).thenReturn(TextDirection.ltr);
+    when(stateManager.isLTR).thenReturn(true);
     when(stateManager.canRowDrag).thenReturn(true);
     when(stateManager.isSelectedCell(any, any, any)).thenReturn(false);
     when(stateManager.enabledRowGroups).thenReturn(false);
@@ -317,6 +321,185 @@ void main() {
     expect(find.byType(PlutoTimeCell), findsNothing);
     expect(find.byType(PlutoTextCell), findsNothing);
   });
+
+  testWidgets(
+    'column boundary in a cell should resize the column',
+    (WidgetTester tester) async {
+      final PlutoCell cell = PlutoCell(value: 'cell value');
+      final PlutoColumn column = PlutoColumn(
+        title: 'header',
+        field: 'header',
+        type: PlutoColumnType.text(),
+      );
+      final PlutoRow row = PlutoRow(cells: <String, PlutoCell>{'header': cell});
+
+      when(stateManager.isCurrentCell(any)).thenReturn(false);
+      when(stateManager.isSelectedCell(any, any, any)).thenReturn(false);
+      when(stateManager.isEditing).thenReturn(false);
+
+      await tester.pumpWidget(
+        buildApp(
+          cell: cell,
+          column: column,
+          rowIdx: 0,
+          row: row,
+        ),
+      );
+
+      final Finder resizeHandle = find.byKey(
+        const ValueKey<String>('cell_resize_handle_header_0'),
+      );
+
+      await tester.drag(resizeHandle, const Offset(50, 0));
+
+      verify(
+        stateManager.resizeColumn(
+          column,
+          argThat(greaterThanOrEqualTo(30)),
+        ),
+      );
+    },
+  );
+
+  testWidgets(
+    'double tapping a cell boundary should auto fit the column',
+    (WidgetTester tester) async {
+      final PlutoCell cell = PlutoCell(value: 'cell value');
+      final PlutoColumn column = PlutoColumn(
+        title: 'header',
+        field: 'header',
+        type: PlutoColumnType.text(),
+      );
+      final PlutoRow row = PlutoRow(cells: <String, PlutoCell>{'header': cell});
+
+      when(stateManager.isCurrentCell(any)).thenReturn(false);
+      when(stateManager.isSelectedCell(any, any, any)).thenReturn(false);
+      when(stateManager.isEditing).thenReturn(false);
+
+      await tester.pumpWidget(
+        buildApp(
+          cell: cell,
+          column: column,
+          rowIdx: 0,
+          row: row,
+        ),
+      );
+
+      final Finder resizeHandle = find.byKey(
+        const ValueKey<String>('cell_resize_handle_header_0'),
+      );
+      final Offset handleCenter = tester.getCenter(resizeHandle);
+      final TestGesture mouse = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+
+      await mouse.addPointer(location: handleCenter);
+      await mouse.down(handleCenter);
+      await mouse.up(timeStamp: const Duration(milliseconds: 1));
+      await mouse.down(
+        handleCenter,
+        timeStamp: const Duration(milliseconds: 100),
+      );
+      await mouse.up(timeStamp: const Duration(milliseconds: 101));
+      await tester.pumpAndSettle();
+
+      verify(stateManager.autoFitColumn(any, column)).called(1);
+      verify(stateManager.updateCorrectScrollOffset()).called(1);
+
+      await mouse.removePointer();
+    },
+  );
+
+  testWidgets(
+    'active resize indicator should be centered on the cell boundary',
+    (WidgetTester tester) async {
+      final PlutoCell cell = PlutoCell(value: 'cell value');
+      final PlutoColumn column = PlutoColumn(
+        title: 'header',
+        field: 'header',
+        type: PlutoColumnType.text(),
+      );
+      final PlutoRow row = PlutoRow(cells: <String, PlutoCell>{'header': cell});
+
+      when(stateManager.isCurrentCell(any)).thenReturn(false);
+      when(stateManager.isSelectedCell(any, any, any)).thenReturn(false);
+      when(stateManager.isEditing).thenReturn(false);
+
+      await tester.pumpWidget(
+        buildApp(
+          cell: cell,
+          column: column,
+          rowIdx: 0,
+          row: row,
+        ),
+      );
+
+      final Finder resizeHandle = find.byKey(
+        const ValueKey<String>('cell_resize_handle_header_0'),
+      );
+      final Finder indicator = find.byKey(
+        const ValueKey<String>('ColumnResizeHandleIndicator'),
+      );
+      final TestGesture mouse = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+
+      await mouse.addPointer(location: Offset.zero);
+      await mouse.moveTo(tester.getCenter(resizeHandle));
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.getCenter(indicator).dx,
+        closeTo(tester.getTopRight(resizeHandle).dx, 0.01),
+      );
+
+      await mouse.removePointer();
+    },
+  );
+
+  testWidgets(
+    'resizable cell decoration should fill the complete row height',
+    (WidgetTester tester) async {
+      final PlutoCell cell = PlutoCell(value: 'cell value');
+      final PlutoColumn column = PlutoColumn(
+        title: 'header',
+        field: 'header',
+        type: PlutoColumnType.text(),
+      );
+      final PlutoRow row = PlutoRow(cells: <String, PlutoCell>{'header': cell});
+
+      when(stateManager.isCurrentCell(any)).thenReturn(false);
+      when(stateManager.isSelectedCell(any, any, any)).thenReturn(false);
+      when(stateManager.isEditing).thenReturn(false);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Material(
+            child: Center(
+              child: SizedBox(
+                width: 200,
+                height: 45,
+                child: PlutoBaseCell(
+                  cell: cell,
+                  column: column,
+                  rowIdx: 0,
+                  row: row,
+                  stateManager: stateManager,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final Finder decoration = find.descendant(
+        of: find.byType(PlutoBaseCell),
+        matching: find.byType(DecoratedBox),
+      );
+
+      expect(tester.getSize(decoration.first).height, 45);
+    },
+  );
 
   testWidgets('WHEN If double type cell is CurrentCell and in Editing state'
       'THEN [NumberCellWidget] should be rendered', (
@@ -754,6 +937,7 @@ void main() {
         style: PlutoGridStyleConfig(
           enableCellBorderVertical: true,
           borderColor: Colors.deepOrange,
+          columnBorderWidth: 0.5,
         ),
       ),
       isCurrentCell: false,
@@ -778,6 +962,7 @@ void main() {
           border.end.color,
           stateManager.configuration.style.borderColor,
         );
+        expect(border.end.width, 0.5);
       },
     );
 

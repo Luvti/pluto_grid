@@ -50,6 +50,21 @@
             "program": "lib/main.dart"
         },
         {
+            "name": "example (thin 0.5px divider)",
+            "cwd": "example",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/thin_column_divider.dart"
+        },
+        {
+            "name": "example (column resize stress 50x100k)",
+            "cwd": "example",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/column_resize_stress.dart",
+            "flutterMode": "profile"
+        },
+        {
             "name": "example (big)",
             "cwd": "example",
             "request": "launch",

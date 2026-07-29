@@ -194,12 +194,8 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
   @override
   final GlobalKey gridKey;
 
-  void Function(
-    BuildContext context, {
-    PlutoColumn? calledColumn,
-    void Function()? onClosed,
-  })?
-  showFilterPopupCustom;
+  @override
+  PlutoShowFilterPopupCallback? showFilterPopupCustom;
 
   void _initialize() {
     PlutoGridStateManager.initializeRows(

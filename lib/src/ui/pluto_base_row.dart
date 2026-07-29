@@ -4,6 +4,7 @@ import 'package:flutter/src/gestures/events.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 import 'package:pluto_grid_plus/src/manager/event/pluto_grid_row_hover_event.dart';
 
+import 'columns/pluto_column_resize_handle.dart';
 import 'ui.dart';
 
 class PlutoBaseRow extends StatelessWidget {
@@ -17,12 +18,15 @@ class PlutoBaseRow extends StatelessWidget {
 
   final bool visibilityLayout;
 
+  final bool showTrailingResizeGutter;
+
   const PlutoBaseRow({
     required this.rowIdx,
     required this.row,
     required this.columns,
     required this.stateManager,
     this.visibilityLayout = false,
+    this.showTrailingResizeGutter = false,
     super.key,
   });
 
@@ -62,6 +66,13 @@ class PlutoBaseRow extends StatelessWidget {
   }
 
   PlutoVisibilityLayoutId _makeCell(PlutoColumn column) {
+    final int columnIndex = columns.indexWhere(
+      (PlutoColumn candidate) => candidate.key == column.key,
+    );
+    final PlutoColumn? leadingResizeColumn = columnIndex > 0
+        ? columns[columnIndex - 1]
+        : null;
+
     // check exist and more readable warning
     if (!row.cells.containsKey(column.field)) {
       debugPrint(
@@ -79,6 +90,7 @@ class PlutoBaseRow extends StatelessWidget {
           key: ValueKey<String>('missingCell_${column.field}'),
           cell: cell,
           column: column,
+          leadingResizeColumn: leadingResizeColumn,
           rowIdx: rowIdx,
           row: row,
           stateManager: stateManager,
@@ -91,6 +103,7 @@ class PlutoBaseRow extends StatelessWidget {
         key: row.cells[column.field]!.key,
         cell: row.cells[column.field]!,
         column: column,
+        leadingResizeColumn: leadingResizeColumn,
         rowIdx: rowIdx,
         row: row,
         stateManager: stateManager,
@@ -98,7 +111,42 @@ class PlutoBaseRow extends StatelessWidget {
     );
   }
 
+  List<PlutoVisibilityLayoutId> _makeCells() {
+    final List<PlutoVisibilityLayoutId> cells = columns
+        .map(_makeCell)
+        .toList(growable: true);
+
+    if (showTrailingResizeGutter &&
+        columns.isNotEmpty &&
+        columns.last.enableDropToResize &&
+        !stateManager.columnsResizeMode.isNone) {
+      final PlutoColumn trailingColumn = columns.last;
+      cells.add(
+        PlutoVisibilityLayoutId(
+          id: PlutoColumnResizeGutter.layoutId,
+          child: PlutoColumnResizeGutter(
+            key: ValueKey<String>('cell_resize_trailing_gutter_$rowIdx'),
+            handleKey: ValueKey<String>(
+              'cell_resize_handle_end_gutter_'
+              '${trailingColumn.field}_$rowIdx',
+            ),
+            stateManager: stateManager,
+            column: trailingColumn,
+            boundaryPosition: columns.fold<double>(
+              0,
+              (double width, PlutoColumn column) => width + column.width,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return cells;
+  }
+
   Widget _dragTargetBuilder(BuildContext dragContext, candidate, rejected) {
+    final List<PlutoVisibilityLayoutId> cells = _makeCells();
+
     return _RowContainerWidget(
       stateManager: stateManager,
       rowIdx: rowIdx,
@@ -113,10 +161,11 @@ class PlutoBaseRow extends StatelessWidget {
                 stateManager: stateManager,
                 columns: columns,
                 textDirection: stateManager.textDirection,
+                showTrailingResizeGutter: showTrailingResizeGutter,
               ),
               scrollController: stateManager.scroll.bodyRowsHorizontal!,
               initialViewportDimension: MediaQuery.sizeOf(dragContext).width,
-              children: columns.map(_makeCell).toList(growable: false),
+              children: cells,
             )
           : CustomMultiChildLayout(
               key: ValueKey('rowContainer_${row.key}_row'),
@@ -124,8 +173,9 @@ class PlutoBaseRow extends StatelessWidget {
                 stateManager: stateManager,
                 columns: columns,
                 textDirection: stateManager.textDirection,
+                showTrailingResizeGutter: showTrailingResizeGutter,
               ),
-              children: columns.map(_makeCell).toList(growable: false),
+              children: cells,
             ),
     );
   }
@@ -171,35 +221,40 @@ class _RowCellsLayoutDelegate extends MultiChildLayoutDelegate {
 
   final TextDirection textDirection;
 
-  // Cache for total width calculation
-  double? _cachedWidth;
+  final bool showTrailingResizeGutter;
 
   _RowCellsLayoutDelegate({
     required this.stateManager,
     required this.columns,
     required this.textDirection,
+    required this.showTrailingResizeGutter,
   }) : super(relayout: stateManager.resizingChangeNotifier);
+
+  bool get _showTrailingResizeGutter =>
+      showTrailingResizeGutter &&
+      columns.isNotEmpty &&
+      columns.last.enableDropToResize &&
+      !stateManager.columnsResizeMode.isNone;
+
+  double get _trailingGutterWidth => _showTrailingResizeGutter
+      ? PlutoGridSettings.columnResizeHandleWidth / 2
+      : 0;
 
   @override
   Size getSize(BoxConstraints constraints) {
-    // Since delegate is recreated when columns change (via resizingChangeNotifier),
-    // we can safely cache the width calculation
-    if (_cachedWidth == null) {
-      double width = 0;
-      for (final PlutoColumn column in columns) {
-        width += column.width;
-      }
-      _cachedWidth = width;
+    double width = _trailingGutterWidth;
+    for (final PlutoColumn column in columns) {
+      width += column.width;
     }
 
-    return Size(_cachedWidth!, stateManager.rowHeight);
+    return Size(width, stateManager.rowHeight);
   }
 
   @override
   void performLayout(Size size) {
     final bool isLTR = textDirection == TextDirection.ltr;
     final Iterable<PlutoColumn> items = isLTR ? columns : columns.reversed;
-    double dx = 0;
+    double dx = isLTR ? 0 : _trailingGutterWidth;
 
     for (PlutoColumn element in items) {
       double width = element.width;
@@ -220,6 +275,21 @@ class _RowCellsLayoutDelegate extends MultiChildLayoutDelegate {
       }
 
       dx += width;
+    }
+
+    if (_showTrailingResizeGutter &&
+        hasChild(PlutoColumnResizeGutter.layoutId)) {
+      layoutChild(
+        PlutoColumnResizeGutter.layoutId,
+        BoxConstraints.tightFor(
+          width: _trailingGutterWidth,
+          height: stateManager.rowHeight,
+        ),
+      );
+      positionChild(
+        PlutoColumnResizeGutter.layoutId,
+        Offset(isLTR ? size.width - _trailingGutterWidth : 0, 0),
+      );
     }
   }
 
@@ -395,18 +465,18 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
       border: Border(
         top: isTopDragTarget
             ? BorderSide(
-                width: PlutoGridSettings.rowBorderWidth,
+                width: stateManager.configuration.style.rowBorderWidth,
                 color: stateManager.configuration.style.activatedBorderColor,
               )
             : BorderSide.none,
         bottom: isBottomDragTarget
             ? BorderSide(
-                width: PlutoGridSettings.rowBorderWidth,
+                width: stateManager.configuration.style.rowBorderWidth,
                 color: stateManager.configuration.style.activatedBorderColor,
               )
             : stateManager.configuration.style.enableCellBorderHorizontal
             ? BorderSide(
-                width: PlutoGridSettings.rowBorderWidth,
+                width: stateManager.configuration.style.rowBorderWidth,
                 color: stateManager.configuration.style.borderColor,
               )
             : BorderSide.none,

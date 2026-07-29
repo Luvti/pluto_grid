@@ -9,11 +9,14 @@ class PlutoBaseColumn extends PlutoStatefulWidget
 
   final PlutoColumn column;
 
+  final PlutoColumn? leadingResizeColumn;
+
   final double? columnTitleHeight;
 
   PlutoBaseColumn({
     required this.stateManager,
     required this.column,
+    this.leadingResizeColumn,
     this.columnTitleHeight,
   }) : super(key: column.key);
 
@@ -64,6 +67,7 @@ class PlutoBaseColumnState extends PlutoStateWithChange<PlutoBaseColumn> {
           child: PlutoColumnTitle(
             stateManager: stateManager,
             column: widget.column,
+            leadingResizeColumn: widget.leadingResizeColumn,
             height: widget.columnTitleHeight ?? stateManager.columnHeight,
           ),
         ),

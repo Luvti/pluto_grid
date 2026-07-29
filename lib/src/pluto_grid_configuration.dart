@@ -225,6 +225,19 @@ class PlutoGridConfiguration {
   );
 }
 
+/// Determines how much of a column boundary is highlighted while resizing.
+enum PlutoColumnResizeIndicatorMode {
+  /// Highlight only the boundary segment inside the hovered cell or header.
+  cell,
+
+  /// Highlight only the leaf column header.
+  header,
+
+  /// Highlight one continuous boundary through the column header and all
+  /// visible rows, stopping at the last row when it is inside the viewport.
+  fullHeight,
+}
+
 class PlutoGridStyleConfig {
   const PlutoGridStyleConfig({
     this.enableGridBorderShadow = false,
@@ -252,6 +265,8 @@ class PlutoGridStyleConfig {
     this.menuBackgroundColor = Colors.white,
     this.gridBorderColor = const Color(0xFFA1A5AE),
     this.borderColor = const Color(0xFFDDE2EB),
+    this.columnBorderWidth = PlutoGridSettings.columnBorderWidth,
+    this.rowBorderWidth = PlutoGridSettings.rowBorderWidth,
     this.activatedBorderColor = Colors.lightBlue,
     this.inactivatedBorderColor = const Color(0xFFC4C7CC),
     this.iconSize = 18,
@@ -275,6 +290,10 @@ class PlutoGridStyleConfig {
     this.tooltipTextStyle = const TextStyle(color: Colors.black, fontSize: 14),
     this.columnContextIcon = Icons.dehaze,
     this.columnResizeIcon = Icons.code_sharp,
+    this.columnFilterIcon = Icons.filter_alt_outlined,
+    this.showColumnHeaderIcon = true,
+    this.showColumnFilterIcon = true,
+    this.columnResizeIndicatorMode = PlutoColumnResizeIndicatorMode.cell,
     this.columnAscendingIcon,
     this.columnDescendingIcon,
     this.rowGroupExpandedIcon = Icons.keyboard_arrow_down,
@@ -330,6 +349,8 @@ class PlutoGridStyleConfig {
     this.menuBackgroundColor = const Color(0xFF414141),
     this.gridBorderColor = const Color(0xFF666666),
     this.borderColor = const Color(0xFF222222),
+    this.columnBorderWidth = PlutoGridSettings.columnBorderWidth,
+    this.rowBorderWidth = PlutoGridSettings.rowBorderWidth,
     this.activatedBorderColor = const Color(0xFFFFFFFF),
     this.inactivatedBorderColor = const Color(0xFF666666),
     this.iconSize = 18,
@@ -353,6 +374,10 @@ class PlutoGridStyleConfig {
     this.tooltipTextStyle = const TextStyle(color: Colors.white, fontSize: 14),
     this.columnContextIcon = Icons.dehaze,
     this.columnResizeIcon = Icons.code_sharp,
+    this.columnFilterIcon = Icons.filter_alt_outlined,
+    this.showColumnHeaderIcon = true,
+    this.showColumnFilterIcon = true,
+    this.columnResizeIndicatorMode = PlutoColumnResizeIndicatorMode.cell,
     this.columnAscendingIcon,
     this.columnDescendingIcon,
     this.rowGroupExpandedIcon = Icons.keyboard_arrow_down,
@@ -477,6 +502,14 @@ class PlutoGridStyleConfig {
   /// for [PlutoColumn], [PlutoColumnGroup], [PlutoCell], [PlutoRow], etc.
   final Color borderColor;
 
+  /// Width of the painted vertical divider between columns.
+  ///
+  /// This does not change the larger invisible resize hit target.
+  final double columnBorderWidth;
+
+  /// Width of the painted horizontal divider between rows.
+  final double rowBorderWidth;
+
   /// Border color set when widgets such as [PlutoRow] and [PlutoCell]
   /// receive focus or are currently selected.
   final Color activatedBorderColor;
@@ -540,6 +573,28 @@ class PlutoGridStyleConfig {
   /// only the width of the column can be adjusted.
   final IconData columnResizeIcon;
 
+  /// Icon displayed next to a column title while that column is filtered.
+  final IconData columnFilterIcon;
+
+  /// Whether context-menu and resize icons are shown in column headers.
+  ///
+  /// This does not hide active sort indicators. A column can override this
+  /// value with [PlutoColumn.showColumnHeaderIcon].
+  final bool showColumnHeaderIcon;
+
+  /// Whether filter icons are enabled in column headers.
+  ///
+  /// Without a custom filter action, an icon is displayed only while its
+  /// column is filtered. A column can override this value with
+  /// [PlutoColumn.showColumnFilterIcon].
+  final bool showColumnFilterIcon;
+
+  /// Controls how the active column resize boundary is highlighted.
+  ///
+  /// A column can override this value with
+  /// [PlutoColumn.columnResizeIndicatorMode].
+  final PlutoColumnResizeIndicatorMode columnResizeIndicatorMode;
+
   /// Ascending icon when sorting a column.
   ///
   /// If no value is specified, the default icon is set.
@@ -600,6 +655,8 @@ class PlutoGridStyleConfig {
     Color? menuBackgroundColor,
     Color? gridBorderColor,
     Color? borderColor,
+    double? columnBorderWidth,
+    double? rowBorderWidth,
     Color? activatedBorderColor,
     Color? inactivatedBorderColor,
     double? iconSize,
@@ -618,6 +675,10 @@ class PlutoGridStyleConfig {
     TextStyle? tooltipTextStyle,
     IconData? columnContextIcon,
     IconData? columnResizeIcon,
+    IconData? columnFilterIcon,
+    bool? showColumnHeaderIcon,
+    bool? showColumnFilterIcon,
+    PlutoColumnResizeIndicatorMode? columnResizeIndicatorMode,
     PlutoOptional<Icon?>? columnAscendingIcon,
     PlutoOptional<Icon?>? columnDescendingIcon,
     IconData? rowGroupExpandedIcon,
@@ -663,6 +724,8 @@ class PlutoGridStyleConfig {
       menuBackgroundColor: menuBackgroundColor ?? this.menuBackgroundColor,
       gridBorderColor: gridBorderColor ?? this.gridBorderColor,
       borderColor: borderColor ?? this.borderColor,
+      columnBorderWidth: columnBorderWidth ?? this.columnBorderWidth,
+      rowBorderWidth: rowBorderWidth ?? this.rowBorderWidth,
       activatedBorderColor: activatedBorderColor ?? this.activatedBorderColor,
       inactivatedBorderColor:
           inactivatedBorderColor ?? this.inactivatedBorderColor,
@@ -684,6 +747,11 @@ class PlutoGridStyleConfig {
       cellTextStyle: cellTextStyle ?? this.cellTextStyle,
       columnContextIcon: columnContextIcon ?? this.columnContextIcon,
       columnResizeIcon: columnResizeIcon ?? this.columnResizeIcon,
+      columnFilterIcon: columnFilterIcon ?? this.columnFilterIcon,
+      showColumnHeaderIcon: showColumnHeaderIcon ?? this.showColumnHeaderIcon,
+      showColumnFilterIcon: showColumnFilterIcon ?? this.showColumnFilterIcon,
+      columnResizeIndicatorMode:
+          columnResizeIndicatorMode ?? this.columnResizeIndicatorMode,
       columnAscendingIcon: columnAscendingIcon == null
           ? this.columnAscendingIcon
           : columnAscendingIcon.value,
@@ -733,6 +801,8 @@ class PlutoGridStyleConfig {
             menuBackgroundColor == other.menuBackgroundColor &&
             gridBorderColor == other.gridBorderColor &&
             borderColor == other.borderColor &&
+            columnBorderWidth == other.columnBorderWidth &&
+            rowBorderWidth == other.rowBorderWidth &&
             activatedBorderColor == other.activatedBorderColor &&
             inactivatedBorderColor == other.inactivatedBorderColor &&
             iconSize == other.iconSize &&
@@ -751,6 +821,10 @@ class PlutoGridStyleConfig {
             tooltipTextStyle == other.tooltipTextStyle &&
             columnContextIcon == other.columnContextIcon &&
             columnResizeIcon == other.columnResizeIcon &&
+            columnFilterIcon == other.columnFilterIcon &&
+            showColumnHeaderIcon == other.showColumnHeaderIcon &&
+            showColumnFilterIcon == other.showColumnFilterIcon &&
+            columnResizeIndicatorMode == other.columnResizeIndicatorMode &&
             columnAscendingIcon == other.columnAscendingIcon &&
             columnDescendingIcon == other.columnDescendingIcon &&
             rowGroupExpandedIcon == other.rowGroupExpandedIcon &&
@@ -786,6 +860,8 @@ class PlutoGridStyleConfig {
     menuBackgroundColor,
     gridBorderColor,
     borderColor,
+    columnBorderWidth,
+    rowBorderWidth,
     activatedBorderColor,
     inactivatedBorderColor,
     iconSize,
@@ -804,6 +880,10 @@ class PlutoGridStyleConfig {
     tooltipTextStyle,
     columnContextIcon,
     columnResizeIcon,
+    columnFilterIcon,
+    showColumnHeaderIcon,
+    showColumnFilterIcon,
+    columnResizeIndicatorMode,
     columnAscendingIcon,
     columnDescendingIcon,
     rowGroupExpandedIcon,

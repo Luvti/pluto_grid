@@ -64,12 +64,29 @@ class PlutoLeftFrozenColumnsState
     return _showColumnGroups == true ? _columnGroups.length : _columns.length;
   }
 
+  PlutoColumn? _previousColumn(PlutoColumn column) {
+    final int index = _columns.indexWhere(
+      (PlutoColumn candidate) => candidate.key == column.key,
+    );
+
+    return index > 0 ? _columns[index - 1] : null;
+  }
+
+  PlutoColumn? _previousColumnGroup(PlutoColumnGroupPair columnGroup) {
+    final int index = _columnGroups.indexWhere(
+      (PlutoColumnGroupPair candidate) => candidate.key == columnGroup.key,
+    );
+
+    return index > 0 ? _columnGroups[index - 1].columns.last : null;
+  }
+
   Widget _makeColumnGroup(PlutoColumnGroupPair e) {
     return LayoutId(
       id: e.key,
       child: PlutoBaseColumnGroup(
         stateManager: stateManager,
         columnGroup: e,
+        leadingResizeColumn: _previousColumnGroup(e),
         depth: stateManager.columnGroupDepth(stateManager.refColumnGroups),
       ),
     );
@@ -81,6 +98,7 @@ class PlutoLeftFrozenColumnsState
       child: PlutoBaseColumn(
         stateManager: stateManager,
         column: e,
+        leadingResizeColumn: _previousColumn(e),
       ),
     );
   }

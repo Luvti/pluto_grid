@@ -37,6 +37,29 @@ void main() {
 
       expect(copiedStyle.evenRowColor, null);
     });
+
+    test('columnBorderWidth, rowBorderWidth 값을 변경할 수 있어야 한다.', () {
+      const PlutoGridStyleConfig style = PlutoGridStyleConfig();
+
+      final PlutoGridStyleConfig copiedStyle = style.copyWith(
+        columnBorderWidth: 0.5,
+        rowBorderWidth: 0.5,
+        showColumnHeaderIcon: false,
+        showColumnFilterIcon: false,
+        columnFilterIcon: Icons.filter_list,
+        columnResizeIndicatorMode: PlutoColumnResizeIndicatorMode.fullHeight,
+      );
+
+      expect(copiedStyle.columnBorderWidth, 0.5);
+      expect(copiedStyle.rowBorderWidth, 0.5);
+      expect(copiedStyle.showColumnHeaderIcon, false);
+      expect(copiedStyle.showColumnFilterIcon, false);
+      expect(copiedStyle.columnFilterIcon, Icons.filter_list);
+      expect(
+        copiedStyle.columnResizeIndicatorMode,
+        PlutoColumnResizeIndicatorMode.fullHeight,
+      );
+    });
   });
 
   group('PlutoGridColumnSizeConfig.copyWith', () {

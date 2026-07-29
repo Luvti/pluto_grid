@@ -32,7 +32,10 @@ class PlutoBaseColumnFooter extends StatelessWidget
         color: column.backgroundColor,
         border: BorderDirectional(
           end: stateManager.style.enableColumnBorderVertical
-              ? BorderSide(color: stateManager.style.borderColor, width: 1.0)
+              ? BorderSide(
+                  color: stateManager.style.borderColor,
+                  width: stateManager.style.columnBorderWidth,
+                )
               : BorderSide.none,
         ),
       ),

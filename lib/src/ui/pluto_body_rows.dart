@@ -115,6 +115,7 @@ class PlutoBodyRowsState extends PlutoStateWithChange<PlutoBodyRows> {
                 columns: _columns,
                 stateManager: stateManager,
                 visibilityLayout: true,
+                showTrailingResizeGutter: !stateManager.showFrozenColumn,
               );
 
               if (stateManager.rowWrapper != null) {
@@ -144,10 +145,20 @@ class ListResizeDelegate extends SingleChildLayoutDelegate {
   }
 
   double _getWidth() {
-    return columns.fold(
+    final double columnsWidth = columns.fold<double>(
       0,
-      (previousValue, element) => previousValue + element.width,
+      (double width, PlutoColumn column) => width + column.width,
     );
+    final bool showTrailingResizeGutter =
+        !stateManager.showFrozenColumn &&
+        !stateManager.columnsResizeMode.isNone &&
+        columns.isNotEmpty &&
+        columns.last.enableDropToResize;
+
+    return columnsWidth +
+        (showTrailingResizeGutter
+            ? PlutoGridSettings.columnResizeHandleWidth / 2
+            : 0);
   }
 
   @override

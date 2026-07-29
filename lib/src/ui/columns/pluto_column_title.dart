@@ -1,19 +1,25 @@
 import 'dart:math';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 import '../ui.dart';
+import 'pluto_column_resize_handle.dart';
 
 class PlutoColumnTitle extends PlutoStatefulWidget {
   final PlutoGridStateManager stateManager;
 
   final PlutoColumn column;
+
+  final PlutoColumn? leadingResizeColumn;
+
   late final double height;
 
   PlutoColumnTitle({
     required this.stateManager,
     required this.column,
+    this.leadingResizeColumn,
     double? height,
   }) : height = height ?? stateManager.columnHeight,
        super(key: ValueKey('column_title_${column.key}'));
@@ -29,12 +35,24 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
 
   PlutoColumnSort? _sort;
 
-  bool get showContextIcon {
+  bool get showActionIcon =>
+      widget.column.resolveShowColumnHeaderIcon(stateManager.style) &&
+      (widget.column.enableContextMenu || widget.column.enableDropToResize);
+
+  bool get showRightIcon {
     _sort ??= widget.column.sort;
-    return widget.column.enableContextMenu ||
-        widget.column.enableDropToResize ||
-        !_sort!.isNone;
+    return showActionIcon || !_sort!.isNone;
   }
+
+  bool get showResizeHandle =>
+      widget.column.enableDropToResize &&
+      !stateManager.columnsResizeMode.isNone;
+
+  PlutoColumn? get leadingResizeColumn =>
+      !stateManager.columnsResizeMode.isNone &&
+          widget.leadingResizeColumn?.enableDropToResize == true
+      ? widget.leadingResizeColumn
+      : null;
 
   bool get enableGesture {
     return widget.column.enableContextMenu || widget.column.enableDropToResize;
@@ -130,9 +148,20 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
     _isPointMoving = false;
   }
 
+  void _handleOnPointCancel(PointerCancelEvent event) {
+    _isPointMoving = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final PlutoGridStyleConfig style = stateManager.configuration.style;
+    final bool shouldShowRightIcon = showRightIcon;
+    final double resizeHandleInset = showResizeHandle
+        ? PlutoGridSettings.columnResizeHandleWidth / 2
+        : 0;
+    final double actionIconSpacing = shouldShowRightIcon
+        ? style.iconSize + resizeHandleInset
+        : 0;
     final _SortableWidget columnWidget = _SortableWidget(
       stateManager: stateManager,
       column: widget.column,
@@ -140,6 +169,7 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
         stateManager: stateManager,
         column: widget.column,
         height: widget.height,
+        actionIconSpacing: actionIconSpacing,
       ),
     );
 
@@ -149,32 +179,44 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
         builder: (BuildContext themedContext) {
           final ThemeData theme = Theme.of(themedContext);
 
-          final SizedBox contextMenuIcon = SizedBox(
-            height: widget.height,
-            child: Align(
-              alignment: Alignment.center,
-              child: IconButton(
-                icon: PlutoGridColumnIcon(
-                  sort: _sort,
-                  color: style.iconColor,
-                  icon: widget.column.enableContextMenu
-                      ? style.columnContextIcon
-                      : style.columnResizeIcon,
-                  ascendingIcon: style.columnAscendingIcon,
-                  descendingIcon: style.columnDescendingIcon,
-                  successColor: style.activatedColor,
-                  errorColor: style.removeIconColor ?? theme.colorScheme.error,
+          // Keep the painted action and its hit test at iconSize. A default
+          // IconButton is 48 px wide and would overlap the adjacent filter
+          // action even though the header reserves only the compact icon slot.
+          final Widget contextMenuIcon = MouseRegion(
+            cursor: showActionIcon
+                ? contextMenuCursor
+                : SystemMouseCursors.basic,
+            child: SizedBox(
+              key: ValueKey<String>(
+                'column_header_action_${widget.column.field}',
+              ),
+              width: style.iconSize,
+              height: widget.height,
+              child: Center(
+                child: IconTheme(
+                  data: IconThemeData(size: style.iconSize),
+                  child: PlutoGridColumnIcon(
+                    sort: _sort,
+                    color: style.iconColor,
+                    icon: widget.column.enableContextMenu
+                        ? style.columnContextIcon
+                        : style.columnResizeIcon,
+                    ascendingIcon: style.columnAscendingIcon,
+                    descendingIcon: style.columnDescendingIcon,
+                    successColor: style.activatedColor,
+                    errorColor:
+                        style.removeIconColor ?? theme.colorScheme.error,
+                  ),
                 ),
-                iconSize: style.iconSize,
-                mouseCursor: contextMenuCursor,
-                onPressed: null,
               ),
             ),
           );
 
           Offset position = Offset.zero;
+          final PlutoColumn? leadingColumn = leadingResizeColumn;
 
           return Stack(
+            clipBehavior: Clip.none,
             children: <Widget>[
               Positioned(
                 left: 0,
@@ -199,11 +241,11 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
                       )
                     : columnWidget,
               ),
-              if (showContextIcon)
+              if (shouldShowRightIcon)
                 Positioned.directional(
                   textDirection: stateManager.textDirection,
-                  end: -3,
-                  child: enableGesture
+                  end: resizeHandleInset,
+                  child: showActionIcon && enableGesture
                       ? Listener(
                           onPointerDown: _handleOnPointDown,
                           onPointerMove: _handleOnPointMove,
@@ -213,13 +255,48 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
                                 event,
                                 RoundedRectangleBorder(
                                   borderRadius:
-                                      widget.stateManager.gridPopupBorderRadius ??
+                                      widget
+                                          .stateManager
+                                          .gridPopupBorderRadius ??
                                       BorderRadius.zero,
                                 ),
                               ),
+                          onPointerCancel: _handleOnPointCancel,
                           child: contextMenuIcon,
                         )
                       : contextMenuIcon,
+                ),
+              if (showResizeHandle)
+                Positioned.directional(
+                  textDirection: stateManager.textDirection,
+                  top: 0,
+                  bottom: 0,
+                  end: 0,
+                  width: PlutoGridSettings.columnResizeHandleWidth / 2,
+                  child: PlutoColumnResizeHandle(
+                    key: ValueKey<String>(
+                      'column_resize_handle_${widget.column.field}',
+                    ),
+                    stateManager: stateManager,
+                    column: widget.column,
+                  ),
+                ),
+              if (leadingColumn != null)
+                Positioned.directional(
+                  textDirection: stateManager.textDirection,
+                  top: 0,
+                  bottom: 0,
+                  start: 0,
+                  width: PlutoGridSettings.columnResizeHandleWidth / 2,
+                  child: PlutoColumnResizeHandle(
+                    key: ValueKey<String>(
+                      'column_resize_handle_start_${widget.column.field}_for_'
+                      '${leadingColumn.field}',
+                    ),
+                    stateManager: stateManager,
+                    column: leadingColumn,
+                    side: PlutoColumnResizeHandleSide.start,
+                  ),
                 ),
             ],
           );
@@ -375,19 +452,18 @@ class _ColumnWidget extends StatelessWidget {
 
   final double height;
 
+  final double actionIconSpacing;
+
   const _ColumnWidget({
     required this.stateManager,
     required this.column,
     required this.height,
+    required this.actionIconSpacing,
   });
 
   EdgeInsets get padding =>
       column.titlePadding ??
       stateManager.configuration.style.defaultColumnTitlePadding;
-
-  bool get showSizedBoxForIcon =>
-      column.isShowRightIcon &&
-      (column.titleTextAlign.isRight || stateManager.isRTL);
 
   @override
   Widget build(BuildContext context) {
@@ -433,7 +509,10 @@ class _ColumnWidget extends StatelessWidget {
                       : null,
                   border: BorderDirectional(
                     end: style.enableColumnBorderVertical
-                        ? BorderSide(color: style.borderColor, width: 1.0)
+                        ? BorderSide(
+                            color: style.borderColor,
+                            width: style.columnBorderWidth,
+                          )
                         : BorderSide.none,
                   ),
                 ),
@@ -451,11 +530,9 @@ class _ColumnWidget extends StatelessWidget {
                           child: _ColumnTextWidget(
                             column: column,
                             stateManager: stateManager,
-                            height: height,
+                            actionIconSpacing: actionIconSpacing,
                           ),
                         ),
-                        if (showSizedBoxForIcon)
-                          SizedBox(width: style.iconSize),
                       ],
                     ),
                   ),
@@ -539,12 +616,12 @@ class _ColumnTextWidget extends PlutoStatefulWidget {
 
   final PlutoColumn column;
 
-  final double height;
+  final double actionIconSpacing;
 
   const _ColumnTextWidget({
     required this.stateManager,
     required this.column,
-    required this.height,
+    required this.actionIconSpacing,
   });
 
   @override
@@ -552,7 +629,15 @@ class _ColumnTextWidget extends PlutoStatefulWidget {
 }
 
 class _ColumnTextWidgetState extends PlutoStateWithChange<_ColumnTextWidget> {
+  static const double _filterTapMovementTolerance = 4;
+
   bool _isFilteredList = false;
+
+  int? _filterPointer;
+
+  Offset? _filterPointerDownPosition;
+
+  bool _filterPointerMoved = false;
 
   @override
   PlutoGridStateManager get stateManager => widget.stateManager;
@@ -579,12 +664,137 @@ class _ColumnTextWidgetState extends PlutoStateWithChange<_ColumnTextWidget> {
     if (widget.column.titleSpan != null) widget.column.titleSpan!,
   ];
 
+  bool get _showFilterIcon =>
+      widget.column.resolveShowColumnFilterIcon(stateManager.style) &&
+      (_isFilteredList ||
+          widget.column.filterIconRenderer != null ||
+          widget.column.onFilterIconTap != null ||
+          stateManager.showFilterPopupCustom != null);
+
+  PlutoColumnFilterIconContext _filterIconContext(BuildContext context) =>
+      PlutoColumnFilterIconContext(
+        buildContext: context,
+        column: widget.column,
+        stateManager: stateManager,
+      );
+
+  void _handleFilterIconTap(BuildContext context) {
+    final PlutoColumnFilterIconContext filterIconContext = _filterIconContext(
+      context,
+    );
+    final PlutoColumnFilterIconTapCallback? onTap =
+        widget.column.onFilterIconTap;
+
+    if (onTap != null) {
+      onTap(filterIconContext);
+      return;
+    }
+
+    filterIconContext.showFilterPopup();
+  }
+
+  void _handleFilterPointerDown(PointerDownEvent event) {
+    if ((event.buttons & kPrimaryButton) == 0) {
+      return;
+    }
+
+    _filterPointer = event.pointer;
+    _filterPointerDownPosition = event.position;
+    _filterPointerMoved = false;
+  }
+
+  void _handleFilterPointerMove(PointerMoveEvent event) {
+    if (_filterPointer != event.pointer || _filterPointerDownPosition == null) {
+      return;
+    }
+
+    _filterPointerMoved |=
+        (event.position - _filterPointerDownPosition!).distanceSquared >
+        _filterTapMovementTolerance * _filterTapMovementTolerance;
+  }
+
+  void _handleFilterPointerUp(
+    BuildContext context,
+    PointerUpEvent event,
+  ) {
+    if (_filterPointer == event.pointer && !_filterPointerMoved) {
+      _handleFilterIconTap(context);
+    }
+
+    _resetFilterPointer();
+  }
+
+  void _handleFilterPointerCancel(PointerCancelEvent event) {
+    if (_filterPointer == event.pointer) {
+      _resetFilterPointer();
+    }
+  }
+
+  void _resetFilterPointer() {
+    _filterPointer = null;
+    _filterPointerDownPosition = null;
+    _filterPointerMoved = false;
+  }
+
+  Widget _buildFilterIcon(
+    BuildContext context,
+    PlutoGridStyleConfig style,
+  ) {
+    final PlutoColumnFilterIconContext filterIconContext = _filterIconContext(
+      context,
+    );
+    final Widget icon =
+        widget.column.filterIconRenderer?.call(filterIconContext) ??
+        Icon(
+          style.columnFilterIcon,
+          color: style.iconColor,
+          size: style.iconSize,
+        );
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: RawGestureDetector(
+        key: ValueKey<String>('column_filter_icon_${widget.column.field}'),
+        behavior: HitTestBehavior.opaque,
+        // Claim the icon's compact hit area before the surrounding sortable or
+        // draggable header can consume the tap. Raw pointer tracking below
+        // still rejects a drag that started on the icon.
+        gestures: <Type, GestureRecognizerFactory>{
+          EagerGestureRecognizer:
+              GestureRecognizerFactoryWithHandlers<EagerGestureRecognizer>(
+                EagerGestureRecognizer.new,
+                (EagerGestureRecognizer recognizer) {},
+              ),
+        },
+        child: Listener(
+          behavior: HitTestBehavior.opaque,
+          onPointerDown: _handleFilterPointerDown,
+          onPointerMove: _handleFilterPointerMove,
+          onPointerUp: (PointerUpEvent event) =>
+              _handleFilterPointerUp(context, event),
+          onPointerCancel: _handleFilterPointerCancel,
+          child: Semantics(
+            button: true,
+            label: stateManager.localeText.setFilter,
+            onTap: () => _handleFilterIconTap(context),
+            child: SizedBox.square(dimension: style.iconSize, child: icon),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final PlutoGridStyleConfig style = stateManager.style;
+
     return Row(
       children: <Widget>[
-        Flexible(
+        // A tight text region keeps alignment deterministic and places all
+        // visible header controls at the directional end of the column.
+        Expanded(
           child: Text.rich(
+            key: ValueKey<String>('column_header_text_${widget.column.field}'),
             TextSpan(
               text: _title,
               children: _children,
@@ -597,13 +807,20 @@ class _ColumnTextWidgetState extends PlutoStateWithChange<_ColumnTextWidget> {
             textAlign: widget.column.titleTextAlign.value,
           ),
         ),
-        if (_isFilteredList)
-          Icon(
-            Icons.filter_alt_outlined,
-            color: stateManager.configuration.style.iconColor,
-            size: stateManager.configuration.style.iconSize,
+        if (_showFilterIcon)
+          // Builder supplies the icon's exact context, which lets custom
+          // callbacks anchor an OverlayEntry to this action.
+          Builder(
+            builder: (BuildContext filterIconContext) =>
+                _buildFilterIcon(filterIconContext, style),
           ),
-        SizedBox(width: stateManager.configuration.style.iconSize),
+        if (widget.actionIconSpacing > 0)
+          SizedBox(
+            key: ValueKey<String>(
+              'column_header_action_spacer_${widget.column.field}',
+            ),
+            width: widget.actionIconSpacing,
+          ),
       ],
     );
   }

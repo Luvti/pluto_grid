@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
@@ -1744,6 +1745,42 @@ void main() {
     });
 
     test(
+      'clamping to minWidth still notifies the resizing listeners',
+      () {
+        final List<PlutoColumn> columns = ColumnHelper.textColumn(
+          'title',
+          count: 5,
+        );
+        final MockMethods mockListener = MockMethods();
+        final PlutoGridStateManager stateManager = getStateManager(
+          columns: columns,
+          rows: <PlutoRow<dynamic>>[],
+          gridFocusNode: null,
+          scroll: scroll,
+          configuration: const PlutoGridConfiguration(
+            columnSize: PlutoGridColumnSizeConfig(
+              resizeMode: PlutoResizeMode.normal,
+            ),
+          ),
+        );
+
+        stateManager.setLayout(const BoxConstraints(maxWidth: 800));
+        stateManager.resizingChangeNotifier.addListener(
+          mockListener.noParamReturnVoid,
+        );
+
+        stateManager.resizeColumn(columns.first, -columns.first.width);
+
+        expect(columns.first.width, columns.first.minWidth);
+        verify(mockListener.noParamReturnVoid()).called(1);
+
+        stateManager.resizingChangeNotifier.removeListener(
+          mockListener.noParamReturnVoid,
+        );
+      },
+    );
+
+    test(
       'PlutoResizeMode.pushAndPull 인경우 scroll.horizontal.notifyListeners 호출 되어야 한다.',
       () {
         final columns = ColumnHelper.textColumn('title', count: 5);
@@ -1856,6 +1893,299 @@ void main() {
 
       expect(columns.first.width, greaterThan(columns.first.minWidth));
     });
+
+    testWidgets(
+      'header can wrap at spaces but does not fit below its widest word',
+      (WidgetTester tester) async {
+        const TextStyle headerStyle = TextStyle(fontSize: 20);
+        const PlutoGridConfiguration configuration = PlutoGridConfiguration(
+          style: PlutoGridStyleConfig(
+            columnHeaderTextStyle: headerStyle,
+            showColumnHeaderIcon: false,
+          ),
+        );
+        final PlutoColumn column = PlutoColumn(
+          title: 'UnbreakableHeader second',
+          field: 'title',
+          type: PlutoColumnType.text(),
+          width: 500,
+        );
+        final List<PlutoRow> rows = <PlutoRow>[
+          PlutoRow(
+            cells: <String, PlutoCell>{
+              column.field: PlutoCell(value: 'x'),
+            },
+          ),
+        ];
+        late final BuildContext context;
+        final PlutoGridStateManager stateManager = getStateManager(
+          columns: <PlutoColumn>[column],
+          rows: rows,
+          gridFocusNode: null,
+          scroll: scroll,
+          configuration: configuration,
+        );
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Material(
+              child: Builder(
+                builder: (BuildContext builderContext) {
+                  context = builderContext;
+                  return Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: PlutoBaseColumn(
+                      stateManager: stateManager,
+                      column: column,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+
+        final TextStyle resolvedHeaderStyle = DefaultTextStyle.of(
+          context,
+        ).style.merge(headerStyle);
+        final TextPainter wordPainter = TextPainter(
+          text: TextSpan(
+            text: 'UnbreakableHeader',
+            style: resolvedHeaderStyle,
+          ),
+          textDirection: TextDirection.ltr,
+        )..layout();
+        final TextPainter fullTitlePainter = TextPainter(
+          text: TextSpan(
+            text: 'UnbreakableHeader second',
+            style: resolvedHeaderStyle,
+          ),
+          textDirection: TextDirection.ltr,
+        )..layout();
+        final PlutoGridStyleConfig style = configuration.style;
+        final double titleChromeWidth =
+            style.defaultColumnTitlePadding.horizontal;
+        final double expectedWidth = (wordPainter.width + titleChromeWidth)
+            .ceilToDouble();
+
+        stateManager.autoFitColumn(context, column);
+
+        expect(
+          column.width,
+          expectedWidth,
+        );
+        expect(
+          column.width,
+          lessThan(
+            (fullTitlePainter.width + titleChromeWidth).ceilToDouble(),
+          ),
+        );
+
+        await tester.pump();
+
+        final Finder title = find.byWidgetPredicate(
+          (Widget widget) =>
+              widget is RichText && widget.text.toPlainText() == column.title,
+        );
+        final RenderParagraph paragraph = tester.renderObject<RenderParagraph>(
+          title,
+        );
+        final List<TextBox> widestWordBoxes = paragraph.getBoxesForSelection(
+          const TextSelection(
+            baseOffset: 0,
+            extentOffset: 'UnbreakableHeader'.length,
+          ),
+        );
+
+        expect(widestWordBoxes, hasLength(1));
+      },
+    );
+
+    testWidgets(
+      'auto fit accounts for header and cell chrome independently',
+      (WidgetTester tester) async {
+        const PlutoGridConfiguration configuration = PlutoGridConfiguration(
+          style: PlutoGridStyleConfig(showColumnHeaderIcon: false),
+        );
+        final PlutoColumn column = PlutoColumn(
+          title: 'Updated',
+          field: 'updated',
+          type: PlutoColumnType.text(),
+          width: 180,
+        );
+        final List<PlutoRow> rows = <PlutoRow>[
+          for (final String value in <String>[
+            'Today',
+            'Yesterday',
+            'Yesterday',
+            'Today',
+            '2 days ago',
+          ])
+            PlutoRow(
+              cells: <String, PlutoCell>{
+                column.field: PlutoCell(value: value),
+              },
+            ),
+        ];
+        late final BuildContext context;
+        final PlutoGridStateManager stateManager = getStateManager(
+          columns: <PlutoColumn>[column],
+          rows: rows,
+          gridFocusNode: null,
+          scroll: scroll,
+          configuration: configuration,
+        );
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Material(
+              child: Builder(
+                builder: (BuildContext builderContext) {
+                  context = builderContext;
+                  return Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: PlutoBaseColumn(
+                      stateManager: stateManager,
+                      column: column,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+
+        final TextPainter cellPainter = TextPainter(
+          text: TextSpan(
+            text: '2 days ago',
+            style: configuration.style.cellTextStyle,
+          ),
+          textDirection: TextDirection.ltr,
+        )..layout();
+        final double expectedWidth = cellPainter.width.ceilToDouble();
+
+        stateManager.autoFitColumn(context, column);
+
+        expect(column.width, expectedWidth);
+
+        for (final PlutoRow row in rows) {
+          row.cells[column.field]!.value = 'x';
+        }
+        column
+          ..titleTextAlign = PlutoColumnTextAlign.right
+          ..showColumnHeaderIcon = true
+          ..width = 180;
+
+        final TextStyle headerStyle = DefaultTextStyle.of(
+          context,
+        ).style.merge(configuration.style.columnHeaderTextStyle);
+        final TextPainter headerPainter = TextPainter(
+          text: TextSpan(text: column.title, style: headerStyle),
+          textDirection: TextDirection.ltr,
+        )..layout();
+        final double expectedHeaderWidth =
+            (headerPainter.width +
+                    configuration.style.defaultColumnTitlePadding.horizontal +
+                    configuration.style.iconSize +
+                    PlutoGridSettings.columnResizeHandleWidth / 2)
+                .ceilToDouble();
+
+        stateManager.autoFitColumn(context, column);
+
+        expect(column.width, expectedHeaderWidth);
+      },
+    );
+
+    testWidgets(
+      'the widest default cell fits without clipping at the auto-fit width',
+      (WidgetTester tester) async {
+        const String widestValue = '2 days ago';
+        const PlutoGridConfiguration configuration = PlutoGridConfiguration(
+          style: PlutoGridStyleConfig(showColumnHeaderIcon: false),
+        );
+        final PlutoColumn column = PlutoColumn(
+          title: 'U',
+          field: 'updated',
+          type: PlutoColumnType.text(),
+          width: 180,
+          minWidth: 1,
+        );
+        final PlutoRow row = PlutoRow(
+          cells: <String, PlutoCell>{
+            column.field: PlutoCell(value: widestValue),
+          },
+        );
+        final PlutoGridStateManager stateManager = getStateManager(
+          columns: <PlutoColumn>[column],
+          rows: <PlutoRow>[row],
+          gridFocusNode: null,
+          scroll: scroll,
+          configuration: configuration,
+        );
+        late final BuildContext context;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Material(
+              child: Builder(
+                builder: (BuildContext builderContext) {
+                  context = builderContext;
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
+          ),
+        );
+
+        final TextPainter cellPainter = TextPainter(
+          text: TextSpan(
+            text: widestValue,
+            style: configuration.style.cellTextStyle,
+          ),
+          textDirection: TextDirection.ltr,
+        )..layout();
+
+        stateManager.autoFitColumn(context, column);
+
+        expect(column.width, cellPainter.width.ceilToDouble());
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Material(
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: SizedBox(
+                  width: column.width,
+                  height: stateManager.rowHeight,
+                  child: PlutoBaseCell(
+                    cell: row.cells[column.field]!,
+                    column: column,
+                    rowIdx: 0,
+                    row: row,
+                    stateManager: stateManager,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        final Finder renderedValue = find.text(widestValue);
+        final RenderParagraph paragraph = tester.renderObject<RenderParagraph>(
+          renderedValue,
+        );
+        final List<TextBox> boxes = paragraph.getBoxesForSelection(
+          const TextSelection(
+            baseOffset: 0,
+            extentOffset: widestValue.length,
+          ),
+        );
+
+        expect(boxes, hasLength(1));
+        expect(boxes.single.left, greaterThanOrEqualTo(0));
+        expect(boxes.single.right, lessThanOrEqualTo(paragraph.size.width));
+      },
+    );
   });
 
   group('hideColumn', () {

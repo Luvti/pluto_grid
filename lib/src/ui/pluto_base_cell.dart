@@ -3,6 +3,7 @@ import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 import 'package:pluto_grid_plus/src/helper/platform_helper.dart';
 import 'package:pluto_grid_plus/src/helper/pluto_double_tap_detector.dart';
 
+import 'columns/pluto_column_resize_handle.dart';
 import 'ui.dart';
 
 class PlutoBaseCell extends StatelessWidget
@@ -10,6 +11,9 @@ class PlutoBaseCell extends StatelessWidget
   final PlutoCell cell;
 
   final PlutoColumn column;
+
+  /// The column whose trailing boundary occupies this cell's leading half.
+  final PlutoColumn? leadingResizeColumn;
 
   final int rowIdx;
 
@@ -24,6 +28,7 @@ class PlutoBaseCell extends StatelessWidget
     required this.rowIdx,
     required this.row,
     required this.stateManager,
+    this.leadingResizeColumn,
   });
 
   @override
@@ -116,7 +121,14 @@ class PlutoBaseCell extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    final bool resizeEnabled = !stateManager.columnsResizeMode.isNone;
+    final bool showTrailingResizeHandle =
+        resizeEnabled && column.enableDropToResize;
+    final PlutoColumn? leadingColumn =
+        resizeEnabled && leadingResizeColumn?.enableDropToResize == true
+        ? leadingResizeColumn
+        : null;
+    final Widget cellWidget = GestureDetector(
       behavior: HitTestBehavior.translucent,
       // Essential gestures.
       onTapUp: _handleOnTapUp,
@@ -143,6 +155,50 @@ class PlutoBaseCell extends StatelessWidget
           cell: cell,
         ),
       ),
+    );
+
+    if (!showTrailingResizeHandle && leadingColumn == null) {
+      return cellWidget;
+    }
+
+    return Stack(
+      fit: StackFit.expand,
+      clipBehavior: Clip.none,
+      children: <Widget>[
+        cellWidget,
+        if (leadingColumn != null)
+          Positioned.directional(
+            textDirection: stateManager.textDirection,
+            top: 0,
+            bottom: 0,
+            start: 0,
+            width: PlutoGridSettings.columnResizeHandleWidth / 2,
+            child: PlutoColumnResizeHandle(
+              key: ValueKey<String>(
+                'cell_resize_handle_start_${column.field}_for_'
+                '${leadingColumn.field}_$rowIdx',
+              ),
+              stateManager: stateManager,
+              column: leadingColumn,
+              side: PlutoColumnResizeHandleSide.start,
+            ),
+          ),
+        if (showTrailingResizeHandle)
+          Positioned.directional(
+            textDirection: stateManager.textDirection,
+            top: 0,
+            bottom: 0,
+            end: 0,
+            width: PlutoGridSettings.columnResizeHandleWidth / 2,
+            child: PlutoColumnResizeHandle(
+              key: ValueKey<String>(
+                'cell_resize_handle_${column.field}_$rowIdx',
+              ),
+              stateManager: stateManager,
+              column: column,
+            ),
+          ),
+      ],
     );
   }
 }
@@ -212,6 +268,7 @@ class _CellContainerState extends PlutoStateWithChange<_CellContainer> {
             stateManager.rowGroupDelegate!.isExpandableCell(widget.cell),
         enableCellVerticalBorder: style.enableCellBorderVertical,
         borderColor: style.borderColor,
+        columnBorderWidth: style.columnBorderWidth,
         activatedBorderColor: style.activatedBorderColor,
         activatedColor: style.activatedColor,
         inactivatedBorderColor: style.inactivatedBorderColor,
@@ -254,6 +311,7 @@ class _CellContainerState extends PlutoStateWithChange<_CellContainer> {
     required bool isGroupedRowCell,
     required bool enableCellVerticalBorder,
     required Color borderColor,
+    required double columnBorderWidth,
     required Color activatedBorderColor,
     required Color activatedColor,
     required Color inactivatedBorderColor,
@@ -295,7 +353,7 @@ class _CellContainerState extends PlutoStateWithChange<_CellContainer> {
             ? BorderDirectional(
                 end: BorderSide(
                   color: borderColor,
-                  width: 1.0,
+                  width: columnBorderWidth,
                 ),
               )
             : null,
