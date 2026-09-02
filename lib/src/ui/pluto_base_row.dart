@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/gestures/events.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 import 'package:pluto_grid_plus/src/manager/event/pluto_grid_row_hover_event.dart';
 
@@ -119,7 +118,11 @@ class PlutoBaseRow extends StatelessWidget {
     if (showTrailingResizeGutter &&
         columns.isNotEmpty &&
         columns.last.enableDropToResize &&
-        !stateManager.columnsResizeMode.isNone) {
+        !stateManager.columnsResizeMode.isNone &&
+        PlutoColumnResizeHandle.usesCellHandle(
+          stateManager,
+          columns.last,
+        )) {
       final PlutoColumn trailingColumn = columns.last;
       cells.add(
         PlutoVisibilityLayoutId(
@@ -180,36 +183,12 @@ class PlutoBaseRow extends StatelessWidget {
     );
   }
 
-  void _handleOnEnter() {
-    // set hovered row index
-    stateManager.eventManager!.addEvent(
-      PlutoGridRowHoverEvent(
-        rowIdx: rowIdx,
-        isHovered: true,
-      ),
-    );
-  }
-
-  void _handleOnExit() {
-    // reset hovered row index
-    stateManager.eventManager!.addEvent(
-      PlutoGridRowHoverEvent(
-        rowIdx: rowIdx,
-        isHovered: false,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (PointerEnterEvent event) => _handleOnEnter(),
-      onExit: (PointerExitEvent event) => _handleOnExit(),
-      child: DragTarget<PlutoRow>(
-        onWillAcceptWithDetails: _handleOnWillAccept,
-        onAcceptWithDetails: _handleOnAccept,
-        builder: _dragTargetBuilder,
-      ),
+    return DragTarget<PlutoRow>(
+      onWillAcceptWithDetails: _handleOnWillAccept,
+      onAcceptWithDetails: _handleOnAccept,
+      builder: _dragTargetBuilder,
     );
   }
 }
@@ -332,6 +311,8 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
 
   BoxDecoration _decoration = const BoxDecoration();
 
+  bool _isHovered = false;
+
   Color get _oddRowColor => stateManager.configuration.style.oddRowColor == null
       ? stateManager.configuration.style.rowColor
       : stateManager.configuration.style.oddRowColor!;
@@ -449,15 +430,13 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
 
     final bool isFocusedCurrentRow = isCurrentRow && stateManager.hasFocus;
 
-    final bool isHovered = stateManager.isRowIdxHovered(widget.rowIdx);
-
     final Color rowColor = _getRowColor(
       isDragTarget: isDragTarget,
       isFocusedCurrentRow: isFocusedCurrentRow,
       isSelecting: isSelecting,
       hasCurrentSelectingPosition: hasCurrentSelectingPosition,
       isCheckedRow: isCheckedRow,
-      isHovered: isHovered,
+      isHovered: _isHovered,
     );
 
     return BoxDecoration(
@@ -484,14 +463,38 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
     );
   }
 
+  void _setHovered(bool value) {
+    if (_isHovered == value) {
+      return;
+    }
+
+    setState(() {
+      _isHovered = value;
+      _decoration = _getBoxDecoration();
+    });
+
+    stateManager.eventManager!.addEvent(
+      PlutoGridRowHoverEvent(
+        rowIdx: widget.rowIdx,
+        isHovered: value,
+        notifyStateManager: false,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    return _AnimatedOrNormalContainer(
-      enable: widget.enableRowColorAnimation,
-      decoration: _decoration,
-      child: widget.child,
+    return MouseRegion(
+      key: ValueKey<String>('row_hover_${widget.row.key}'),
+      onEnter: (_) => _setHovered(true),
+      onExit: (_) => _setHovered(false),
+      child: _AnimatedOrNormalContainer(
+        enable: widget.enableRowColorAnimation,
+        decoration: _decoration,
+        child: widget.child,
+      ),
     );
   }
 }

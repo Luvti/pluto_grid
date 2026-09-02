@@ -3,16 +3,18 @@ import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 /// [PlutoRow] This event handles the hover status of the widget.
 class PlutoGridRowHoverEvent extends PlutoGridEvent {
   final int rowIdx;
-  bool isHovered;
+  final bool isHovered;
+  final bool notifyStateManager;
 
   PlutoGridRowHoverEvent({
     required this.rowIdx,
     required this.isHovered,
+    this.notifyStateManager = true,
   });
 
   @override
   void handler(PlutoGridStateManager stateManager) {
-    bool enableRowHoverColor =
+    final bool enableRowHoverColor =
         stateManager.configuration.style.enableRowHoverColor;
 
     // only change current hovered row index
@@ -20,9 +22,9 @@ class PlutoGridRowHoverEvent extends PlutoGridEvent {
     if (enableRowHoverColor) {
       // set the hovered row index to either the row index or null
       if (isHovered == true) {
-        stateManager.setHoveredRowIdx(rowIdx, notify: true);
+        stateManager.setHoveredRowIdx(rowIdx, notify: notifyStateManager);
       } else {
-        stateManager.setHoveredRowIdx(null, notify: true);
+        stateManager.setHoveredRowIdx(null, notify: notifyStateManager);
       }
     }
 

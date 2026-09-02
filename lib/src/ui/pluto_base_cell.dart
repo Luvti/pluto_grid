@@ -123,9 +123,16 @@ class PlutoBaseCell extends StatelessWidget
   Widget build(BuildContext context) {
     final bool resizeEnabled = !stateManager.columnsResizeMode.isNone;
     final bool showTrailingResizeHandle =
-        resizeEnabled && column.enableDropToResize;
+        resizeEnabled &&
+        column.enableDropToResize &&
+        PlutoColumnResizeHandle.usesCellHandle(stateManager, column);
     final PlutoColumn? leadingColumn =
-        resizeEnabled && leadingResizeColumn?.enableDropToResize == true
+        resizeEnabled &&
+            leadingResizeColumn?.enableDropToResize == true &&
+            PlutoColumnResizeHandle.usesCellHandle(
+              stateManager,
+              leadingResizeColumn!,
+            )
         ? leadingResizeColumn
         : null;
     final Widget cellWidget = GestureDetector(

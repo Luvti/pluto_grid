@@ -1,7 +1,9 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
+import 'package:pluto_grid_plus/src/manager/event/pluto_grid_row_hover_event.dart';
 import 'package:pluto_grid_plus/src/ui/ui.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -12,16 +14,19 @@ import '../../mock/shared_mocks.mocks.dart';
 
 void main() {
   late MockPlutoGridStateManager stateManager;
+  late MockPlutoGridEventManager eventManager;
   PublishSubject<PlutoNotifierEvent> streamNotifier;
-  List<PlutoColumn> columns;
-  List<PlutoRow> rows;
+  late List<PlutoColumn> columns;
+  late List<PlutoRow> rows;
   final resizingNotifier = ChangeNotifier();
 
   setUp(() {
     const configuration = PlutoGridConfiguration();
     stateManager = MockPlutoGridStateManager();
+    eventManager = MockPlutoGridEventManager();
     streamNotifier = PublishSubject<PlutoNotifierEvent>();
     when(stateManager.streamNotifier).thenAnswer((_) => streamNotifier);
+    when(stateManager.eventManager).thenReturn(eventManager);
     when(stateManager.resizingChangeNotifier).thenReturn(resizingNotifier);
     when(stateManager.configuration).thenReturn(configuration);
     when(stateManager.style).thenReturn(configuration.style);
@@ -49,13 +54,17 @@ void main() {
     bool isSelectedRow = false,
     bool isCurrentCell = false,
     bool isSelectedCell = false,
+    bool enableRowHoverColor = false,
     double rowBorderWidth = PlutoGridSettings.rowBorderWidth,
   }) {
     return PlutoWidgetTestHelper(
       'build row widget.',
       (tester) async {
         final configuration = PlutoGridConfiguration(
-          style: PlutoGridStyleConfig(rowBorderWidth: rowBorderWidth),
+          style: PlutoGridStyleConfig(
+            rowBorderWidth: rowBorderWidth,
+            enableRowHoverColor: enableRowHoverColor,
+          ),
         );
         when(stateManager.configuration).thenReturn(configuration);
         when(stateManager.style).thenReturn(configuration.style);
@@ -131,6 +140,44 @@ void main() {
           rowContainerWidget.decoration as BoxDecoration;
 
       expect(rowContainerDecoration.color, Colors.white);
+    },
+  );
+
+  buildRowWidget(checked: false, enableRowHoverColor: true).test(
+    'row hover updates only the local decoration',
+    (tester) async {
+      final Finder hoverRegion = find.byKey(
+        ValueKey<String>('row_hover_${rows.first.key}'),
+      );
+      final MouseRegion region = tester.widget<MouseRegion>(hoverRegion);
+      region.onEnter!(const PointerEnterEvent());
+      await tester.pump();
+
+      final DecoratedBox hoveredContainer =
+          find.byType(DecoratedBox).first.evaluate().single.widget
+              as DecoratedBox;
+      final BoxDecoration hoveredDecoration =
+          hoveredContainer.decoration as BoxDecoration;
+      expect(
+        hoveredDecoration.color,
+        stateManager.configuration.style.rowHoveredColor,
+      );
+
+      final PlutoGridRowHoverEvent enterEvent =
+          verify(eventManager.addEvent(captureAny)).captured.single
+              as PlutoGridRowHoverEvent;
+      expect(enterEvent.notifyStateManager, isFalse);
+      enterEvent.handler(stateManager);
+      verify(stateManager.setHoveredRowIdx(0, notify: false)).called(1);
+
+      region.onExit!(const PointerExitEvent());
+      await tester.pump();
+      final DecoratedBox normalContainer =
+          find.byType(DecoratedBox).first.evaluate().single.widget
+              as DecoratedBox;
+      final BoxDecoration normalDecoration =
+          normalContainer.decoration as BoxDecoration;
+      expect(normalDecoration.color, Colors.white);
     },
   );
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 import '../helper/platform_helper.dart';
+import 'columns/pluto_column_resize_handle.dart';
 import 'ui.dart';
 
 class PlutoBodyRows extends PlutoStatefulWidget {
@@ -98,32 +99,43 @@ class PlutoBodyRowsState extends PlutoStateWithChange<PlutoBodyRows> {
         physics: const ClampingScrollPhysics(),
         child: CustomSingleChildLayout(
           delegate: ListResizeDelegate(stateManager, _columns),
-          child: ListView.builder(
-            controller: _verticalScroll,
-            scrollDirection: Axis.vertical,
-            physics: const ClampingScrollPhysics(),
-            itemCount: _rows.length,
-            itemExtent: stateManager.rowWrapper != null
-                ? null
-                : stateManager.rowTotalHeight,
-            addRepaintBoundaries: false,
-            itemBuilder: (ctx, i) {
-              Widget w = PlutoBaseRow(
-                key: ValueKey('body_row_${_rows[i].key}'),
-                rowIdx: i,
-                row: _rows[i],
-                columns: _columns,
+          child: Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
+              ListView.builder(
+                controller: _verticalScroll,
+                scrollDirection: Axis.vertical,
+                physics: const ClampingScrollPhysics(),
+                itemCount: _rows.length,
+                itemExtent: stateManager.rowWrapper != null
+                    ? null
+                    : stateManager.rowTotalHeight,
+                addRepaintBoundaries: false,
+                itemBuilder: (ctx, i) {
+                  Widget w = PlutoBaseRow(
+                    key: ValueKey('body_row_${_rows[i].key}'),
+                    rowIdx: i,
+                    row: _rows[i],
+                    columns: _columns,
+                    stateManager: stateManager,
+                    visibilityLayout: true,
+                    showTrailingResizeGutter: !stateManager.showFrozenColumn,
+                  );
+
+                  if (stateManager.rowWrapper != null) {
+                    w = stateManager.rowWrapper!(w);
+                  }
+
+                  return w;
+                },
+              ),
+              PlutoBodyColumnResizeHandles(
+                key: const ValueKey<String>('body_column_resize_handles'),
                 stateManager: stateManager,
-                visibilityLayout: true,
+                columns: _columns,
                 showTrailingResizeGutter: !stateManager.showFrozenColumn,
-              );
-
-              if (stateManager.rowWrapper != null) {
-                w = stateManager.rowWrapper!(w);
-              }
-
-              return w;
-            },
+              ),
+            ],
           ),
         ),
       ),

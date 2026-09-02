@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/gestures.dart'
     show
+        PointerScrollEvent,
+        PointerSignalEvent,
         computePanSlop,
         kDoubleTapMinTime,
         kDoubleTapSlop,
@@ -11,6 +13,7 @@ import 'package:flutter/gestures.dart'
 import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
+import 'package:pluto_grid_plus/src/helper/platform_helper.dart';
 import 'package:pluto_grid_plus/src/ui/miscellaneous/pluto_visibility_layout.dart';
 
 /// Geometry published by a resize handle for the grid-level guide overlay.
@@ -52,6 +55,7 @@ class PlutoColumnResizeIndicatorNotification extends Notification {
 enum PlutoColumnResizeHandleSide {
   start,
   end,
+  center,
 }
 
 /// One half of an invisible interaction target centered on a column boundary.
@@ -71,12 +75,24 @@ class PlutoColumnResizeHandle extends StatefulWidget {
   /// relying on hit testing outside either column's bounds.
   final PlutoColumnResizeHandleSide side;
 
+  final bool forwardVerticalScroll;
+
   const PlutoColumnResizeHandle({
     required this.stateManager,
     required this.column,
     this.side = PlutoColumnResizeHandleSide.end,
+    this.forwardVerticalScroll = false,
     super.key,
   });
+
+  static bool usesCellHandle(
+    PlutoGridStateManager stateManager,
+    PlutoColumn column,
+  ) {
+    return !PlatformHelper.isDesktop ||
+        column.resolveColumnResizeIndicatorMode(stateManager.style) ==
+            PlutoColumnResizeIndicatorMode.cell;
+  }
 
   @override
   State<PlutoColumnResizeHandle> createState() =>
@@ -271,6 +287,23 @@ class _PlutoColumnResizeHandleState extends State<PlutoColumnResizeHandle> {
     _scheduleOverlayIndicatorUpdate();
   }
 
+  void _handlePointerSignal(PointerSignalEvent event) {
+    if (!widget.forwardVerticalScroll || event is! PointerScrollEvent) {
+      return;
+    }
+    final ScrollController? verticalScroll =
+        widget.stateManager.scroll.bodyRowsVertical;
+    if (verticalScroll?.hasClients != true || event.scrollDelta.dy == 0) {
+      return;
+    }
+    final ScrollPosition position = verticalScroll!.position;
+    final double offset = (position.pixels + event.scrollDelta.dy).clamp(
+      position.minScrollExtent,
+      position.maxScrollExtent,
+    );
+    verticalScroll.jumpTo(offset);
+  }
+
   void _handlePointerUp(PointerUpEvent event) {
     final bool wasPointMoving = _isPointMoving;
 
@@ -347,6 +380,10 @@ class _PlutoColumnResizeHandleState extends State<PlutoColumnResizeHandle> {
 
     if (renderBox == null || !renderBox.hasSize) {
       return null;
+    }
+
+    if (widget.side == PlutoColumnResizeHandleSide.center) {
+      return renderBox.localToGlobal(Offset(renderBox.size.width / 2, 0)).dx;
     }
 
     final bool boundaryAtStart =
@@ -435,14 +472,21 @@ class _PlutoColumnResizeHandleState extends State<PlutoColumnResizeHandle> {
   @override
   Widget build(BuildContext context) {
     final bool isLTR = widget.stateManager.isLTR;
-    final bool boundaryAtStart =
-        widget.side == PlutoColumnResizeHandleSide.start;
     final bool showLocalIndicator =
         _indicatorMode == PlutoColumnResizeIndicatorMode.cell && _isActive;
-    final AlignmentGeometry indicatorAlignment = boundaryAtStart
-        ? AlignmentDirectional.centerStart
-        : AlignmentDirectional.centerEnd;
-    final double directionalTranslation = boundaryAtStart ? -0.5 : 0.5;
+    final AlignmentGeometry indicatorAlignment;
+    final double directionalTranslation;
+    switch (widget.side) {
+      case PlutoColumnResizeHandleSide.start:
+        indicatorAlignment = AlignmentDirectional.centerStart;
+        directionalTranslation = -0.5;
+      case PlutoColumnResizeHandleSide.end:
+        indicatorAlignment = AlignmentDirectional.centerEnd;
+        directionalTranslation = 0.5;
+      case PlutoColumnResizeHandleSide.center:
+        indicatorAlignment = AlignmentDirectional.center;
+        directionalTranslation = 0;
+    }
 
     return MouseRegion(
       cursor: _showResizeCursor
@@ -456,6 +500,7 @@ class _PlutoColumnResizeHandleState extends State<PlutoColumnResizeHandle> {
         onPointerMove: _handlePointerMove,
         onPointerUp: _handlePointerUp,
         onPointerCancel: _handlePointerCancel,
+        onPointerSignal: _handlePointerSignal,
         child: Align(
           alignment: indicatorAlignment,
           child: FractionalTranslation(
@@ -477,6 +522,128 @@ class _PlutoColumnResizeHandleState extends State<PlutoColumnResizeHandle> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Keeps one persistent resize hit target per column boundary instead of
+/// recreating the same target in every virtualized row.
+///
+/// Columns using [PlutoColumnResizeIndicatorMode.cell] retain their per-cell
+/// handles because their indicator is intentionally limited to one row.
+class PlutoBodyColumnResizeHandles extends StatefulWidget {
+  final PlutoGridStateManager stateManager;
+
+  final List<PlutoColumn> columns;
+
+  final bool showTrailingResizeGutter;
+
+  const PlutoBodyColumnResizeHandles({
+    required this.stateManager,
+    required this.columns,
+    this.showTrailingResizeGutter = false,
+    super.key,
+  });
+
+  @override
+  State<PlutoBodyColumnResizeHandles> createState() =>
+      _PlutoBodyColumnResizeHandlesState();
+}
+
+class _PlutoBodyColumnResizeHandlesState
+    extends State<PlutoBodyColumnResizeHandles> {
+  @override
+  void initState() {
+    super.initState();
+    widget.stateManager.resizingChangeNotifier.addListener(_handleResize);
+  }
+
+  @override
+  void didUpdateWidget(PlutoBodyColumnResizeHandles oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.stateManager != widget.stateManager) {
+      oldWidget.stateManager.resizingChangeNotifier.removeListener(
+        _handleResize,
+      );
+      widget.stateManager.resizingChangeNotifier.addListener(_handleResize);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.stateManager.resizingChangeNotifier.removeListener(_handleResize);
+    super.dispose();
+  }
+
+  void _handleResize() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final PlutoGridStateManager stateManager = widget.stateManager;
+    final List<PlutoColumn> columns = widget.columns;
+    if (stateManager.columnsResizeMode.isNone || columns.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final double handleWidth = stateManager.style.columnResizeHandleWidth;
+    final double columnsWidth = columns.fold<double>(
+      0,
+      (double width, PlutoColumn column) => width + column.width,
+    );
+    final double trailingGutterWidth =
+        widget.showTrailingResizeGutter && columns.last.enableDropToResize
+        ? handleWidth / 2
+        : 0;
+    final double contentWidth = columnsWidth + trailingGutterWidth;
+    double boundaryPosition = 0;
+    final List<Widget> handles = <Widget>[];
+
+    for (final PlutoColumn column in columns) {
+      boundaryPosition += column.width;
+      if (!column.enableDropToResize ||
+          PlutoColumnResizeHandle.usesCellHandle(stateManager, column)) {
+        continue;
+      }
+
+      final bool hasOuterHalf =
+          column != columns.last || widget.showTrailingResizeGutter;
+      final double effectiveHandleWidth = hasOuterHalf
+          ? handleWidth
+          : handleWidth / 2;
+      handles.add(
+        Positioned.directional(
+          textDirection: stateManager.textDirection,
+          top: 0,
+          bottom: 0,
+          start: boundaryPosition - handleWidth / 2,
+          width: effectiveHandleWidth,
+          child: PlutoColumnResizeHandle(
+            key: ValueKey<String>('body_resize_handle_${column.field}'),
+            stateManager: stateManager,
+            column: column,
+            side: hasOuterHalf
+                ? PlutoColumnResizeHandleSide.center
+                : PlutoColumnResizeHandleSide.end,
+            forwardVerticalScroll: true,
+          ),
+        ),
+      );
+    }
+
+    if (handles.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return SizedBox(
+      width: contentWidth,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: handles,
       ),
     );
   }

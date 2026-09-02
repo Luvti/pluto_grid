@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
+import 'columns/pluto_column_resize_handle.dart';
 import 'ui.dart';
 
 class PlutoLeftFrozenRows extends PlutoStatefulWidget {
@@ -53,21 +54,31 @@ class PlutoLeftFrozenRowsState
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      controller: _scroll,
-      scrollDirection: Axis.vertical,
-      physics: const ClampingScrollPhysics(),
-      itemCount: _rows.length,
-      itemExtent: stateManager.rowTotalHeight,
-      itemBuilder: (ctx, i) {
-        return PlutoBaseRow(
-          key: ValueKey('left_frozen_row_${_rows[i].key}'),
-          rowIdx: i,
-          row: _rows[i],
-          columns: _columns,
+    return Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        ListView.builder(
+          controller: _scroll,
+          scrollDirection: Axis.vertical,
+          physics: const ClampingScrollPhysics(),
+          itemCount: _rows.length,
+          itemExtent: stateManager.rowTotalHeight,
+          itemBuilder: (ctx, i) {
+            return PlutoBaseRow(
+              key: ValueKey('left_frozen_row_${_rows[i].key}'),
+              rowIdx: i,
+              row: _rows[i],
+              columns: _columns,
+              stateManager: stateManager,
+            );
+          },
+        ),
+        PlutoBodyColumnResizeHandles(
+          key: const ValueKey<String>('left_frozen_column_resize_handles'),
           stateManager: stateManager,
-        );
-      },
+          columns: _columns,
+        ),
+      ],
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,8 +9,27 @@ import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 const int _columnCount = 50;
 const int _rowCount = 100_000;
 
-void main() {
+void desktopTestWidgets(
+  String description,
+  WidgetTesterCallback callback, {
+  Timeout? timeout,
+}) {
   testWidgets(
+    description,
+    (WidgetTester tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+      try {
+        await callback(tester);
+      } finally {
+        debugDefaultTargetPlatformOverride = null;
+      }
+    },
+    timeout: timeout,
+  );
+}
+
+void main() {
+  desktopTestWidgets(
     'resizes a column with 50 columns and 100000 rows',
     (WidgetTester tester) async {
       await tester.binding.setSurfaceSize(const Size(1440, 900));
@@ -98,19 +118,18 @@ void main() {
       expect(stateManager.columns.length, _columnCount);
       expect(stateManager.refRows.length, _rowCount);
 
-      final Finder cellHandles = find.byWidgetPredicate((Widget widget) {
+      final Finder bodyHandles = find.byWidgetPredicate((Widget widget) {
         final Key? key = widget.key;
 
         return key is ValueKey<String> &&
-            key.value.startsWith('cell_resize_handle_');
+            key.value.startsWith('body_resize_handle_');
       });
-      final int mountedCellHandleCount = cellHandles.evaluate().length;
+      final int mountedBodyHandleCount = bodyHandles.evaluate().length;
 
-      expect(mountedCellHandleCount, greaterThan(0));
-      expect(mountedCellHandleCount, lessThan(1000));
+      expect(mountedBodyHandleCount, _columnCount);
 
       final Finder firstHandle = find.byKey(
-        const ValueKey<String>('cell_resize_handle_column_0_0'),
+        const ValueKey<String>('body_resize_handle_column_0'),
       );
       expect(firstHandle, findsOneWidget);
 
@@ -167,7 +186,7 @@ void main() {
         'firstRender=${firstRenderWatch.elapsedMilliseconds}ms '
         'drag120Frames=${dragWatch.elapsedMilliseconds}ms '
         'autoFitLastColumn=${autoFitWatch.elapsedMilliseconds}ms '
-        'mountedHandles=$mountedCellHandleCount '
+        'mountedHandles=$mountedBodyHandleCount '
         'rssDelta=${rssDeltaMb.toStringAsFixed(1)}MB',
       );
 
