@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 
 abstract class PlutoGridSettings {
+  /// Soft shared budget for all incremental footer calculations in one frame.
+  /// A single user-supplied callback cannot be interrupted.
+  static const Duration calculationFrameBudget = Duration(milliseconds: 2);
+  static const int calculationBatchSize = 64;
+  static const int calculationMaxStepsPerFrame = 16384;
+
   /// If there is a frozen column, the minimum width of the body
   /// (if it is less than the value, the frozen column is released)
   static const double bodyMinWidth = 200.0;

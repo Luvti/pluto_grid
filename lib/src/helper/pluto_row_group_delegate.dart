@@ -204,7 +204,9 @@ class PlutoRowGroupTreeDelegate extends PlutoRowGroupDelegate {
     required FilteredList<PlutoRow> rows,
     required int Function(PlutoRow, PlutoRow) compare,
   }) {
-    if (rows.originalList.isEmpty) return;
+    if (rows.originalLength == 0) {
+      return;
+    }
 
     rows.sort(compare);
 
@@ -224,7 +226,9 @@ class PlutoRowGroupTreeDelegate extends PlutoRowGroupDelegate {
     required FilteredList<PlutoRow> rows,
     required FilteredListFilter<PlutoRow>? filter,
   }) {
-    if (rows.originalList.isEmpty) return;
+    if (rows.originalLength == 0) {
+      return;
+    }
 
     PlutoRowGroupHelper.applyFilter(rows: rows, filter: filter);
   }
@@ -381,7 +385,9 @@ class PlutoRowGroupByColumnDelegate extends PlutoRowGroupDelegate {
     required FilteredList<PlutoRow> rows,
     required int Function(PlutoRow, PlutoRow) compare,
   }) {
-    if (rows.originalList.isEmpty) return;
+    if (rows.originalLength == 0) {
+      return;
+    }
 
     final depth = _columnDepth(column);
 
@@ -411,7 +417,9 @@ class PlutoRowGroupByColumnDelegate extends PlutoRowGroupDelegate {
     required FilteredList<PlutoRow> rows,
     required FilteredListFilter<PlutoRow>? filter,
   }) {
-    if (rows.originalList.isEmpty) return;
+    if (rows.originalLength == 0) {
+      return;
+    }
 
     PlutoRowGroupHelper.applyFilter(rows: rows, filter: filter);
   }

@@ -136,12 +136,21 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
   @override
   List<E> get originalList => <E>[..._list];
 
+  /// Live read-only view, without copying rows. Do not mutate the source during
+  /// iteration; cancellable calculations must restart when grid data changes.
+  List<E> get originalListView => UnmodifiableListView<E>(_list);
+
   /// Returns the filtered elements.
   @override
   List<E> get filteredList => <E>[..._filteredList];
 
   @override
   List<E> get filterOrOriginalList => hasFilter ? filteredList : originalList;
+
+  /// Live read-only view of the filtered result, before pagination.
+  /// Reacquire the view after filtering changes.
+  List<E> get filterOrOriginalListView =>
+      UnmodifiableListView<E>(hasFilter ? _filteredList : _list);
 
   @override
   bool get hasFilter => _filter != null;
@@ -150,7 +159,16 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   /// Returns the length of the elements with filtering or ranging applied.
   @override
-  int get length => _effectiveList.length;
+  int get length {
+    if (!hasRange) {
+      return _maxLength;
+    }
+
+    final int from = _safetyFrom;
+    final int to = _safetyTo;
+    RangeError.checkValidRange(from, to, _maxLength);
+    return to - from;
+  }
 
   /// Returns the length of all elements, regardless of filtering or ranging.
   int get originalLength => _list.length;
@@ -196,8 +214,6 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
     _workOnOriginalList(() {
       super.sort(compare);
     });
-
-    _updateFilteredList();
   }
 
   @override
@@ -217,8 +233,6 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
       result = super.remove(element);
     });
 
-    _updateFilteredList();
-
     return result;
   }
 
@@ -231,8 +245,6 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
         return _isInList(element, list) && test(element);
       });
     });
-
-    _updateFilteredList();
   }
 
   @override
@@ -240,8 +252,6 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
     _workOnOriginalList(() {
       super.removeWhere(test);
     });
-
-    _updateFilteredList();
   }
 
   @override
@@ -254,8 +264,6 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
         return !isInList || (_isInList(element, list) && test(element));
       });
     });
-
-    _updateFilteredList();
   }
 
   @override
@@ -263,8 +271,6 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
     _workOnOriginalList(() {
       super.retainWhere(test);
     });
-
-    _updateFilteredList();
   }
 
   @override
@@ -276,8 +282,6 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
         return _isInList(element, list);
       });
     });
-
-    _updateFilteredList();
   }
 
   @override
@@ -289,11 +293,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   @override
   E removeLast() {
-    final E result = removeAt(_effectiveList.length - 1);
-
-    _updateFilteredList();
-
-    return result;
+    return removeAt(length - 1);
   }
 
   @override
@@ -304,8 +304,6 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
       result = super.removeLast();
     });
 
-    _updateFilteredList();
-
     return result;
   }
 
@@ -314,8 +312,6 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
     _workOnOriginalList(() {
       super.shuffle(random);
     });
-
-    _updateFilteredList();
   }
 
   @override
@@ -343,8 +339,6 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
     _workOnOriginalList(() {
       super.insert(originalIndex, element);
     });
-
-    _updateFilteredList();
   }
 
   @override
@@ -357,8 +351,6 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
       result = super.removeAt(originalIndex);
     });
 
-    _updateFilteredList();
-
     return result;
   }
 
@@ -369,13 +361,18 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
     _workOnOriginalList(() {
       super.insertAll(originalIndex, iterable);
     });
-
-    _updateFilteredList();
   }
 
   @override
   E operator [](int index) {
-    return _effectiveList[index];
+    final List<E> list = hasFilter ? _filteredList : _list;
+    if (!hasRange) {
+      return list[index];
+    }
+
+    // Read the page directly. Copying it for every index makes iteration O(n²).
+    RangeError.checkValidIndex(index, this, 'index', length);
+    return list[_safetyFrom + index];
   }
 
   @override
@@ -419,11 +416,14 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
     setFilterRange(null);
 
-    callback();
-
-    setFilter(storeFilter);
-
-    setFilterRange(storeRange);
+    try {
+      callback();
+    } finally {
+      _filter = storeFilter;
+      _range = storeRange;
+      // Restore the filtered result once, even if the mutation throws.
+      _updateFilteredList();
+    }
   }
 
   bool _isInList(Object? element, List<E> list) {

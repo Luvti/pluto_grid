@@ -272,7 +272,7 @@ mixin RowGroupState implements IPlutoGridState {
     assert(enabledRowGroups);
 
     if (!rowGroup.type.isGroup ||
-        rowGroup.type.group.children.originalList.isEmpty) {
+        rowGroup.type.group.children.originalLength == 0) {
       return;
     }
 
@@ -376,7 +376,7 @@ mixin RowGroupState implements IPlutoGridState {
 
     bool hasChildrenGroup(PlutoRow found) {
       return found.type.isGroup &&
-          found.type.group.children.originalList.isNotEmpty &&
+          found.type.group.children.originalLength > 0 &&
           found.type.group.children.originalList.first.type.isGroup;
     }
 
@@ -560,7 +560,7 @@ mixin RowGroupState implements IPlutoGridState {
 
     bool removeEmptyGroup(PlutoRow row) =>
         rowGroupDelegate!.type.isByColumn &&
-        row.type.group.children.originalList.isEmpty;
+        row.type.group.children.originalLength == 0;
 
     _ensureRowGroups(() {
       bool removeAll(PlutoRow row) {

@@ -8,28 +8,34 @@ class PlutoAggregateHelper {
     required PlutoColumn column,
     PlutoAggregateFilter? filter,
   }) {
-    if (column.type is! PlutoColumnTypeWithNumberFormat ||
-        !_hasColumnField(rows: rows, column: column)) {
+    if (column.type is! PlutoColumnTypeWithNumberFormat) {
+      return 0;
+    }
+
+    final String field = column.field;
+    final Iterator<PlutoRow<dynamic>> iterator = rows.iterator;
+    if (!iterator.moveNext() || !iterator.current.cells.containsKey(field)) {
       return 0;
     }
 
     final PlutoColumnTypeWithNumberFormat numberColumn =
         column.type as PlutoColumnTypeWithNumberFormat;
+    num total = 0;
+    bool hasValue = false;
+    do {
+      final PlutoCell? cell = iterator.current.cells[field];
+      if (filter != null && !filter(cell!)) {
+        continue;
+      }
+      final num? value = cell?.currentValue as num?;
+      if (value != null) {
+        total += value;
+        hasValue = true;
+      }
+    } while (iterator.moveNext());
 
-    final Iterable<PlutoRow<dynamic>> foundItems = filter != null
-        ? rows.where(
-            (PlutoRow<dynamic> row) => filter(row.cells[column.field]!),
-          )
-        : rows;
-
-    final Iterable<num> numbers = foundItems
-        .map(
-          (PlutoRow<dynamic> e) => e.cells[column.field]?.currentValue as num?,
-        )
-        .nonNulls;
-
-    return numbers.isNotEmpty
-        ? numberColumn.toNumber(numberColumn.applyFormat(numbers.sum))
+    return hasValue
+        ? numberColumn.toNumber(numberColumn.applyFormat(total))
         : 0;
   }
 
@@ -38,50 +44,47 @@ class PlutoAggregateHelper {
     required PlutoColumn column,
     PlutoAggregateFilter? filter,
   }) {
-    if (column.type is PlutoColumnTypeWithDoubleFormat) {
-      final PlutoColumnTypeWithDoubleFormat numberColumn =
-          column.type as PlutoColumnTypeWithDoubleFormat;
-
-      final Iterable<PlutoRow<dynamic>> foundItems = filter != null
-          ? rows.where(
-              (PlutoRow<dynamic> row) => filter(row.cells[column.field]!),
-            )
-          : rows;
-
-      final Iterable<double> numbers = foundItems
-          .map(
-            (PlutoRow<dynamic> e) =>
-                e.cells[column.field]?.valueForSorting as double?,
-          )
-          .nonNulls;
-
-      return numbers.isNotEmpty
-          ? numberColumn.toDouble(numberColumn.applyFormat(numbers.average))
-          : null;
-    }
-    if (column.type is! PlutoColumnTypeWithNumberFormat ||
-        !_hasColumnField(rows: rows, column: column)) {
+    final PlutoColumnType columnType = column.type;
+    final bool isDouble = columnType is PlutoColumnTypeWithDoubleFormat;
+    if (!isDouble && columnType is! PlutoColumnTypeWithNumberFormat) {
       return 0;
     }
 
+    final String field = column.field;
+    final Iterator<PlutoRow<dynamic>> iterator = rows.iterator;
+    if (!iterator.moveNext() ||
+        (!isDouble && !iterator.current.cells.containsKey(field))) {
+      return isDouble ? null : 0;
+    }
+
+    double result = 0;
+    int count = 0;
+    do {
+      final PlutoCell? cell = iterator.current.cells[field];
+      if (filter != null && !filter(cell!)) {
+        continue;
+      }
+      final num? value = isDouble
+          ? cell?.valueForSorting as double?
+          : cell?.currentValue as num?;
+      if (value != null) {
+        count += 1;
+        // Preserve the incremental mean used by IterableNumberExtension.average.
+        result += (value - result) / count;
+      }
+    } while (iterator.moveNext());
+
+    if (count == 0) {
+      return null;
+    }
+    if (columnType is PlutoColumnTypeWithDoubleFormat) {
+      final PlutoColumnTypeWithDoubleFormat doubleColumn =
+          columnType as PlutoColumnTypeWithDoubleFormat;
+      return doubleColumn.toDouble(doubleColumn.applyFormat(result));
+    }
     final PlutoColumnTypeWithNumberFormat numberColumn =
-        column.type as PlutoColumnTypeWithNumberFormat;
-
-    final Iterable<PlutoRow<dynamic>> foundItems = filter != null
-        ? rows.where(
-            (PlutoRow<dynamic> row) => filter(row.cells[column.field]!),
-          )
-        : rows;
-
-    final Iterable<num> numbers = foundItems
-        .map(
-          (PlutoRow<dynamic> e) => e.cells[column.field]?.currentValue as num?,
-        )
-        .nonNulls;
-
-    return numbers.isNotEmpty
-        ? numberColumn.toNumber(numberColumn.applyFormat(numbers.average))
-        : null;
+        columnType as PlutoColumnTypeWithNumberFormat;
+    return numberColumn.toNumber(numberColumn.applyFormat(result));
   }
 
   static num? min({
@@ -135,17 +138,24 @@ class PlutoAggregateHelper {
     required PlutoColumn column,
     PlutoAggregateFilter? filter,
   }) {
-    if (!_hasColumnField(rows: rows, column: column)) {
+    if (filter == null) {
+      return _hasColumnField(rows: rows, column: column) ? rows.length : 0;
+    }
+
+    final String field = column.field;
+    final Iterator<PlutoRow<dynamic>> iterator = rows.iterator;
+    if (!iterator.moveNext() || !iterator.current.cells.containsKey(field)) {
       return 0;
     }
 
-    final Iterable<PlutoRow<dynamic>> foundItems = filter != null
-        ? rows.where(
-            (PlutoRow<dynamic> row) => filter(row.cells[column.field]!),
-          )
-        : rows;
+    int count = 0;
+    do {
+      if (filter(iterator.current.cells[field]!)) {
+        count += 1;
+      }
+    } while (iterator.moveNext());
 
-    return foundItems.length;
+    return count;
   }
 
   static bool _hasColumnField({

@@ -998,8 +998,8 @@ mixin ColumnState implements IPlutoGridState {
     clearCurrentSelecting(notify: false);
 
     // Reset column sort to none.
-    for (int i = 0; i < refColumns.originalList.length; i += 1) {
-      refColumns.originalList[i].sort = PlutoColumnSort.none;
+    for (final PlutoColumn column in refColumns.originalList) {
+      column.sort = PlutoColumnSort.none;
     }
   }
 

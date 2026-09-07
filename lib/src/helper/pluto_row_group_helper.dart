@@ -66,7 +66,9 @@ class PlutoRowGroupHelper {
     required FilteredList<PlutoRow> rows,
     required FilteredListFilter<PlutoRow>? filter,
   }) {
-    if (rows.originalList.isEmpty) return;
+    if (rows.originalLength == 0) {
+      return;
+    }
 
     isGroup(PlutoRow row) => row.type.isGroup;
 
@@ -84,7 +86,7 @@ class PlutoRowGroupHelper {
     } else {
       isNotEmptyGroup(PlutoRow row) =>
           row.type.isGroup &&
-          row.type.group.children.filterOrOriginalList.isNotEmpty;
+          row.type.group.children.filterOrOriginalLength > 0;
 
       filterOrHasChildren(PlutoRow row) => filter(row) || isNotEmptyGroup(row);
 

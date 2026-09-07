@@ -254,6 +254,8 @@ class PlutoNotifierFilterResolverDefault
     PlutoGridStateManager stateManager,
   ) {
     return <int>{
+      stateManager.setShowLoading.hashCode,
+      stateManager.moveRowsByIndex.hashCode,
       stateManager.toggleAllRowChecked.hashCode,
       stateManager.setRowChecked.hashCode,
       stateManager.setPage.hashCode,

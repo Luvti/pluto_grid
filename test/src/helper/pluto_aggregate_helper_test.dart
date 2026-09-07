@@ -1,7 +1,131 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
+typedef _Aggregate =
+    num? Function({
+      required Iterable<PlutoRow<dynamic>> rows,
+      required PlutoColumn column,
+      PlutoAggregateFilter? filter,
+    });
+
 void main() {
+  group('single-pass numeric aggregates', () {
+    final Map<String, (PlutoColumnType, _Aggregate)> cases =
+        <String, (PlutoColumnType, _Aggregate)>{
+          'sum': (
+            PlutoColumnType.number(format: '#,###.###'),
+            PlutoAggregateHelper.sum,
+          ),
+          'average': (
+            PlutoColumnType.number(format: '#,###.###'),
+            PlutoAggregateHelper.average,
+          ),
+          'double average': (
+            PlutoColumnType.double(format: '#,###.###'),
+            PlutoAggregateHelper.average,
+          ),
+        };
+    for (final String name in cases.keys) {
+      final (PlutoColumnType type, _Aggregate aggregate) = cases[name]!;
+      final PlutoColumn column = PlutoColumn(
+        title: 'value',
+        field: 'value',
+        type: type,
+      );
+
+      test('$name visits sparse lazy rows and applies the filter once', () {
+        int visits = 0;
+        int filterCalls = 0;
+        final Iterable<PlutoRow<dynamic>> rows =
+            List<double>.generate(8, (int index) => index.toDouble()).map(
+              (double value) {
+                visits += 1;
+                return PlutoRow<dynamic>(
+                  cells: <String, PlutoCell>{'value': PlutoCell(value: value)},
+                );
+              },
+            );
+
+        expect(
+          aggregate(
+            rows: rows,
+            column: column,
+            filter: (PlutoCell cell) {
+              filterCalls += 1;
+              return cell.currentValue == 7;
+            },
+          ),
+          7,
+        );
+        expect(visits, 8);
+        expect(filterCalls, 8);
+      });
+
+      test('$name skips nulls and retains column rounding', () {
+        final List<PlutoRow<dynamic>> rows = <double?>[null, 1.1234, 2.6789]
+            .map(
+              (double? value) => PlutoRow<dynamic>(
+                cells: <String, PlutoCell>{'value': PlutoCell(value: value)},
+              ),
+            )
+            .toList();
+
+        expect(
+          aggregate(rows: rows, column: column),
+          name == 'sum' ? 3.802 : 1.901,
+        );
+        expect(
+          aggregate(
+            rows: rows,
+            column: column,
+            filter: (PlutoCell cell) => false,
+          ),
+          name == 'sum' ? 0 : null,
+        );
+        expect(
+          aggregate(rows: <PlutoRow<dynamic>>[rows.first], column: column),
+          name == 'sum' ? 0 : null,
+        );
+        expect(
+          aggregate(rows: <PlutoRow<dynamic>>[], column: column),
+          name == 'double average' ? null : 0,
+        );
+      });
+
+      test('$name preserves handling of a missing first field', () {
+        final List<PlutoRow<dynamic>> rows = <PlutoRow<dynamic>>[
+          PlutoRow<dynamic>(cells: <String, PlutoCell>{}),
+          PlutoRow<dynamic>(
+            cells: <String, PlutoCell>{'value': PlutoCell(value: 5.0)},
+          ),
+        ];
+        expect(
+          aggregate(rows: rows, column: column),
+          name == 'double average' ? 5 : 0,
+        );
+      });
+    }
+
+    test('double average still reads the sorting value', () {
+      final PlutoColumn column = PlutoColumn(
+        title: 'value',
+        field: 'value',
+        type: PlutoColumnType.double(format: '#,###.###'),
+      );
+      final PlutoCell cell = PlutoCell(value: '2.5')..setColumn(column);
+      expect(cell.currentValue, '2.5');
+      expect(
+        PlutoAggregateHelper.average(
+          rows: <PlutoRow<dynamic>>[
+            PlutoRow<dynamic>(cells: <String, PlutoCell>{'value': cell}),
+          ],
+          column: column,
+        ),
+        2.5,
+      );
+    });
+  });
+
   group('sum', () {
     test('숫자 컬럼이 아닌경우 0이 리턴 되어야 한다.', () {
       final column = PlutoColumn(
@@ -341,6 +465,108 @@ void main() {
   });
 
   group('count', () {
+    final PlutoColumn countColumn = PlutoColumn(
+      title: 'column',
+      field: 'column',
+      type: PlutoColumnType.number(),
+    );
+
+    test('empty rows and a missing first field do not call the filter', () {
+      for (final List<PlutoRow<dynamic>> rows in <List<PlutoRow<dynamic>>>[
+        <PlutoRow<dynamic>>[],
+        <PlutoRow<dynamic>>[
+          PlutoRow<dynamic>(cells: <String, PlutoCell>{}),
+          PlutoRow<dynamic>(
+            cells: <String, PlutoCell>{'column': PlutoCell(value: 1)},
+          ),
+        ],
+      ]) {
+        expect(PlutoAggregateHelper.count(rows: rows, column: countColumn), 0);
+        expect(
+          PlutoAggregateHelper.count(
+            rows: rows,
+            column: countColumn,
+            filter: (_) => throw StateError('Unexpected filter call'),
+          ),
+          0,
+        );
+      }
+    });
+
+    test('filtered count visits lazy rows and their cells only once', () {
+      int visits = 0;
+      final List<Object?> values = <Object?>[];
+      final Iterable<PlutoRow<dynamic>> rows = <int?>[null, 1, 2, 3].map((
+        int? value,
+      ) {
+        visits += 1;
+        return PlutoRow<dynamic>(
+          cells: <String, PlutoCell>{'column': PlutoCell(value: value)},
+        );
+      });
+
+      expect(
+        PlutoAggregateHelper.count(
+          rows: rows,
+          column: countColumn,
+          filter: (PlutoCell cell) {
+            values.add(cell.currentValue);
+            return cell.currentValue != null;
+          },
+        ),
+        3,
+      );
+      expect(visits, 4);
+      expect(values, <int?>[null, 1, 2, 3]);
+    });
+
+    test('count follows the filtered page and later cell edits', () {
+      final FilteredList<PlutoRow<dynamic>> rows =
+          FilteredList<PlutoRow<dynamic>>(
+            initialList: List<PlutoRow<dynamic>>.generate(
+              10,
+              (int index) => PlutoRow<dynamic>(
+                cells: <String, PlutoCell>{'column': PlutoCell(value: index)},
+              ),
+            ),
+          )..setFilter(
+            (PlutoRow<dynamic> row) =>
+                (row.cells['column']!.currentValue as int).isEven,
+          );
+      final FilteredListRange range = FilteredListRange(1, 4);
+      rows.setFilterRange(range);
+      bool matches(PlutoCell cell) => (cell.currentValue as int) >= 4;
+
+      expect(PlutoAggregateHelper.count(rows: rows, column: countColumn), 3);
+      expect(
+        PlutoAggregateHelper.count(
+          rows: rows,
+          column: countColumn,
+          filter: matches,
+        ),
+        2,
+      );
+      rows[0].cells['column']!.value = 10;
+      expect(
+        PlutoAggregateHelper.count(
+          rows: rows,
+          column: countColumn,
+          filter: matches,
+        ),
+        3,
+      );
+      range.setRange(4, 10);
+      expect(PlutoAggregateHelper.count(rows: rows, column: countColumn), 1);
+      expect(
+        PlutoAggregateHelper.count(
+          rows: rows,
+          column: countColumn,
+          filter: matches,
+        ),
+        1,
+      );
+    });
+
     test('condition 이 없는 경우 전체 리스트 개수가 리턴 되어야 한다.', () {
       final column = PlutoColumn(
         title: 'column',

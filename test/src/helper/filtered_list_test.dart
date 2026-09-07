@@ -2,6 +2,134 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 void main() {
+  test('read-only views avoid snapshots and ignore the page range', () {
+    final FilteredList<int> list = FilteredList<int>(
+      initialList: <int>[1, 2, 3, 4],
+    )..setFilterRange(FilteredListRange(0, 1));
+    final List<int> original = list.originalListView;
+    expect(original, <int>[1, 2, 3, 4]);
+    expect(list.filterOrOriginalListView, original);
+    expect(() => original.add(5), throwsUnsupportedError);
+    list.add(5);
+    expect(original, <int>[1, 2, 3, 4, 5]);
+    list.setFilter((int value) => value.isEven);
+    expect(list.filterOrOriginalListView, <int>[2, 4]);
+    expect(list.toList(), <int>[2]);
+    expect(() => list.filterOrOriginalListView.clear(), throwsUnsupportedError);
+  });
+
+  group('refresh filtering after mutations', () {
+    final Map<String, (void Function(FilteredList<int>), List<int>)> cases =
+        <String, (void Function(FilteredList<int>), List<int>)>{
+          'sort': (
+            (FilteredList<int> list) =>
+                list.sort((int a, int b) => b.compareTo(a)),
+            <int>[6, 5, 4, 3, 2, 1],
+          ),
+          'removeFromOriginal': (
+            (FilteredList<int> list) => list.removeFromOriginal(1),
+            <int>[2, 3, 4, 5, 6],
+          ),
+          'removeWhere': (
+            (FilteredList<int> list) =>
+                list.removeWhere((int value) => value == 2),
+            <int>[1, 3, 4, 5, 6],
+          ),
+          'removeWhereFromOriginal': (
+            (FilteredList<int> list) =>
+                list.removeWhereFromOriginal((int value) => value.isOdd),
+            <int>[2, 4, 6],
+          ),
+          'retainWhere': (
+            (FilteredList<int> list) =>
+                list.retainWhere((int value) => value == 2),
+            <int>[1, 2, 3, 5, 6],
+          ),
+          'retainWhereFromOriginal': (
+            (FilteredList<int> list) =>
+                list.retainWhereFromOriginal((int value) => value.isEven),
+            <int>[2, 4, 6],
+          ),
+          'clear': (
+            (FilteredList<int> list) => list.clear(),
+            <int>[1, 3, 5, 6],
+          ),
+          'removeLast': (
+            (FilteredList<int> list) => list.removeLast(),
+            <int>[1, 2, 3, 5, 6],
+          ),
+          'removeLastFromOriginal': (
+            (FilteredList<int> list) => list.removeLastFromOriginal(),
+            <int>[1, 2, 3, 4, 5],
+          ),
+          'insert': (
+            (FilteredList<int> list) => list.insert(1, 8),
+            <int>[1, 2, 3, 8, 4, 5, 6],
+          ),
+          'removeAt': (
+            (FilteredList<int> list) => list.removeAt(1),
+            <int>[1, 2, 3, 5, 6],
+          ),
+          'insertAll': (
+            (FilteredList<int> list) => list.insertAll(1, <int>[8, 10]),
+            <int>[1, 2, 3, 8, 10, 4, 5, 6],
+          ),
+        };
+
+    for (final String name in cases.keys) {
+      test('$name refreshes once and preserves the filtered page', () {
+        int filterCalls = 0;
+        final FilteredList<int> list =
+            FilteredList<int>(
+                initialList: <int>[1, 2, 3, 4, 5, 6],
+              )
+              ..setFilter((int value) {
+                filterCalls += 1;
+                return value.isEven;
+              })
+              ..setFilterRange(FilteredListRange(0, 2));
+        filterCalls = 0;
+        final (void Function(FilteredList<int>) mutate, List<int> expected) =
+            cases[name]!;
+
+        mutate(list);
+
+        expect(list.originalList, expected);
+        expect(
+          list.toList(),
+          expected.where((int value) => value.isEven).take(2).toList(),
+        );
+        expect(filterCalls, expected.length);
+      });
+    }
+
+    test('a failed mutation restores the filter and page', () {
+      int filterCalls = 0;
+      final FilteredList<int> list =
+          FilteredList<int>(
+              initialList: <int>[1, 2, 3, 4, 5, 6],
+            )
+            ..setFilter((int value) {
+              filterCalls += 1;
+              return value.isEven;
+            })
+            ..setFilterRange(FilteredListRange(1, 2));
+      filterCalls = 0;
+
+      expect(
+        () => list.removeWhereFromOriginal(
+          (int value) => throw StateError('Failed predicate'),
+        ),
+        throwsStateError,
+      );
+
+      expect(list.hasFilter, isTrue);
+      expect(list.hasRange, isTrue);
+      expect(list.toList(), <int>[4]);
+      expect(filterCalls, list.originalLength);
+    });
+  });
+
   group('Int List 를 짝수로 필터링.', () {
     List<int> originalList;
 
@@ -564,6 +692,51 @@ void main() {
       originalList = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
       list = FilteredList(initialList: originalList);
+    });
+
+    test('indexed reads stay within the filtered page', () {
+      list
+        ..setFilter((int value) => value.isEven)
+        ..setFilterRange(FilteredListRange(1, 3));
+
+      expect(list.length, 2);
+      expect(list.toList(), <int>[4, 6]);
+      expect(list.first, 4);
+      expect(list.last, 6);
+      expect(() => list[-1], throwsRangeError);
+      expect(() => list[2], throwsRangeError);
+    });
+
+    test('page reads follow range changes and clamp to available rows', () {
+      final FilteredListRange range = FilteredListRange(7, 20);
+      list.setFilterRange(range);
+      expect(list.length, 2);
+      expect(list.toList(), <int>[8, 9]);
+
+      range.setRange(-2, 2);
+      expect(list.toList(), <int>[1, 2]);
+      range.setRange(20, 30);
+      expect(list.length, 0);
+      expect(list.toList(), isEmpty);
+      expect(() => list[0], throwsRangeError);
+
+      list.clearFromOriginal();
+      expect(list.length, 0);
+      expect(() => list[0], throwsRangeError);
+    });
+
+    test('a reversed page range still throws', () {
+      list.setFilterRange(FilteredListRange(5, 2));
+      expect(() => list.length, throwsRangeError);
+      expect(() => list[0], throwsRangeError);
+    });
+
+    test('iteration still detects changes to page length', () {
+      list.setFilterRange(FilteredListRange(1, 10));
+      final Iterator<int> iterator = list.iterator;
+      expect(iterator.moveNext(), isTrue);
+      list.add(10);
+      expect(iterator.moveNext, throwsConcurrentModificationError);
     });
 
     test(

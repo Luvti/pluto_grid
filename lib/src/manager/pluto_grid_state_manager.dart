@@ -725,6 +725,6 @@ class _ApplyRowGroup implements _Apply {
   }
 
   bool _hasChildren(PlutoRow row) {
-    return row.type.isGroup && row.type.group.children.originalList.isNotEmpty;
+    return row.type.isGroup && row.type.group.children.originalLength > 0;
   }
 }

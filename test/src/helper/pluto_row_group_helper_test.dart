@@ -8,6 +8,42 @@ void main() {
   final mock = MockMethods();
 
   group('applyFilter', () {
+    test('keeps a parent with matching children outside the current page', () {
+      final PlutoRow<dynamic> matching = PlutoRow<dynamic>(
+        cells: <String, PlutoCell>{'column': PlutoCell(value: 'match')},
+      );
+      final FilteredList<PlutoRow<dynamic>> children =
+          FilteredList<PlutoRow<dynamic>>(
+            initialList: <PlutoRow<dynamic>>[matching],
+          )..setFilterRange(FilteredListRange(1, 2));
+      final PlutoRow<dynamic> group = PlutoRow<dynamic>(
+        cells: <String, PlutoCell>{'column': PlutoCell(value: 'group')},
+        type: PlutoRowType.group(children: children),
+      );
+      final FilteredList<PlutoRow<dynamic>> rows =
+          FilteredList<PlutoRow<dynamic>>(
+            initialList: <PlutoRow<dynamic>>[group],
+          );
+
+      PlutoRowGroupHelper.applyFilter(
+        rows: rows,
+        filter: (PlutoRow<dynamic> row) =>
+            row.cells['column']!.currentValue == 'match',
+      );
+      expect(children, isEmpty);
+      expect(children.filterOrOriginalLength, 1);
+      expect(rows.toList(), <PlutoRow<dynamic>>[group]);
+
+      PlutoRowGroupHelper.applyFilter(
+        rows: rows,
+        filter: (PlutoRow<dynamic> row) => false,
+      );
+      expect(rows, isEmpty);
+      PlutoRowGroupHelper.applyFilter(rows: rows, filter: null);
+      expect(rows.toList(), <PlutoRow<dynamic>>[group]);
+      expect(children.filterOrOriginalLength, 1);
+    });
+
     test('rows 가 비어있는 경우 filter 가 호출되지 않아야 한다.', () {
       final FilteredList<PlutoRow> rows = FilteredList();
 

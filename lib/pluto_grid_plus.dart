@@ -3,6 +3,7 @@ library;
 export './src/helper/filter_helper.dart';
 export './src/helper/filtered_list.dart';
 export './src/helper/pluto_aggregate_helper.dart';
+export './src/helper/pluto_grid_async_calculation.dart';
 export './src/helper/pluto_clipboard_transformation.dart';
 export './src/helper/pluto_column_group_helper.dart';
 export './src/helper/pluto_date_time_helper.dart';

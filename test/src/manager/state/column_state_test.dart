@@ -48,6 +48,32 @@ void main() {
     )..setEventManager(eventManager);
   }
 
+  test('sorting clears sort flags on hidden columns too', () {
+    final List<PlutoColumn> columns = ColumnHelper.textColumn(
+      'column',
+      count: 3,
+    );
+    final PlutoGridStateManager stateManager = getStateManager(
+      columns: columns,
+      rows: <PlutoRow<dynamic>>[],
+      gridFocusNode: null,
+      scroll: scroll,
+    );
+    addTearDown(stateManager.dispose);
+    stateManager.refColumns.setFilter(
+      (PlutoColumn column) => column != columns.last,
+    );
+    columns.last.sort = PlutoColumnSort.ascending;
+
+    stateManager.sortDescending(columns.first, notify: false);
+
+    expect(columns.first.sort, PlutoColumnSort.descending);
+    expect(columns.last.sort, PlutoColumnSort.none);
+    stateManager.sortAscending(columns[1], notify: false);
+    expect(columns.first.sort, PlutoColumnSort.none);
+    expect(columns[1].sort, PlutoColumnSort.ascending);
+  });
+
   testWidgets('columnIndexes - columns 에 맞는 index list 가 리턴 되어야 한다.', (
     WidgetTester tester,
   ) async {
