@@ -8,11 +8,14 @@ class PlutoCell {
     this.filterValue,
     this.onChanged,
     Key? key,
-  }) : _key = key ?? UniqueKey(),
+  }) : _key = key,
        _value = value,
        _originalValue = value;
 
-  final Key _key;
+  Key? _key;
+
+  static const int _formatOnInitFlag = 1;
+  static const int _pendingSortValueFlag = 2;
 
   dynamic _value;
 
@@ -26,21 +29,25 @@ class PlutoCell {
 
   dynamic _valueForSorting;
 
-  /// Set initial value according to [PlutoColumn] setting.
+  /// Deferred initial formatting and comparison conversion flags.
   ///
-  /// [setColumn] is called when [PlutoGridStateManager.initializeRows] is called.
-  /// When [setColumn] is called, this value is changed to `true` according to the column setting.
-  /// If this value is `true` when the getter of [PlutoCell.valueFormatted] is called,
-  /// it calls [_applyFormatOnInit] to update the value according to the format.
-  /// [_applyFormatOnInit] is called once, and if [setColumn] is not called again,
-  /// it is not called anymore.
-  bool _needToApplyFormatOnInit = false;
+  /// Sharing one field keeps cell instances the same size. [setColumn] enables
+  /// initial formatting according to the column setting. [valueFormatted]
+  /// applies it once; [valueForSorting] separately converts the captured
+  /// initial value only when comparison is requested.
+  int _flags = 0;
+
+  bool get _needToApplyFormatOnInit => (_flags & _formatOnInitFlag) != 0;
 
   PlutoColumn? _column;
 
   PlutoRow? _row;
 
-  Key get key => _key;
+  /// Allocate widget identity only when a cell is rendered or selected.
+  Key get key => _key ??= UniqueKey();
+
+  /// Check identity without allocating keys for cells outside the viewport.
+  bool hasKey(Key key) => _key == key;
 
   bool get initialized => _column != null && _row != null;
 
@@ -99,11 +106,20 @@ class PlutoCell {
     _value = changed;
 
     _valueForSorting = null;
+    _flags &= ~_pendingSortValueFlag;
 
     onChanged?.call(value: _value, referenceValue: referenceValue);
   }
 
   dynamic get valueForSorting {
+    if ((_flags & _pendingSortValueFlag) != 0) {
+      // Preserve the value at setColumn time, even if formatting has since
+      // changed _value. Only sorted columns need the converted value.
+      _valueForSorting = canUseOriginalValueForSorting
+          ? _originalValue
+          : _column!.type.makeCompareValue(_valueForSorting);
+      _flags &= ~_pendingSortValueFlag;
+    }
     _valueForSorting ??= _getValueForSorting();
 
     return _valueForSorting;
@@ -111,8 +127,13 @@ class PlutoCell {
 
   void setColumn(PlutoColumn column) {
     _column = column;
-    _valueForSorting = _getValueForSorting();
-    _needToApplyFormatOnInit = _column?.type.applyFormatOnInit == true;
+    if (_needToApplyFormatOnInit && !canUseOriginalValueForSorting) {
+      _applyFormatOnInit();
+    }
+    _valueForSorting = _value;
+    _flags =
+        _pendingSortValueFlag |
+        (column.type.applyFormatOnInit ? _formatOnInitFlag : 0);
   }
 
   void setRow(PlutoRow row) {
@@ -124,6 +145,8 @@ class PlutoCell {
   void clear() {
     _column = null;
     _row = null;
+    _valueForSorting = null;
+    _flags = 0;
   }
 
   dynamic _getValueForSorting() {
@@ -183,7 +206,7 @@ class PlutoCell {
       );
     }
 
-    _needToApplyFormatOnInit = false;
+    _flags &= ~_formatOnInitFlag;
   }
 }
 

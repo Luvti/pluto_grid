@@ -1,6 +1,7 @@
 name: Coverage
 
 on:
+  pull_request:
   push:
     branches:
       - 'master'
@@ -25,3 +26,30 @@ jobs:
         with:
           files: ./coverage/lcov.info
           token: ${{ secrets.CODECOV_TOKEN }}
+
+  memory-benchmarks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - run: flutter pub get
+      - name: Verify retained grid objects after disposal
+        run: flutter test --no-pub --enable-vmservice benchmark/grid_disposal_memory_test.dart
+        env:
+          PLUTO_GRID_DISPOSAL_MEMORY_REPORT: ${{ runner.temp }}/grid-disposal-memory.json
+      - name: Compare eager and lazy cell allocations
+        run: flutter test --no-pub --enable-vmservice benchmark/cell_memory_test.dart
+        env:
+          PLUTO_CELL_MEMORY_REPORT: ${{ runner.temp }}/cell-memory.json
+      - name: Save heap benchmark reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: memory-benchmarks
+          path: |
+            ${{ runner.temp }}/grid-disposal-memory.json
+            ${{ runner.temp }}/cell-memory.json
+          retention-days: 14

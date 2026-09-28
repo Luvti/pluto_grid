@@ -58,6 +58,13 @@ extension PlutoRowFilterX on PlutoRow {
 mixin FilteringRowState implements IPlutoGridState {
   final _State _state = _State();
 
+  /// Releases filter references without notifying consumers during disposal.
+  @protected
+  void clearFilterState() {
+    _state._filterRows = <PlutoRow<dynamic>>[];
+    _state._filterColumns = <PlutoRow<dynamic>>[];
+  }
+
   /// current applied filters for rows (with canApplyFilter)
   @override
   List<PlutoRow> get filterRows => _state._filterRows;

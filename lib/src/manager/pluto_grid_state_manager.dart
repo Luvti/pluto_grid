@@ -127,6 +127,7 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
   @override
   final FilteredList<PlutoColumn> refColumns;
 
+  @override
   final Map<String, PlutoColumn> columnsMap;
 
   @override
@@ -458,16 +459,31 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
 
   @override
   void dispose() {
-    // Clear each row to break reference cycles (PlutoCell <-> PlutoRow <-> PlutoColumn)
-    for (final PlutoRow row in refRows.originalList) {
+    // Include collapsed and filtered descendants, while preserving caller data.
+    // Snapshot the traversal because clear() also resets each row's parent.
+    for (final PlutoRow<dynamic> row in iterateAllRowAndGroup.toList(
+      growable: false,
+    )) {
       row.clear();
     }
     refRows.clearFromOriginal();
+    refRows.setFilter(null);
     refColumns.clearFromOriginal();
+    columnsMap.clear();
+    refColumnGroups.clearFromOriginal();
+    // filterColumns may be the caller's list. Replace it without clearing it
+    // or invoking the external onFiltered callback during disposal.
+    clearFilterState();
+    savedFilter = null;
+    setDragRows(<PlutoRow<dynamic>>[], notify: false);
+    clearRowGroupState();
+    resizingChangeNotifier.dispose();
 
     // Clear scroll controller references
     scroll.setBodyRowsHorizontal(null);
     scroll.setBodyRowsVertical(null);
+    scroll.horizontal = null;
+    scroll.vertical = null;
 
     // Clear TextEditingController reference to prevent leaks
     setTextEditingController(null);

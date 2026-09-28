@@ -112,7 +112,7 @@ class PlutoGridCupertinoScrollbarState extends State<PlutoScrollbar>
 
   late TextDirection _textDirection;
   late AnimationController _fadeoutAnimationController;
-  late Animation<double> _fadeoutOpacityAnimation;
+  late CurvedAnimation _fadeoutOpacityAnimation;
   late AnimationController _thicknessAnimationController;
   Timer? _fadeoutTimer;
   double? _dragScrollbarAxisPosition;
@@ -513,6 +513,7 @@ class PlutoGridCupertinoScrollbarState extends State<PlutoScrollbar>
 
   @override
   void dispose() {
+    _fadeoutOpacityAnimation.dispose();
     _fadeoutAnimationController.dispose();
     _thicknessAnimationController.dispose();
     _fadeoutTimer?.cancel();

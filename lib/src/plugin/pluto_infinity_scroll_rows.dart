@@ -114,6 +114,8 @@ class _PlutoInfinityScrollRowsState extends State<PlutoInfinityScrollRows> {
 
   bool _isLast = false;
 
+  int _requestId = 0;
+
   PlutoGridStateManager get stateManager => widget.stateManager;
 
   ScrollController get scroll => stateManager.scroll.bodyRowsVertical!;
@@ -136,7 +138,7 @@ class _PlutoInfinityScrollRowsState extends State<PlutoInfinityScrollRows> {
 
     if (widget.initialFetch) {
       WidgetsBinding.instance.addPostFrameCallback((Duration timeStamp) {
-        _update(null);
+        unawaited(_update(null));
       });
     }
   }
@@ -154,11 +156,15 @@ class _PlutoInfinityScrollRowsState extends State<PlutoInfinityScrollRows> {
     if (event is PlutoGridCannotMoveCurrentCellEvent &&
         event.direction.isDown &&
         !_isFetching) {
-      _update(stateManager.refRows.last);
+      unawaited(
+        _update(
+          stateManager.refRows.isEmpty ? null : stateManager.refRows.last,
+        ),
+      );
     } else if (event is PlutoGridChangeColumnSortEvent) {
-      _update(null);
+      unawaited(_update(null));
     } else if (event is PlutoGridSetColumnFilterEvent) {
-      _update(null);
+      unawaited(_update(null));
     }
   }
 
@@ -166,15 +172,29 @@ class _PlutoInfinityScrollRowsState extends State<PlutoInfinityScrollRows> {
     if (scroll.hasClients &&
         scroll.offset == scroll.position.maxScrollExtent &&
         !_isFetching) {
-      _update(stateManager.refRows.last);
+      unawaited(
+        _update(
+          stateManager.refRows.isEmpty ? null : stateManager.refRows.last,
+        ),
+      );
     }
   }
 
-  void _update(PlutoRow? lastRow) {
-    if (lastRow == null) _isLast = false;
+  Future<void> _update(PlutoRow? lastRow) async {
+    if (!mounted) {
+      return;
+    }
 
-    if (_isLast) return;
+    if (lastRow == null) {
+      _isLast = false;
+    }
 
+    if (_isLast) {
+      return;
+    }
+
+    // Sorting or filtering supersedes any page request already in flight.
+    final int requestId = ++_requestId;
     _isFetching = true;
 
     stateManager.setShowLoading(
@@ -191,22 +211,41 @@ class _PlutoInfinityScrollRowsState extends State<PlutoInfinityScrollRows> {
           filterRows: stateManager.filterRows,
         );
 
-    unawaited(
-      widget.fetch(request).then((PlutoInfinityScrollRowsResponse response) {
-        if (lastRow == null) {
+    try {
+      final PlutoInfinityScrollRowsResponse response = await widget.fetch(
+        request,
+      );
+      if (!mounted || requestId != _requestId) {
+        return;
+      }
+
+      if (lastRow == null) {
+        if (scroll.hasClients) {
           scroll.jumpTo(0);
-          stateManager.removeAllRows(notify: false);
         }
+        stateManager.removeAllRows(notify: false);
+      }
 
-        stateManager
-          ..appendRows(response.rows)
-          ..setShowLoading(false);
-
+      stateManager.appendRows(response.rows);
+      _isLast = response.isLast;
+    } on Object catch (error, stack) {
+      if (!mounted || requestId != _requestId) {
+        return;
+      }
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: error,
+          stack: stack,
+          library: 'pluto_grid_plus',
+          context: ErrorDescription('while fetching infinite-scroll rows'),
+        ),
+      );
+    } finally {
+      if (mounted && requestId == _requestId) {
         _isFetching = false;
-
-        _isLast = response.isLast;
-      }),
-    );
+        stateManager.setShowLoading(false);
+      }
+    }
   }
 
   @override

@@ -110,6 +110,8 @@ class PlutoDualGridState extends State<PlutoDualGrid> {
 
     unawaited(_streamB.cancel());
 
+    resizeNotifier.dispose();
+
     super.dispose();
   }
 

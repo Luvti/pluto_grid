@@ -158,6 +158,13 @@ class _State {
 mixin RowGroupState implements IPlutoGridState {
   final _State _state = _State();
 
+  /// Releases the grouping delegate without regrouping rows during disposal.
+  @protected
+  void clearRowGroupState() {
+    _state._rowGroupDelegate = null;
+    _state._previousEnabledRowGroups = false;
+  }
+
   @override
   bool get hasRowGroups => _state._rowGroupDelegate != null;
 

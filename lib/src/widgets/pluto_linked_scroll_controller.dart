@@ -160,7 +160,10 @@ class _LinkedScrollController extends ScrollController {
 
   @override
   void dispose() {
-    _controllers._allControllers.remove(this);
+    // Both the group and the owning widget release their controllers.
+    if (!_controllers._allControllers.remove(this)) {
+      return;
+    }
     super.dispose();
   }
 

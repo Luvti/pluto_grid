@@ -12,6 +12,9 @@ abstract class IColumnState {
 
   FilteredList<PlutoColumn> get refColumns;
 
+  /// Current columns indexed by field, including hidden columns.
+  Map<String, PlutoColumn> get columnsMap;
+
   /// Column index list.
   List<int> get columnIndexes;
 
@@ -431,6 +434,8 @@ mixin ColumnState implements IPlutoGridState {
       refColumns.insertAll(columnIdx, columns);
     }
 
+    _updateColumnsMap();
+
     _fillCellsInRows(columns);
 
     resetCurrentState(notify: false);
@@ -466,6 +471,8 @@ mixin ColumnState implements IPlutoGridState {
       (PlutoColumn column) => removeKeys.contains(column.key),
     );
 
+    _updateColumnsMap();
+
     resetShowFrozenColumn();
 
     if (!columnSizeConfig.restoreAutoSizeAfterRemoveColumn) {
@@ -477,6 +484,13 @@ mixin ColumnState implements IPlutoGridState {
     resetCurrentState(notify: false);
 
     notifyListeners(true, removeColumns.hashCode);
+  }
+
+  void _updateColumnsMap() {
+    columnsMap.clear();
+    for (final PlutoColumn column in refColumns.originalList) {
+      columnsMap[column.field] = column;
+    }
   }
 
   @override

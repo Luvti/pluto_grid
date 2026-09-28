@@ -188,16 +188,12 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
         _children,
         <Widget>[],
         forgottenChildren: _forgottenChildren,
-        slots: <IndexedSlot>[],
       );
       _forgottenChildren.clear();
       return;
     }
 
     final visibleWidgets = <Widget>[];
-    final slots = <IndexedSlot>[];
-
-    Element? previousChild;
     double startOffset = 0;
     _firstVisible = true;
 
@@ -207,18 +203,11 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
       final width = layoutChild.width;
 
       if (visible(startOffset: startOffset, layoutChild: layoutChild)) {
-        final foundElement = findChildByLayoutId(child.id);
-
-        if (foundElement != null) {
-          visibleWidgets.add(foundElement.widget);
-          slots.add(IndexedSlot<Element?>(i, previousChild));
-          previousChild = foundElement;
-        } else {
-          final element = child.createElement();
-          visibleWidgets.add(element.widget);
-          slots.add(IndexedSlot<Element?>(i, previousChild));
-          previousChild = element;
-        }
+        // updateChildren creates and mounts elements, and computes their slots.
+        // Creating a temporary element here leaks an unmounted element and
+        // leaves the next child's slot pointing to an element without a render
+        // object.
+        visibleWidgets.add(child);
 
         updateLastVisible(startOffset: startOffset, width: width);
       }
@@ -226,27 +215,10 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
       startOffset += width;
     }
 
-    for (final child in _children) {
-      if (child is _NullElement) {
-        continue;
-      }
-
-      final layoutChild = (child.widget as PlutoVisibilityLayoutId).layoutChild;
-
-      if (!visible(
-        startOffset: layoutChild.startPosition,
-        layoutChild: layoutChild,
-      )) {
-        deactivateChild(child);
-        _forgottenChildren.add(child);
-      }
-    }
-
     _children = updateChildren(
       _children,
       visibleWidgets,
       forgottenChildren: _forgottenChildren,
-      slots: slots,
     );
 
     _forgottenChildren.clear();
@@ -264,30 +236,25 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
       return;
     }
 
-    final List<Element> children = List<Element>.filled(
-      _widgetChildren.length,
-      _NullElement.instance,
-    );
+    final List<Element> children = <Element>[];
 
     Element? previousChild;
     double startOffset = 0;
     _firstVisible = true;
 
-    for (int i = 0; i < children.length; i += 1) {
+    for (int i = 0; i < _widgetChildren.length; i += 1) {
       final layoutChild = _widgetChildren.elementAt(i).layoutChild;
       final width = layoutChild.width;
 
       if (visible(startOffset: startOffset, layoutChild: layoutChild)) {
         final Element newChild = inflateWidget(
           _widgetChildren.elementAt(i),
-          IndexedSlot<Element?>(i, previousChild),
+          IndexedSlot<Element?>(children.length, previousChild),
         );
-        children[i] = newChild;
+        children.add(newChild);
         previousChild = newChild;
 
         updateLastVisible(startOffset: startOffset, width: width);
-      } else {
-        _forgottenChildren.add(children[i]);
       }
 
       startOffset += width;
@@ -454,26 +421,4 @@ abstract class PlutoVisibilityLayoutChild implements Widget {
   double get startPosition;
 
   bool get keepAlive => false;
-}
-
-class _NullElement extends Element {
-  _NullElement() : super(const _NullWidget());
-
-  static _NullElement instance = _NullElement();
-
-  @override
-  bool get debugDoingBuild => throw UnimplementedError();
-
-  @override
-  void performRebuild() {
-    super.performRebuild();
-    throw UnimplementedError();
-  }
-}
-
-class _NullWidget extends Widget {
-  const _NullWidget();
-
-  @override
-  Element createElement() => throw UnimplementedError();
 }

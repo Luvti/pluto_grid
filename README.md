@@ -29,6 +29,10 @@ If you comment on an issue, mobile improvements can be made quickly.
 dart find_broken_tests.dart.
 ```
 
+## [Memory regression tests](test/memory/README.md)
+
+Leak tracking, allocation checks and VM heap benchmarks.
+
 ## [ChangeLog](https://github.com/bosskmk/pluto_grid/blob/master/CHANGELOG.md)
 >
 > Please note the changes when changing the version of PlutoGrid you are using.
