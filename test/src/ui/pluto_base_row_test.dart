@@ -15,6 +15,7 @@ import '../../mock/shared_mocks.mocks.dart';
 void main() {
   late MockPlutoGridStateManager stateManager;
   late MockPlutoGridEventManager eventManager;
+  late PublishSubject<PlutoGridEvent> rowHoverEvents;
   PublishSubject<PlutoNotifierEvent> streamNotifier;
   late List<PlutoColumn> columns;
   late List<PlutoRow> rows;
@@ -24,6 +25,17 @@ void main() {
     const configuration = PlutoGridConfiguration();
     stateManager = MockPlutoGridStateManager();
     eventManager = MockPlutoGridEventManager();
+    rowHoverEvents = PublishSubject<PlutoGridEvent>();
+    when(eventManager.listener(any)).thenAnswer(
+      (Invocation invocation) => rowHoverEvents.listen(
+        invocation.positionalArguments.first as void Function(PlutoGridEvent),
+      ),
+    );
+    when(eventManager.addEvent(any)).thenAnswer((Invocation invocation) {
+      rowHoverEvents.add(
+        invocation.positionalArguments.first as PlutoGridEvent,
+      );
+    });
     streamNotifier = PublishSubject<PlutoNotifierEvent>();
     when(stateManager.streamNotifier).thenAnswer((_) => streamNotifier);
     when(stateManager.eventManager).thenReturn(eventManager);
@@ -43,6 +55,10 @@ void main() {
     when(stateManager.rowGroupDelegate).thenReturn(null);
   });
 
+  tearDown(() async {
+    await rowHoverEvents.close();
+  });
+
   buildRowWidget({
     int rowIdx = 0,
     bool checked = false,
@@ -55,6 +71,7 @@ void main() {
     bool isCurrentCell = false,
     bool isSelectedCell = false,
     bool enableRowHoverColor = false,
+    bool isRowHovered = false,
     double rowBorderWidth = PlutoGridSettings.rowBorderWidth,
   }) {
     return PlutoWidgetTestHelper(
@@ -68,6 +85,7 @@ void main() {
         );
         when(stateManager.configuration).thenReturn(configuration);
         when(stateManager.style).thenReturn(configuration.style);
+        when(stateManager.isRowIdxHovered(rowIdx)).thenReturn(isRowHovered);
         when(stateManager.isDraggingRow).thenReturn(isDraggingRow);
         when(stateManager.isRowIdxDragTarget(any)).thenReturn(isDragTarget);
         when(
@@ -178,6 +196,33 @@ void main() {
       final BoxDecoration normalDecoration =
           normalContainer.decoration as BoxDecoration;
       expect(normalDecoration.color, Colors.white);
+    },
+  );
+
+  buildRowWidget(enableRowHoverColor: true).test(
+    'row hover subscription is released when the row unmounts',
+    (WidgetTester tester) async {
+      expect(rowHoverEvents.hasListener, isTrue);
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpAndSettle();
+
+      expect(rowHoverEvents.hasListener, isFalse);
+    },
+  );
+
+  buildRowWidget(enableRowHoverColor: true, isRowHovered: true).test(
+    'a newly mounted row section inherits the shared hovered row',
+    (WidgetTester tester) async {
+      final DecoratedBox container = tester.widget<DecoratedBox>(
+        find.byType(DecoratedBox).first,
+      );
+
+      expect(
+        (container.decoration as BoxDecoration).color,
+        stateManager.style.rowHoveredColor,
+      );
+      verifyNever(eventManager.addEvent(any));
     },
   );
 

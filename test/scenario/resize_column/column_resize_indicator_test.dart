@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +63,9 @@ void main() {
     Duration cursorDelay = Duration.zero,
     Duration indicatorHoverDelay = Duration.zero,
     bool showColumnFooter = false,
+    bool enableRowHoverColor = false,
+    PlutoOnRowEnterEventCallback? onRowEnter,
+    PlutoOnRowExitEventCallback? onRowExit,
   }) async {
     if (showColumnFooter) {
       columns.first.footerRenderer = (_) =>
@@ -84,6 +89,7 @@ void main() {
               rows: rows,
               configuration: PlutoGridConfiguration(
                 style: PlutoGridStyleConfig(
+                  enableRowHoverColor: enableRowHoverColor,
                   columnResizeIndicatorMode: indicatorMode,
                   columnResizeIndicatorColor: indicatorColor,
                   columnResizeHandleWidth: handleWidth,
@@ -98,6 +104,8 @@ void main() {
               onLoaded: (PlutoGridOnLoadedEvent event) {
                 stateManager = event.stateManager;
               },
+              onRowEnter: onRowEnter,
+              onRowExit: onRowExit,
             ),
           ),
         ),
@@ -123,6 +131,390 @@ void main() {
 
     return mouse;
   }
+
+  Color? rowColor(WidgetTester tester, Finder row) {
+    final DecoratedBox decoration = tester.widget<DecoratedBox>(
+      find.descendant(of: row, matching: find.byType(DecoratedBox)).first,
+    );
+    return (decoration.decoration as BoxDecoration).color;
+  }
+
+  for (final TextDirection direction in TextDirection.values) {
+    desktopTestWidgets(
+      'row hover covers the first pinned column and all row sections in ${direction.name}',
+      (WidgetTester tester) async {
+        columns.first.frozen = PlutoColumnFrozen.start;
+        columns.last.frozen = PlutoColumnFrozen.end;
+        int cellBuilds = 0;
+        for (final PlutoColumn column in columns) {
+          column.renderer = (_) {
+            cellBuilds += 1;
+            return const SizedBox.expand();
+          };
+        }
+        await buildGrid(
+          tester,
+          textDirection: direction,
+          enableRowHoverColor: true,
+        );
+
+        List<Finder> rowSections(int rowIdx) => <Finder>[
+          find.byKey(ValueKey<String>('left_frozen_row_${rows[rowIdx].key}')),
+          find.byKey(ValueKey<String>('body_row_${rows[rowIdx].key}')),
+          find.byKey(ValueKey<String>('right_frozen_row_${rows[rowIdx].key}')),
+        ];
+        final List<Finder> firstSections = rowSections(0);
+        final List<Finder> secondSections = rowSections(1);
+        final List<PlutoNotifierEvent> notifications = <PlutoNotifierEvent>[];
+        final StreamSubscription<PlutoNotifierEvent> subscription = stateManager
+            .streamNotifier
+            .listen(notifications.add);
+        final int initialCellBuilds = cellBuilds;
+        final TestGesture mouse = await tester.createGesture(
+          kind: PointerDeviceKind.mouse,
+        );
+        await mouse.addPointer(location: Offset.zero);
+
+        for (final int section in <int>[1, 0, 1, 2]) {
+          await mouse.moveTo(tester.getCenter(firstSections[section]));
+          await tester.pumpAndSettle();
+
+          for (final Finder row in firstSections) {
+            expect(rowColor(tester, row), stateManager.style.rowHoveredColor);
+          }
+          expect(stateManager.hoveredRowIdx, 0);
+        }
+
+        final Rect bodyHandle = tester.getRect(
+          find.byKey(const ValueKey<String>('body_resize_handle_column1')),
+        );
+        await mouse.moveTo(
+          Offset(bodyHandle.center.dx, tester.getCenter(firstSections[1]).dy),
+        );
+        await tester.pumpAndSettle();
+
+        for (final Finder row in firstSections) {
+          expect(rowColor(tester, row), stateManager.style.rowHoveredColor);
+        }
+
+        await mouse.moveTo(tester.getCenter(secondSections.first));
+        await tester.pumpAndSettle();
+
+        for (final Finder row in firstSections) {
+          expect(
+            rowColor(tester, row),
+            isNot(stateManager.style.rowHoveredColor),
+          );
+        }
+        for (final Finder row in secondSections) {
+          expect(rowColor(tester, row), stateManager.style.rowHoveredColor);
+        }
+        expect(stateManager.hoveredRowIdx, 1);
+
+        await mouse.moveTo(Offset.zero);
+        await tester.pumpAndSettle();
+
+        for (final Finder row in secondSections) {
+          expect(
+            rowColor(tester, row),
+            isNot(stateManager.style.rowHoveredColor),
+          );
+        }
+        expect(stateManager.hoveredRowIdx, isNull);
+        expect(notifications, isEmpty);
+        expect(cellBuilds, initialCellBuilds);
+
+        await tester.runAsync(subscription.cancel);
+        await mouse.removePointer();
+      },
+    );
+  }
+
+  for (final TextDirection direction in TextDirection.values) {
+    for (final PlutoColumnResizeIndicatorMode mode
+        in <PlutoColumnResizeIndicatorMode>[
+          PlutoColumnResizeIndicatorMode.fullHeight,
+          PlutoColumnResizeIndicatorMode.header,
+        ]) {
+      desktopTestWidgets(
+        'row hover survives crossing a ${mode.name} resize handle in ${direction.name}',
+        (WidgetTester tester) async {
+          final List<int?> enteredRows = <int?>[];
+          final List<int?> exitedRows = <int?>[];
+          await buildGrid(
+            tester,
+            textDirection: direction,
+            indicatorMode: mode,
+            enableRowHoverColor: true,
+            onRowEnter: (PlutoGridOnRowEnterEvent event) =>
+                enteredRows.add(event.rowIdx),
+            onRowExit: (PlutoGridOnRowExitEvent event) =>
+                exitedRows.add(event.rowIdx),
+          );
+
+          final Finder firstRow = find.byKey(
+            ValueKey<String>('body_row_${rows.first.key}'),
+          );
+          final Finder secondRow = find.byKey(
+            ValueKey<String>('body_row_${rows[1].key}'),
+          );
+          final Rect handleRect = tester.getRect(
+            find.byKey(const ValueKey<String>('body_resize_handle_column0')),
+          );
+          final double rowY = tester.getCenter(firstRow).dy;
+          final TestGesture mouse = await tester.createGesture(
+            kind: PointerDeviceKind.mouse,
+          );
+          await mouse.addPointer(location: Offset.zero);
+          await mouse.moveTo(Offset(handleRect.left - handleRect.width, rowY));
+          await tester.pumpAndSettle();
+
+          expect(
+            rowColor(tester, firstRow),
+            stateManager.style.rowHoveredColor,
+          );
+          expect(stateManager.hoveredRowIdx, 0);
+          expect(enteredRows, <int>[0]);
+
+          final List<PlutoNotifierEvent> notifications = <PlutoNotifierEvent>[];
+          final StreamSubscription<PlutoNotifierEvent> subscription =
+              stateManager.streamNotifier.listen(
+                notifications.add,
+              );
+
+          for (final double x in <double>[
+            handleRect.left + handleRect.width / 4,
+            handleRect.center.dx,
+            handleRect.right - handleRect.width / 4,
+            handleRect.right + handleRect.width,
+          ]) {
+            await mouse.moveTo(Offset(x, rowY));
+            await tester.pumpAndSettle();
+
+            expect(
+              rowColor(tester, firstRow),
+              stateManager.style.rowHoveredColor,
+            );
+            expect(stateManager.hoveredRowIdx, 0);
+            expect(enteredRows, <int>[0]);
+            expect(exitedRows, isEmpty);
+          }
+
+          await mouse.moveTo(
+            Offset(handleRect.center.dx, tester.getCenter(secondRow).dy),
+          );
+          await tester.pumpAndSettle();
+
+          expect(
+            rowColor(tester, firstRow),
+            isNot(stateManager.style.rowHoveredColor),
+          );
+          expect(
+            rowColor(tester, secondRow),
+            stateManager.style.rowHoveredColor,
+          );
+          expect(stateManager.hoveredRowIdx, 1);
+          expect(enteredRows, <int>[0, 1]);
+          expect(exitedRows, <int>[0]);
+
+          await mouse.moveTo(Offset.zero);
+          await tester.pumpAndSettle();
+
+          expect(
+            rowColor(tester, secondRow),
+            isNot(stateManager.style.rowHoveredColor),
+          );
+          expect(stateManager.hoveredRowIdx, isNull);
+          expect(exitedRows, <int>[0, 1]);
+          expect(notifications, isEmpty);
+
+          await tester.runAsync(subscription.cancel);
+          await mouse.removePointer();
+        },
+      );
+    }
+  }
+
+  for (final PlutoColumnFrozen frozen in <PlutoColumnFrozen>[
+    PlutoColumnFrozen.start,
+    PlutoColumnFrozen.end,
+  ]) {
+    desktopTestWidgets(
+      'row hover survives crossing a resize handle in ${frozen.name} frozen columns',
+      (WidgetTester tester) async {
+        final bool isStart = frozen == PlutoColumnFrozen.start;
+        final List<PlutoColumn> frozenColumns = isStart
+            ? columns.take(2).toList()
+            : columns.skip(1).toList();
+        for (final PlutoColumn column in frozenColumns) {
+          column.frozen = frozen;
+        }
+        await buildGrid(tester, enableRowHoverColor: true);
+
+        final String rowPrefix = isStart ? 'left' : 'right';
+        final Finder firstRow = find.byKey(
+          ValueKey<String>('${rowPrefix}_frozen_row_${rows.first.key}'),
+        );
+        final Finder secondRow = find.byKey(
+          ValueKey<String>('${rowPrefix}_frozen_row_${rows[1].key}'),
+        );
+        final Rect handleRect = tester.getRect(
+          find.byKey(
+            ValueKey<String>('body_resize_handle_${frozenColumns.first.field}'),
+          ),
+        );
+        final double rowY = tester.getCenter(firstRow).dy;
+        final TestGesture mouse = await tester.createGesture(
+          kind: PointerDeviceKind.mouse,
+        );
+        await mouse.addPointer(location: Offset.zero);
+
+        for (final double x in <double>[
+          handleRect.left - handleRect.width,
+          handleRect.center.dx,
+          handleRect.right + handleRect.width,
+        ]) {
+          await mouse.moveTo(Offset(x, rowY));
+          await tester.pumpAndSettle();
+
+          expect(
+            rowColor(tester, firstRow),
+            stateManager.style.rowHoveredColor,
+          );
+          expect(stateManager.hoveredRowIdx, 0);
+        }
+
+        await mouse.moveTo(
+          Offset(handleRect.center.dx, tester.getCenter(secondRow).dy),
+        );
+        await tester.pumpAndSettle();
+
+        expect(
+          rowColor(tester, firstRow),
+          isNot(stateManager.style.rowHoveredColor),
+        );
+        expect(rowColor(tester, secondRow), stateManager.style.rowHoveredColor);
+        expect(stateManager.hoveredRowIdx, 1);
+
+        await mouse.removePointer();
+      },
+    );
+  }
+
+  desktopTestWidgets(
+    'hover-transparent resize handles own taps, auto fit, drags and long presses',
+    (WidgetTester tester) async {
+      int rendererActions = 0;
+      for (final PlutoColumn column in columns) {
+        column
+          ..cellPadding = EdgeInsets.zero
+          ..renderer = (_) => GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => rendererActions += 1,
+            onLongPress: () => rendererActions += 1,
+            onSecondaryTap: () => rendererActions += 1,
+            child: const SizedBox.expand(),
+          );
+      }
+      columns.first.width = 260;
+      await buildGrid(tester, enableRowHoverColor: true);
+      final PlutoCell originalCell = rows.last.cells[columns.last.field]!;
+      stateManager
+        ..setCurrentCell(originalCell, rows.length - 1)
+        ..setKeepFocus(true);
+      await tester.pumpAndSettle();
+
+      final List<PlutoGridCellGestureEvent> cellGestures =
+          <PlutoGridCellGestureEvent>[];
+      final StreamSubscription<PlutoGridEvent> subscription = stateManager
+          .eventManager!
+          .listener((PlutoGridEvent event) {
+            if (event is PlutoGridCellGestureEvent) {
+              cellGestures.add(event);
+            }
+          });
+      final Finder handle = find.byKey(
+        const ValueKey<String>('body_resize_handle_column0'),
+      );
+      final Finder firstRow = find.byKey(
+        ValueKey<String>('body_row_${rows.first.key}'),
+      );
+      Offset boundary() => Offset(
+        tester.getCenter(handle).dx,
+        tester.getCenter(firstRow).dy,
+      );
+      final TestGesture mouse = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+      await mouse.addPointer(location: Offset.zero);
+      await mouse.moveTo(boundary());
+      await tester.pumpAndSettle();
+
+      final double widthBeforeAutoFit = columns.first.width;
+      await mouse.down(boundary());
+      await mouse.up(timeStamp: const Duration(milliseconds: 1));
+      await tester.pumpAndSettle();
+
+      expect(stateManager.currentCell, same(originalCell));
+      expect(rendererActions, 0);
+      expect(cellGestures, isEmpty);
+
+      await mouse.down(
+        boundary(),
+        timeStamp: const Duration(milliseconds: 100),
+      );
+      await mouse.up(timeStamp: const Duration(milliseconds: 101));
+      await tester.pumpAndSettle();
+
+      expect(columns.first.width, lessThan(widthBeforeAutoFit));
+      expect(stateManager.currentCell, same(originalCell));
+      expect(stateManager.isEditing, isFalse);
+      expect(rendererActions, 0);
+      expect(cellGestures, isEmpty);
+
+      final double widthBeforeDrag = columns.first.width;
+      await mouse.down(boundary());
+      await mouse.moveBy(const Offset(30, 0));
+      await mouse.up();
+      await tester.pumpAndSettle();
+
+      expect(columns.first.width, closeTo(widthBeforeDrag + 30, 0.01));
+
+      await mouse.down(boundary());
+      await tester.pump(kLongPressTimeout + const Duration(milliseconds: 1));
+      await mouse.up();
+      await tester.pumpAndSettle();
+
+      final TestGesture secondaryMouse = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+        buttons: kSecondaryMouseButton,
+      );
+      await secondaryMouse.down(boundary());
+      await secondaryMouse.up();
+      await tester.pumpAndSettle();
+
+      expect(stateManager.currentCell, same(originalCell));
+      expect(stateManager.isEditing, isFalse);
+      expect(rendererActions, 0);
+      expect(cellGestures, isEmpty);
+
+      final Finder adjacentCell = find.byWidgetPredicate(
+        (Widget widget) =>
+            widget is PlutoBaseCell &&
+            widget.rowIdx == 0 &&
+            widget.column == columns[1],
+      );
+      await mouse.down(tester.getCenter(adjacentCell));
+      await mouse.up();
+      await tester.pumpAndSettle();
+
+      expect(rendererActions, 1);
+
+      await mouse.removePointer();
+      await secondaryMouse.removePointer();
+      await tester.runAsync(subscription.cancel);
+    },
+  );
 
   desktopTestWidgets(
     'fullHeight mode highlights one centered boundary through the grid',
@@ -687,7 +1079,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(verticalScroll.offset, greaterThan(0));
+      expect(verticalScroll.offset, 120);
       expect(bodyHandles, findsNWidgets(columns.length));
     },
   );

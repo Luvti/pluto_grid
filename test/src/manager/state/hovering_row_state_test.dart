@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
+import 'package:pluto_grid_plus/src/manager/event/pluto_grid_row_hover_event.dart';
 
 import '../../../helper/column_helper.dart';
 import '../../../helper/row_helper.dart';
@@ -28,6 +29,9 @@ void main() {
       rows: rows,
       gridFocusNode: MockFocusNode(),
       scroll: MockPlutoGridScrollController(),
+      configuration: const PlutoGridConfiguration(
+        style: PlutoGridStyleConfig(enableRowHoverColor: true),
+      ),
     );
 
     listener = MockMethods();
@@ -113,5 +117,36 @@ void main() {
         isFalse,
       );
     });
+  });
+
+  group('row hover exit events', () {
+    test('an exit from a previous row preserves the current hovered row', () {
+      stateManager.setHoveredRowIdx(2, notify: false);
+
+      PlutoGridRowHoverEvent(
+        rowIdx: 1,
+        isHovered: false,
+        notifyStateManager: false,
+      ).handler(stateManager);
+
+      expect(stateManager.hoveredRowIdx, 2);
+      verifyNever(listener!.noParamReturnVoid());
+    });
+
+    test(
+      'an exit from the current row clears hover without rebuilding the grid',
+      () {
+        stateManager.setHoveredRowIdx(2, notify: false);
+
+        PlutoGridRowHoverEvent(
+          rowIdx: 2,
+          isHovered: false,
+          notifyStateManager: false,
+        ).handler(stateManager);
+
+        expect(stateManager.hoveredRowIdx, isNull);
+        verifyNever(listener!.noParamReturnVoid());
+      },
+    );
   });
 }

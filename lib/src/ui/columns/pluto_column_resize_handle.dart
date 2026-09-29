@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/gestures.dart'
     show
+        EagerGestureRecognizer,
+        GestureBinding,
         PointerScrollEvent,
         PointerSignalEvent,
         computePanSlop,
@@ -77,11 +79,16 @@ class PlutoColumnResizeHandle extends StatefulWidget {
 
   final bool forwardVerticalScroll;
 
+  /// Lets rows behind a persistent body handle keep receiving mouse hover.
+  /// Pointer gestures remain owned by the resize handle.
+  final bool preserveRowHover;
+
   const PlutoColumnResizeHandle({
     required this.stateManager,
     required this.column,
     this.side = PlutoColumnResizeHandleSide.end,
     this.forwardVerticalScroll = false,
+    this.preserveRowHover = false,
     super.key,
   });
 
@@ -301,7 +308,12 @@ class _PlutoColumnResizeHandleState extends State<PlutoColumnResizeHandle> {
       position.minScrollExtent,
       position.maxScrollExtent,
     );
-    verticalScroll.jumpTo(offset);
+    // Hover-transparent handles also hit the scrollable below them. Resolve
+    // the signal once so both listeners do not apply the same wheel delta.
+    GestureBinding.instance.pointerSignalResolver.register(
+      event,
+      (_) => verticalScroll.jumpTo(offset),
+    );
   }
 
   void _handlePointerUp(PointerUpEvent event) {
@@ -488,41 +500,61 @@ class _PlutoColumnResizeHandleState extends State<PlutoColumnResizeHandle> {
         directionalTranslation = 0;
     }
 
+    Widget handle = Listener(
+      behavior: HitTestBehavior.translucent,
+      onPointerDown: _handlePointerDown,
+      onPointerMove: _handlePointerMove,
+      onPointerUp: _handlePointerUp,
+      onPointerCancel: _handlePointerCancel,
+      onPointerSignal: _handlePointerSignal,
+      child: Align(
+        alignment: indicatorAlignment,
+        child: FractionalTranslation(
+          translation: Offset(
+            isLTR ? directionalTranslation : -directionalTranslation,
+            0,
+          ),
+          child: AnimatedContainer(
+            key: const ValueKey<String>('ColumnResizeHandleIndicator'),
+            duration: widget
+                .stateManager
+                .style
+                .columnResizeIndicatorAnimationDuration,
+            curve: Curves.easeOut,
+            width: showLocalIndicator
+                ? widget.stateManager.style.columnResizeIndicatorWidth
+                : 0,
+            color: widget.stateManager.style.columnResizeIndicatorColor,
+          ),
+        ),
+      ),
+    );
+
+    if (widget.preserveRowHover) {
+      // Passing hover through also exposes the cells to pointer hit testing.
+      // Claim their gestures before a boundary tap can select/edit a cell or
+      // trigger an action in its renderer. Raw resize events still reach us.
+      handle = RawGestureDetector(
+        behavior: HitTestBehavior.translucent,
+        gestures: <Type, GestureRecognizerFactory>{
+          EagerGestureRecognizer:
+              GestureRecognizerFactoryWithHandlers<EagerGestureRecognizer>(
+                EagerGestureRecognizer.new,
+                (_) {},
+              ),
+        },
+        child: handle,
+      );
+    }
+
     return MouseRegion(
+      opaque: !widget.preserveRowHover,
       cursor: _showResizeCursor
           ? SystemMouseCursors.resizeLeftRight
           : MouseCursor.defer,
       onEnter: (_) => _handleEnter(),
       onExit: (_) => _handleExit(),
-      child: Listener(
-        behavior: HitTestBehavior.translucent,
-        onPointerDown: _handlePointerDown,
-        onPointerMove: _handlePointerMove,
-        onPointerUp: _handlePointerUp,
-        onPointerCancel: _handlePointerCancel,
-        onPointerSignal: _handlePointerSignal,
-        child: Align(
-          alignment: indicatorAlignment,
-          child: FractionalTranslation(
-            translation: Offset(
-              isLTR ? directionalTranslation : -directionalTranslation,
-              0,
-            ),
-            child: AnimatedContainer(
-              key: const ValueKey<String>('ColumnResizeHandleIndicator'),
-              duration: widget
-                  .stateManager
-                  .style
-                  .columnResizeIndicatorAnimationDuration,
-              curve: Curves.easeOut,
-              width: showLocalIndicator
-                  ? widget.stateManager.style.columnResizeIndicatorWidth
-                  : 0,
-              color: widget.stateManager.style.columnResizeIndicatorColor,
-            ),
-          ),
-        ),
-      ),
+      child: handle,
     );
   }
 }
@@ -630,6 +662,7 @@ class _PlutoBodyColumnResizeHandlesState
                 ? PlutoColumnResizeHandleSide.center
                 : PlutoColumnResizeHandleSide.end,
             forwardVerticalScroll: true,
+            preserveRowHover: true,
           ),
         ),
       );

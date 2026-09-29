@@ -23,7 +23,7 @@ class PlutoGridRowHoverEvent extends PlutoGridEvent {
       // set the hovered row index to either the row index or null
       if (isHovered == true) {
         stateManager.setHoveredRowIdx(rowIdx, notify: notifyStateManager);
-      } else {
+      } else if (stateManager.hoveredRowIdx == rowIdx) {
         stateManager.setHoveredRowIdx(null, notify: notifyStateManager);
       }
     }

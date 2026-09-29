@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
@@ -313,6 +315,10 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
 
   bool _isHovered = false;
 
+  bool _isPointerInside = false;
+
+  late final StreamSubscription<PlutoGridEvent> _rowHoverSubscription;
+
   Color get _oddRowColor => stateManager.configuration.style.oddRowColor == null
       ? stateManager.configuration.style.rowColor
       : stateManager.configuration.style.oddRowColor!;
@@ -326,7 +332,18 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
   void initState() {
     super.initState();
 
+    _isHovered = stateManager.isRowIdxHovered(widget.rowIdx);
+    _rowHoverSubscription = stateManager.eventManager!.listener(
+      _handleRowHoverEvent,
+    );
+
     updateState(PlutoNotifierEventForceUpdate.instance);
+  }
+
+  @override
+  void dispose() {
+    unawaited(_rowHoverSubscription.cancel());
+    super.dispose();
   }
 
   @override
@@ -472,6 +489,29 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
       _isHovered = value;
       _decoration = _getBoxDecoration();
     });
+  }
+
+  void _handleRowHoverEvent(PlutoGridEvent event) {
+    if (!mounted || event is! PlutoGridRowHoverEvent) {
+      return;
+    }
+
+    // Frozen and body sections render separate containers for the same row.
+    // Share their hover decoration without notifying/rebuilding the viewport.
+    if (event.isHovered) {
+      _setHovered(event.rowIdx == widget.rowIdx);
+    } else if (event.rowIdx == widget.rowIdx) {
+      _setHovered(false);
+    }
+  }
+
+  void _handlePointerHover(bool value) {
+    if (_isPointerInside == value) {
+      return;
+    }
+
+    _isPointerInside = value;
+    _setHovered(value);
 
     stateManager.eventManager!.addEvent(
       PlutoGridRowHoverEvent(
@@ -488,8 +528,8 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
 
     return MouseRegion(
       key: ValueKey<String>('row_hover_${widget.row.key}'),
-      onEnter: (_) => _setHovered(true),
-      onExit: (_) => _setHovered(false),
+      onEnter: (_) => _handlePointerHover(true),
+      onExit: (_) => _handlePointerHover(false),
       child: _AnimatedOrNormalContainer(
         enable: widget.enableRowColorAnimation,
         decoration: _decoration,
