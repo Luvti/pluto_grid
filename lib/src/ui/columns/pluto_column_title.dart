@@ -39,10 +39,8 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
       widget.column.resolveShowColumnHeaderIcon(stateManager.style) &&
       (widget.column.enableContextMenu || widget.column.enableDropToResize);
 
-  bool get showRightIcon {
-    _sort ??= widget.column.sort;
-    return showActionIcon || !_sort!.isNone;
-  }
+  bool get showRightIcon =>
+      widget.column.isShowRightIconForStyle(stateManager.style);
 
   bool get showResizeHandle =>
       widget.column.enableDropToResize &&

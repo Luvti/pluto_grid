@@ -392,10 +392,19 @@ class PlutoColumn {
   ) => columnResizeIndicatorMode ?? style.columnResizeIndicatorMode;
 
   /// Whether the title must reserve space for a visible action or sort icon.
-  bool isShowRightIconForStyle(PlutoGridStyleConfig style) =>
-      !sort.isNone ||
-      (resolveShowColumnHeaderIcon(style) &&
-          (enableContextMenu || enableDropToResize));
+  bool isShowRightIconForStyle(PlutoGridStyleConfig style) {
+    if (!sort.isNone) {
+      final Icon? sortIcon = sort.isAscending
+          ? style.columnAscendingIcon
+          : style.columnDescendingIcon;
+      // A null override uses Pluto's default icon. An explicitly empty or
+      // zero-size icon hides the indicator and must not reserve header width.
+      return sortIcon == null || (sortIcon.icon != null && sortIcon.size != 0);
+    }
+
+    return resolveShowColumnHeaderIcon(style) &&
+        (enableContextMenu || enableDropToResize);
+  }
 
   PlutoColumnGroup? group;
 

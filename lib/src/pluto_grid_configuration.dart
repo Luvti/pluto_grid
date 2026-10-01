@@ -661,11 +661,15 @@ class PlutoGridStyleConfig {
   /// Ascending icon when sorting a column.
   ///
   /// If no value is specified, the default icon is set.
+  /// An icon without glyph data or with size zero hides the indicator without
+  /// reserving space in the header.
   final Icon? columnAscendingIcon;
 
   /// Descending icon when sorting a column.
   ///
   /// If no value is specified, the default icon is set.
+  /// An icon without glyph data or with size zero hides the indicator without
+  /// reserving space in the header.
   final Icon? columnDescendingIcon;
 
   /// Icon when RowGroup is expanded.

@@ -1930,6 +1930,8 @@ void main() {
           style: PlutoGridStyleConfig(
             columnHeaderTextStyle: headerStyle,
             showColumnHeaderIcon: false,
+            columnAscendingIcon: Icon(null, size: 0),
+            columnDescendingIcon: Icon(null, size: 0),
           ),
         );
         final PlutoColumn column = PlutoColumn(
@@ -2002,6 +2004,14 @@ void main() {
           column.width,
           expectedWidth,
         );
+        for (final PlutoColumnSort sort in <PlutoColumnSort>[
+          PlutoColumnSort.ascending,
+          PlutoColumnSort.descending,
+        ]) {
+          column.sort = sort;
+          stateManager.autoFitColumn(context, column);
+          expect(column.width, expectedWidth);
+        }
         expect(
           column.width,
           lessThan(

@@ -41,6 +41,9 @@ void main() {
     when(stateManager.style).thenReturn(configuration.style);
     when(stateManager.eventManager).thenReturn(eventManager);
     when(stateManager.streamNotifier).thenAnswer((_) => subject);
+    when(stateManager.resolveNotifierFilter()).thenReturn(
+      PlutoChangeNotifierFilter<Never>(<int>{}),
+    );
     when(stateManager.localeText).thenReturn(const PlutoGridLocaleText());
     when(stateManager.hasCheckedRow).thenReturn(false);
     when(stateManager.hasUnCheckedRow).thenReturn(false);
@@ -288,6 +291,90 @@ void main() {
         ),
         findsNothing,
       );
+    },
+  );
+
+  testWidgets(
+    'hidden sort icons reserve no layout width when sorting in LTR and RTL.',
+    (WidgetTester tester) async {
+      for (final TextDirection textDirection in TextDirection.values) {
+        for (final Icon hiddenIcon in <Icon>[
+          const Icon(null),
+          const Icon(Icons.sort, size: 0),
+          const Icon(null, size: 0),
+        ]) {
+          configuration = PlutoGridConfiguration(
+            style: PlutoGridStyleConfig(
+              defaultColumnTitlePadding: EdgeInsets.zero,
+              showColumnHeaderIcon: false,
+              columnAscendingIcon: hiddenIcon,
+              columnDescendingIcon: hiddenIcon,
+            ),
+          );
+          when(stateManager.configuration).thenReturn(configuration);
+          when(stateManager.style).thenReturn(configuration.style);
+          when(stateManager.textDirection).thenReturn(textDirection);
+          when(stateManager.isRTL).thenReturn(
+            textDirection == TextDirection.rtl,
+          );
+          when(stateManager.isLTR).thenReturn(
+            textDirection == TextDirection.ltr,
+          );
+
+          final PlutoColumn column = PlutoColumn(
+            title: 'column title',
+            field: 'hidden_sort_icon',
+            type: PlutoColumnType.text(),
+          );
+
+          await tester.pumpWidget(const SizedBox.shrink());
+          await tester.pumpWidget(
+            buildApp(
+              column: column,
+              textDirection: textDirection,
+              constrainToColumnWidth: true,
+            ),
+          );
+
+          final Finder headerText = find.byKey(
+            const ValueKey<String>('column_header_text_hidden_sort_icon'),
+          );
+          final double initialTextWidth = tester.getSize(headerText).width;
+
+          for (final PlutoColumnSort sort in <PlutoColumnSort>[
+            PlutoColumnSort.ascending,
+            PlutoColumnSort.descending,
+            PlutoColumnSort.none,
+          ]) {
+            column.sort = sort;
+            subject.add(PlutoNotifierEventForceUpdate.instance);
+            await tester.pump();
+
+            expect(find.byType(PlutoGridColumnIcon), findsNothing);
+            expect(
+              find.byKey(
+                const ValueKey<String>(
+                  'column_header_action_spacer_hidden_sort_icon',
+                ),
+              ),
+              findsNothing,
+            );
+            expect(tester.getSize(headerText).width, initialTextWidth);
+            expect(
+              column.isShowRightIconForStyle(configuration.style),
+              isFalse,
+            );
+            expect(
+              find.byKey(
+                const ValueKey<String>(
+                  'column_resize_handle_hidden_sort_icon',
+                ),
+              ),
+              findsOneWidget,
+            );
+          }
+        }
+      }
     },
   );
 
