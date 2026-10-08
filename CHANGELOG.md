@@ -1,3 +1,12 @@
+## [9.0.0] - 2026. 10. 08
+
+* Migrate the grid, examples, demo, tests, and memory benchmarks to `material_ui`.
+* Resolve dynamic scrollbar colors using the standalone `cupertino_ui` package.
+* Require Flutter 3.47 and Dart 3.13 or newer.
+* Update the demo's Font Awesome dependency for Flutter 3.47 `IconData` compatibility.
+* Breaking: Material types in public APIs now come from `material_ui`.
+  Consumers must migrate their imports and localization delegates.
+
 ## [8.1.0] - 2025. 12. 12
 
 * Updated for flutter 3.38 version.

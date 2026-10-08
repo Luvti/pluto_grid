@@ -1,4 +1,19 @@
-## PlutoGrid for flutter - v8.1.0
+## PlutoGrid for flutter - v9.0.0
+
+### Migrating to 9.0.0
+
+This release uses the standalone `material_ui` package and requires Flutter
+3.47 or newer and Dart 3.13 or newer. Add `material_ui: ^1.6.0` to your app's
+dependencies and replace `package:flutter/material.dart` imports with
+`package:material_ui/material_ui.dart` wherever you use PlutoGrid's Material
+types, including `PopupMenuEntry` and `PopupMenuItem` in custom column menus.
+
+For localized apps, use `GlobalMaterialLocalizations.delegates` from
+`material_ui`. It includes the Material, Cupertino, and Widgets delegates.
+Legacy SDK Material types are distinct from the standalone package's types;
+the compatibility bridge does not convert values passed to PlutoGrid's API.
+See the [Flutter migration guide](https://docs.flutter.dev/release/breaking-changes/material-ui-and-cupertino-ui)
+for migrating apps and remaining legacy dependencies.
 
 [![Awesome Flutter](https://img.shields.io/badge/Awesome-Flutter-blue.svg)](https://github.com/Solido/awesome-flutter)
 [![codecov](https://codecov.io/gh/bosskmk/pluto_grid/branch/master/graph/badge.svg)](https://codecov.io/gh/bosskmk/pluto_grid)

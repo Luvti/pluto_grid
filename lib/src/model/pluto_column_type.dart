@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_annotating_with_dynamic
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
@@ -130,7 +130,7 @@ abstract class PlutoColumnType {
   /// The default icon is displayed, and if this value is set to null , the icon does not appear.
   factory PlutoColumnType.select(
     List<dynamic> items, {
-    final Function(PlutoGridOnSelectedEvent event)? onItemSelected,
+    Function(PlutoGridOnSelectedEvent event)? onItemSelected,
     dynamic defaultValue = '',
     bool enableColumnFilter = false,
     IconData? popupIcon = Icons.arrow_drop_down,

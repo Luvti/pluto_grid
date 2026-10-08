@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 abstract class IColumnGroupState {

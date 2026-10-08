@@ -12,7 +12,7 @@ import 'package:flutter/gestures.dart'
         kDoubleTapSlop,
         kDoubleTapTimeout,
         kPrimaryButton;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 import 'package:pluto_grid_plus/src/helper/platform_helper.dart';

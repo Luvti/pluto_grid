@@ -1,13 +1,16 @@
 name: pluto_grid_plus
 description: PlutoGrid is a dataGrid that can be controlled by the keyboard on desktop and web. Of course, it works well on Android and IOS. (DataGrid, DataTable, Data Grid, Data Table, Sticky)
-version: 8.1.0
+version: 9.0.0
 homepage: https://pluto.weblaze.dev
 repository: https://github.com/doonfrs/pluto_grid_plus
 
 environment:
-  sdk: '>=3.8.0 <4.0.0'
+  sdk: '>=3.13.0 <4.0.0'
+  flutter: '>=3.47.0'
 
 dependencies:
+  material_ui: ^1.6.0
+  cupertino_ui: ^1.1.2
   flutter:
     sdk: flutter
   # Follows the intl version included in Flutter.

@@ -7,11 +7,11 @@ import 'dart:async' as _i6;
 import 'dart:ui' as _i5;
 
 import 'package:flutter/gestures.dart' as _i7;
-import 'package:flutter/material.dart' as _i3;
 import 'package:flutter/rendering.dart' as _i10;
 import 'package:flutter/services.dart' as _i11;
 import 'package:flutter/src/foundation/assertions.dart' as _i12;
 import 'package:flutter/src/foundation/diagnostics.dart' as _i8;
+import 'package:material_ui/material_ui.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i9;
 import 'package:pluto_grid_plus/pluto_grid_plus.dart' as _i2;
@@ -383,17 +383,11 @@ class MockPlutoGridStateManager extends _i1.Mock
           as _i3.GlobalKey<_i3.State<_i3.StatefulWidget>>);
 
   @override
-  set showFilterPopupCustom(
-    void Function(
-      _i3.BuildContext, {
-      _i2.PlutoColumn? calledColumn,
-      void Function()? onClosed,
-    })?
-    value,
-  ) => super.noSuchMethod(
-    Invocation.setter(#showFilterPopupCustom, value),
-    returnValueForMissingStub: null,
-  );
+  set showFilterPopupCustom(_i2.PlutoShowFilterPopupCallback? value) =>
+      super.noSuchMethod(
+        Invocation.setter(#showFilterPopupCustom, value),
+        returnValueForMissingStub: null,
+      );
 
   @override
   set savedFilter(_i2.FilteredListFilter<_i2.PlutoRow<dynamic>>? value) =>
@@ -2934,6 +2928,18 @@ class MockPlutoGridStateManager extends _i1.Mock
             returnValueForMissingStub: false,
           )
           as bool);
+
+  @override
+  void clearFilterState() => super.noSuchMethod(
+    Invocation.method(#clearFilterState, []),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void clearRowGroupState() => super.noSuchMethod(
+    Invocation.method(#clearRowGroupState, []),
+    returnValueForMissingStub: null,
+  );
 }
 
 /// A class which mocks [PlutoGridEventManager].
@@ -3206,6 +3212,12 @@ class MockLinkedScrollControllerGroup extends _i1.Mock
   @override
   void notifyListeners() => super.noSuchMethod(
     Invocation.method(#notifyListeners, []),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void dispose() => super.noSuchMethod(
+    Invocation.method(#dispose, []),
     returnValueForMissingStub: null,
   );
 }
