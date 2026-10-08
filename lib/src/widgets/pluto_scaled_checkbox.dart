@@ -28,17 +28,18 @@ class PlutoScaledCheckbox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     return Transform.scale(
       scale: scale,
       child: Theme(
-        data: ThemeData(
+        data: theme.copyWith(
           unselectedWidgetColor: unselectedColor,
         ),
         child: Checkbox(
           value: value,
           tristate: tristate,
           onChanged: handleOnChanged,
-          activeColor: value == null ? unselectedColor : activeColor,
+          activeColor: activeColor,
           checkColor: checkColor,
         ),
       ),

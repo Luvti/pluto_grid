@@ -1,5 +1,6 @@
 ## [9.0.0] - 2026. 10. 08
 
+* Preserve inherited checkbox themes and active colors for partial row selection.
 * Migrate the grid, examples, demo, tests, and memory benchmarks to `material_ui`.
 * Resolve dynamic scrollbar colors using the standalone `cupertino_ui` package.
 * Require Flutter 3.47 and Dart 3.13 or newer.
