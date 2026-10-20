@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:collection';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
@@ -323,16 +321,13 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
       return refRows;
     }
 
-    final _ApplyList applyList = _ApplyList(<_Apply>[
-      _ApplyCellForSetColumnRow(refColumns),
-      _ApplyRowForSortIdx(
-        forceApply: forceApplySortIdx,
-        increase: increase,
-        start: start,
-        firstRow: refRows.first,
-      ),
-      _ApplyRowGroup(refColumns),
-    ]);
+    final _ApplyList applyList = _initializeRowsApplyList(
+      refColumns,
+      refRows,
+      forceApplySortIdx: forceApplySortIdx,
+      increase: increase,
+      start: start,
+    );
 
     if (!applyList.apply) {
       return refRows;
@@ -347,19 +342,42 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
     return refRows;
   }
 
+  static _ApplyList _initializeRowsApplyList(
+    List<PlutoColumn> refColumns,
+    List<PlutoRow> refRows, {
+    required bool forceApplySortIdx,
+    required bool increase,
+    required int start,
+  }) {
+    return _ApplyList(<_Apply>[
+      _ApplyCellForSetColumnRow(refColumns),
+      _ApplyRowForSortIdx(
+        forceApply: forceApplySortIdx,
+        increase: increase,
+        start: start,
+        firstRow: refRows.first,
+      ),
+      _ApplyRowGroup(refColumns),
+    ]);
+  }
+
   /// An asynchronous version of [PlutoGridStateManager.initializeRows].
   ///
-  /// [PlutoGridStateManager.initializeRowsAsync] repeats [Timer] every [duration],
-  /// Process the setting of [refRows] by the size of [chunkSize].
-  /// [Isolate] is a good way to handle CPU heavy work, but
-  /// The condition that List&lt;PlutoRow&gt; cannot be passed to Isolate
-  /// solves the problem of UI freezing by dividing the work with Timer.
+  /// Rows are processed in order, in slices of up to [frameBudget] separated by
+  /// [duration] pauses, so frames and input are handled while a large list is
+  /// initialized. [Isolate] is a good way to handle CPU heavy work, but
+  /// List&lt;PlutoRow&gt; cannot be passed to an isolate.
   ///
   /// {@macro initialize_rows_params}
   ///
-  /// [chunkSize] determines the number of lists processed at one time when setting rows.
+  /// [chunkSize] is the number of rows processed between checks of
+  /// [frameBudget]. The default budget leaves most of a 60 Hz frame to the UI.
   ///
-  /// [duration] determines the processing interval when setting rows.
+  /// [duration] is the pause between slices.
+  ///
+  /// The result is the same as [PlutoGridStateManager.initializeRows], also
+  /// for [sortIdx] values, in a new list. No row is changed before the first
+  /// pause.
   ///
   /// If pagination is set, [PlutoGridStateManager.setPage] must be called
   /// after Future is completed before Rows appear on the screen.
@@ -381,80 +399,42 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
     int start = 0,
     int chunkSize = 100,
     Duration duration = const Duration(milliseconds: 1),
-  }) {
+    Duration frameBudget = const Duration(milliseconds: 4),
+  }) async {
     if (refColumns.isEmpty || refRows.isEmpty) {
-      return Future.value(refRows);
+      return refRows;
     }
 
     assert(chunkSize > 0);
 
-    final Completer<List<PlutoRow>> completer = Completer();
-
-    final SplayTreeMap<int, List<PlutoRow>> splayMapRows = SplayTreeMap();
-
-    final Iterable<List<PlutoRow>> chunks = refRows.slices(chunkSize);
-
-    final int chunksLength = chunks.length;
-
-    final List<int> chunksIndexes = List.generate(
-      chunksLength,
-      (int index) => index,
+    // Previously each timer tick of [duration] handled one chunk, so 200k rows
+    // waited on ~2000 ticks (about 2 s) for about 0.1 s of actual work; slices
+    // now finish them in about 0.2 s with event-loop stalls of a few ms.
+    final _ApplyList applyList = _initializeRowsApplyList(
+      refColumns,
+      refRows,
+      forceApplySortIdx: forceApplySortIdx,
+      increase: increase,
+      start: start,
     );
 
-    Timer.periodic(duration, (Timer timer) {
-      if (completer.isCompleted) {
-        timer.cancel();
-        return;
+    await Future<void>.delayed(duration);
+
+    final int rowLength = refRows.length;
+    final Stopwatch slice = Stopwatch()..start();
+
+    for (int rowIdx = 0; rowIdx < rowLength; rowIdx += 1) {
+      applyList.execute(refRows[rowIdx]);
+
+      if ((rowIdx + 1) % chunkSize == 0 &&
+          rowIdx + 1 < rowLength &&
+          slice.elapsed >= frameBudget) {
+        await Future<void>.delayed(duration);
+        slice.reset();
       }
+    }
 
-      if (chunksIndexes.isEmpty) {
-        return;
-      }
-
-      final int chunkIndex = chunksIndexes.removeLast();
-
-      final List<PlutoRow> chunk = chunks.elementAt(chunkIndex);
-
-      unawaited(
-        Future(() {
-          return PlutoGridStateManager.initializeRows(
-            refColumns,
-            chunk,
-            forceApplySortIdx: forceApplySortIdx,
-            increase: increase,
-            start: start + (chunkIndex * chunkSize),
-          );
-        }).then<void>(
-          (List<PlutoRow> value) {
-            if (completer.isCompleted) {
-              return;
-            }
-
-            splayMapRows[chunkIndex] = value;
-
-            if (splayMapRows.length == chunksLength) {
-              completer.complete(
-                splayMapRows.values
-                    .expand((List<PlutoRow> element) => element)
-                    .toList(),
-              );
-
-              timer.cancel();
-            }
-          },
-          onError: (Object error, StackTrace stackTrace) {
-            if (completer.isCompleted) {
-              return;
-            }
-
-            timer.cancel();
-            completer.completeError(error, stackTrace);
-          },
-        ),
-      );
-    });
-
-    return completer.future;
+    return List<PlutoRow>.of(refRows);
   }
 
   @override

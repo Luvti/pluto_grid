@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -528,6 +530,82 @@ void main() {
       );
 
       expect(initializedRows.first.sortIdx, 99);
+    });
+
+    test('matches initializeRows, including decreasing sortIdx', () async {
+      final List<PlutoColumn> columns = ColumnHelper.textColumn('title');
+
+      for (final bool increase in <bool>[true, false]) {
+        final List<PlutoRow> syncRows = RowHelper.count(250, columns);
+        final List<PlutoRow> asyncRows = RowHelper.count(250, columns);
+
+        PlutoGridStateManager.initializeRows(
+          columns,
+          syncRows,
+          increase: increase,
+          start: 50,
+        );
+        final List<PlutoRow> initializedRows =
+            await PlutoGridStateManager.initializeRowsAsync(
+              columns,
+              asyncRows,
+              increase: increase,
+              start: 50,
+              chunkSize: 7,
+              frameBudget: Duration.zero,
+            );
+
+        expect(initializedRows, isNot(same(asyncRows)));
+        expect(initializedRows, orderedEquals(asyncRows));
+        for (int i = 0; i < asyncRows.length; i += 1) {
+          expect(asyncRows[i].sortIdx, syncRows[i].sortIdx, reason: '$i');
+          final PlutoCell cell = asyncRows[i].cells[columns.first.field]!;
+          expect(cell.row, same(asyncRows[i]));
+          expect(cell.column, same(columns.first));
+        }
+      }
+    });
+
+    test('does not change rows before the first pause', () async {
+      final List<PlutoColumn> columns = ColumnHelper.textColumn('title');
+      final List<PlutoRow> rows = RowHelper.count(10, columns);
+
+      final Future<List<PlutoRow>> initializing =
+          PlutoGridStateManager.initializeRowsAsync(columns, rows);
+
+      expect(rows.first.cells[columns.first.field]!.initialized, isFalse);
+      await initializing;
+      expect(rows.every((PlutoRow row) => row.initialized), isTrue);
+    });
+
+    test('yields to the event loop between slices', () async {
+      final List<PlutoColumn> columns = ColumnHelper.textColumn('title');
+      final List<PlutoRow> rows = RowHelper.count(1000, columns);
+      final List<int> progress = <int>[];
+
+      final Future<List<PlutoRow>> initializing =
+          PlutoGridStateManager.initializeRowsAsync(
+            columns,
+            rows,
+            chunkSize: 10,
+            frameBudget: Duration.zero,
+            duration: Duration.zero,
+          );
+      // Timers run between slices: they observe partially initialized rows.
+      void observe() {
+        progress.add(rows.where((PlutoRow row) => row.initialized).length);
+        if (progress.last < rows.length) {
+          Timer.run(observe);
+        }
+      }
+
+      Timer.run(observe);
+      await initializing;
+
+      expect(
+        progress.where((int count) => count > 0 && count < rows.length),
+        isNotEmpty,
+      );
     });
 
     test(
