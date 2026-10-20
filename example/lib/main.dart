@@ -1,4 +1,6 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
@@ -13,7 +15,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       locale: const Locale('ru', 'RU'),
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        DefaultCupertinoLocalizations.delegate,
+      ],
       supportedLocales: const <Locale>[Locale('ru', 'RU')],
       title: 'PlutoGrid Example',
       theme: ThemeData(primarySwatch: Colors.blue),
@@ -276,7 +283,7 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
 
       return DropdownButtonFormField<String>(
         focusNode: focusNode,
-        initialValue: controller.text.isEmpty ? null : controller.text,
+        value: controller.text.isEmpty ? null : controller.text,
         isExpanded: true,
         decoration: InputDecoration(
           filled: true,

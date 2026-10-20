@@ -1,8 +1,6 @@
 import 'package:faker/faker.dart' hide Color, Image;
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart' as legacy_material
-    show Material, MaterialType;
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 import 'package:pluto_menu_bar/pluto_menu_bar.dart';
 
@@ -665,7 +663,7 @@ class _HeaderState extends State<_Header> {
 
   @override
   Widget build(BuildContext context) {
-    final menu = PlutoMenuBar(
+    return PlutoMenuBar(
       borderColor: Colors.transparent,
       mode: _isMobile ? PlutoMenuBarMode.tap : PlutoMenuBarMode.hover,
       itemStyle: PlutoMenuItemStyle(
@@ -950,11 +948,6 @@ class _HeaderState extends State<_Header> {
             },
           ),
       ],
-    );
-    // pluto_menu_bar still uses SDK InkWell, which needs an SDK Material ancestor.
-    return legacy_material.Material(
-      type: legacy_material.MaterialType.transparency,
-      child: menu,
     );
   }
 }

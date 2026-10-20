@@ -1,4 +1,4 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 
 class PlutoScaledCheckbox extends StatelessWidget {
   final bool? value;
@@ -28,18 +28,17 @@ class PlutoScaledCheckbox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     return Transform.scale(
       scale: scale,
       child: Theme(
-        data: theme.copyWith(
+        data: ThemeData(
           unselectedWidgetColor: unselectedColor,
         ),
         child: Checkbox(
           value: value,
           tristate: tristate,
           onChanged: handleOnChanged,
-          activeColor: activeColor,
+          activeColor: value == null ? unselectedColor : activeColor,
           checkColor: checkColor,
         ),
       ),

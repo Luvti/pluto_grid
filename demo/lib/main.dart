@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 
 import 'constants/pluto_grid_example_colors.dart';
 import 'screen/development_screen.dart';
@@ -53,7 +53,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      builder: (context, child) => MaterialUiCompatibilityBridge(child: child!),
       initialRoute:
           kReleaseMode ? HomeScreen.routeName : DevelopmentScreen.routeName,
       routes: {

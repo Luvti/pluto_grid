@@ -1,4 +1,4 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 
 import '../constants/pluto_grid_example_colors.dart';
 

@@ -1,4 +1,4 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 
 abstract class PlutoGridSettings {
   /// Soft shared budget for all incremental footer calculations in one frame.
