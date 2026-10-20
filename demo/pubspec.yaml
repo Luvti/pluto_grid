@@ -18,16 +18,18 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.8.0 <4.0.0'
+  sdk: '>=3.13.0 <4.0.0'
+  flutter: '>=3.47.0'
 
 dependencies:
+  material_ui: ^1.6.0
   flutter:
     sdk: flutter
   pluto_grid_plus:
     path: ../
   faker: ^2.2.0
   url_launcher: ^6.3.2
-  font_awesome_flutter: 
+  font_awesome_flutter: ^11.0.0
   rainbow_color: ^2.0.1
   pluto_menu_bar: ^3.0.1
   file_saver: 
@@ -86,4 +88,3 @@ flutter:
         - asset: assets/fonts/open_sans/OpenSans-LightItalic.ttf
           weight: 300
           style: italic
-

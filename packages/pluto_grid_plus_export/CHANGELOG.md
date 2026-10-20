@@ -1,3 +1,8 @@
+## [2.0.0] - 2026. 10. 08
+
+* Support PlutoGrid 9.0.0 and migrate the example to `material_ui`.
+* Require Flutter 3.47 and Dart 3.13 or newer.
+
 ## [1.0.5] - 2024. 5. 15
 upgrade for flutter 3.22.0 & pluto_grid_plus 8.4.1
 

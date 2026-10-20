@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:faker/faker.dart' hide Color;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 import '../../widget/pluto_example_button.dart';
