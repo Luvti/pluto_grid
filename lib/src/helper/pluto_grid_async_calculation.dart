@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
@@ -27,6 +28,8 @@ class PlutoGridAsyncCalculation {
   VoidCallback? _onCompleted;
   Iterator<void>? _iterator;
   bool _retriedConcurrentModification = false;
+  // Steps between two reads of the frame clock (see [_calibrate]).
+  int _stride = 1;
 
   bool get isRunning => _steps != null;
 
@@ -54,20 +57,30 @@ class PlutoGridAsyncCalculation {
     final Stopwatch timer = Stopwatch()..start();
     final int budget = PlutoGridSettings.calculationFrameBudget.inMicroseconds;
     int steps = 0;
+    int elapsed = 0;
     while (_pending.isNotEmpty &&
         steps < PlutoGridSettings.calculationMaxStepsPerFrame &&
-        timer.elapsedMicroseconds < budget) {
+        elapsed < budget) {
       final PlutoGridAsyncCalculation calculation = _pending.removeFirst();
-      for (
-        int batch = 0;
-        calculation.isRunning &&
-            batch < PlutoGridSettings.calculationBatchSize &&
-            steps < PlutoGridSettings.calculationMaxStepsPerFrame &&
-            timer.elapsedMicroseconds < budget;
-        batch += 1
-      ) {
-        calculation._advance();
-        steps += 1;
+      int batch = 0;
+      while (calculation.isRunning &&
+          batch < PlutoGridSettings.calculationBatchSize &&
+          steps < PlutoGridSettings.calculationMaxStepsPerFrame &&
+          elapsed < budget) {
+        final int taken = calculation._advance(
+          min(
+            calculation._stride,
+            min(
+              PlutoGridSettings.calculationBatchSize - batch,
+              PlutoGridSettings.calculationMaxStepsPerFrame - steps,
+            ),
+          ),
+        );
+        batch += taken;
+        steps += taken;
+        final int now = timer.elapsedMicroseconds;
+        calculation._calibrate(taken, now - elapsed, budget);
+        elapsed = now;
       }
       if (calculation.isRunning) {
         _pending.add(calculation);
@@ -76,13 +89,30 @@ class PlutoGridAsyncCalculation {
     _scheduleFrame();
   }
 
-  void _advance() {
+  /// Reading the clock is a VM call costing a sizeable fraction of a cheap
+  /// step, so the budget is checked once per run of [_stride] steps. The run
+  /// doubles while it takes at most 1/16 of the budget and is cut to about 1/8
+  /// of it when slower, so expensive steps overshoot the budget only slightly.
+  void _calibrate(int taken, int runMicroseconds, int budget) {
+    if (runMicroseconds * 16 <= budget) {
+      _stride = min(_stride * 2, PlutoGridSettings.calculationBatchSize);
+    } else if (runMicroseconds * 8 > budget) {
+      _stride = max(taken * budget ~/ (runMicroseconds * 8), 1);
+    }
+  }
+
+  /// Takes up to [count] steps and returns how many were taken.
+  int _advance(int count) {
+    int taken = 0;
     try {
-      _iterator ??= _steps!().iterator;
-      if (!_iterator!.moveNext()) {
-        final VoidCallback? onCompleted = _onCompleted;
-        cancel();
-        onCompleted?.call();
+      final Iterator<void> iterator = _iterator ??= _steps!().iterator;
+      while (taken < count && identical(iterator, _iterator)) {
+        taken += 1;
+        if (!iterator.moveNext()) {
+          final VoidCallback? onCompleted = _onCompleted;
+          cancel();
+          onCompleted?.call();
+        }
       }
       // The iterator's fail-fast signal requests a fresh pass over current data.
       // ignore: avoid_catching_errors
@@ -98,6 +128,7 @@ class PlutoGridAsyncCalculation {
     } on Object catch (error, stack) {
       _reportError(error, stack);
     }
+    return taken;
   }
 
   void _reportError(Object error, StackTrace stack) {
