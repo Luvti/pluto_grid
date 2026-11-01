@@ -417,7 +417,7 @@ class _AggregateCalculator {
         return;
       }
     }
-    final PlutoCell? cell = row.cells[field];
+    final PlutoCell? cell = row.peekCell(field);
     if (filter != null && !filter!(cell!)) {
       return;
     }

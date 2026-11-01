@@ -49,6 +49,14 @@ class PlutoRow<T> {
     return cells.values.first.initialized;
   }
 
+  /// The cell of [field] for one read. Rows whose cells are created when
+  /// first read ([PlutoLazyCells]) do not keep a cell made for it, so a pass
+  /// over every row of a column that only reads values keeps no cells.
+  PlutoCell? peekCell(String field) {
+    final Map<String, PlutoCell> cells = this.cells;
+    return cells is PlutoLazyCells ? cells.peek(field) : cells[field];
+  }
+
   /// If [PlutoRow] is included as a child of a group row,
   /// [parent] is the parent's reference.
   PlutoRow? get parent => _parent;

@@ -27,4 +27,10 @@ abstract interface class PlutoLazyCells implements Map<String, PlutoCell> {
 
   /// The cells created so far, without creating others.
   Iterable<PlutoCell> get createdCells;
+
+  /// The cell of [field] for one read: the created cell, or else a cell made
+  /// for this read, linked to its column but not kept. Passes over a whole
+  /// column that only read values, such as aggregates, use it through
+  /// [PlutoRow.peekCell].
+  PlutoCell? peek(String field);
 }

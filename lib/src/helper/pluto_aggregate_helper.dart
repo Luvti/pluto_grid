@@ -23,7 +23,7 @@ class PlutoAggregateHelper {
     num total = 0;
     bool hasValue = false;
     do {
-      final PlutoCell? cell = iterator.current.cells[field];
+      final PlutoCell? cell = iterator.current.peekCell(field);
       if (filter != null && !filter(cell!)) {
         continue;
       }
@@ -60,7 +60,7 @@ class PlutoAggregateHelper {
     double result = 0;
     int count = 0;
     do {
-      final PlutoCell? cell = iterator.current.cells[field];
+      final PlutoCell? cell = iterator.current.peekCell(field);
       if (filter != null && !filter(cell!)) {
         continue;
       }
@@ -99,12 +99,12 @@ class PlutoAggregateHelper {
 
     final Iterable<PlutoRow<dynamic>> foundItems = filter != null
         ? rows.where(
-            (PlutoRow<dynamic> row) => filter(row.cells[column.field]!),
+            (PlutoRow<dynamic> row) => filter(row.peekCell(column.field)!),
           )
         : rows;
 
     final Iterable<num> mapValues = foundItems.map(
-      (PlutoRow<dynamic> e) => e.cells[column.field]!.currentValue,
+      (PlutoRow<dynamic> e) => e.peekCell(column.field)!.currentValue,
     );
 
     return mapValues.minOrNull;
@@ -122,12 +122,12 @@ class PlutoAggregateHelper {
 
     final Iterable<PlutoRow<dynamic>> foundItems = filter != null
         ? rows.where(
-            (PlutoRow<dynamic> row) => filter(row.cells[column.field]!),
+            (PlutoRow<dynamic> row) => filter(row.peekCell(column.field)!),
           )
         : rows;
 
     final Iterable<num> mapValues = foundItems.map(
-      (PlutoRow<dynamic> e) => e.cells[column.field]!.currentValue,
+      (PlutoRow<dynamic> e) => e.peekCell(column.field)!.currentValue,
     );
 
     return mapValues.maxOrNull;
@@ -150,7 +150,7 @@ class PlutoAggregateHelper {
 
     int count = 0;
     do {
-      if (filter(iterator.current.cells[field]!)) {
+      if (filter(iterator.current.peekCell(field)!)) {
         count += 1;
       }
     } while (iterator.moveNext());
@@ -176,12 +176,12 @@ class PlutoAggregateHelper {
 
     final Iterable<PlutoRow<dynamic>> foundItems = filter != null
         ? rows.where(
-            (PlutoRow<dynamic> row) => filter(row.cells[column.field]!),
+            (PlutoRow<dynamic> row) => filter(row.peekCell(column.field)!),
           )
         : rows;
 
     return foundItems
-        .map((PlutoRow<dynamic> c) => c.cells[column.field]?.currentValue)
+        .map((PlutoRow<dynamic> c) => c.peekCell(column.field)?.currentValue)
         .toSet()
         .length;
   }

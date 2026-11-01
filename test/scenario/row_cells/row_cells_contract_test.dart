@@ -50,6 +50,15 @@ void main() {
       'init | created ${_LazyCells.created} | initialized '
       '${m.refRows.originalListView.where((PlutoRow<dynamic> row) => row.initialized).length}',
     );
+    _LazyCells.peeked = 0;
+    final num? sum = PlutoAggregateHelper.sum(
+      rows: m.refRows,
+      column: g.column('number'),
+    );
+    out.add(
+      'aggregated number $sum | created ${_LazyCells.created} '
+      'peeked ${_LazyCells.peeked}',
+    );
     m.sortAscending(g.column('number'), notify: false);
     m.sortDescending(g.column('number'), notify: false);
     out.add('sorted number twice | created ${_LazyCells.created}');
@@ -78,6 +87,7 @@ void main() {
     g.dispose();
     expect(out, <String>[
       'init | created 0 | initialized 30',
+      'aggregated number 127.8 | created 0 peeked 30',
       'sorted number twice | created 30',
       'filtered text | created 60',
       // The date and select cells, and the id cell read to find their column.
@@ -563,6 +573,9 @@ class _LazyCells extends MapBase<String, PlutoCell> implements PlutoLazyCells {
   /// Cells created by all lazy rows.
   static int created = 0;
 
+  /// Cells made for one read and not kept.
+  static int peeked = 0;
+
   /// Marks the cell of a removed field.
   static final PlutoCell _removed = PlutoCell();
 
@@ -604,6 +617,25 @@ class _LazyCells extends MapBase<String, PlutoCell> implements PlutoLazyCells {
       if (cell != null && !identical(cell, _removed)) cell,
     ..._extra.values,
   ];
+
+  @override
+  PlutoCell? peek(String field) {
+    final int index = _fields.indexOf(field);
+    if (index < 0) {
+      return _extra[field];
+    }
+    final PlutoCell? cell = _cells[index];
+    if (cell != null) {
+      return identical(cell, _removed) ? null : cell;
+    }
+    peeked++;
+    final PlutoCell peekedCell = PlutoCell(value: _values[index]);
+    final PlutoColumn? column = _columns?[field];
+    if (column != null) {
+      peekedCell.setColumn(column);
+    }
+    return peekedCell;
+  }
 
   void _link(String field, PlutoCell cell) {
     final PlutoRow<dynamic>? row = _row;
