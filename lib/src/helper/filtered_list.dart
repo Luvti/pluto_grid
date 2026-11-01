@@ -212,7 +212,28 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
   @override
   void sort([int Function(E a, E b)? compare]) {
     _workOnOriginalList(() {
-      super.sort(compare);
+      _list.sort(compare);
+    });
+  }
+
+  /// Sorts all elements by keys read once per element.
+  ///
+  /// The order is the one [sort] gives with `compare(keyOf(a), keyOf(b))`:
+  /// the same algorithm sees the same comparisons, so equal keys keep their
+  /// order. Large lists avoid reading both keys for each of the n log n
+  /// comparisons.
+  void sortByKey<K>(
+    K Function(E element) keyOf,
+    int Function(K a, K b) compare,
+  ) {
+    _workOnOriginalList(() {
+      final List<(K, E)> keyed = <(K, E)>[
+        for (final E element in _list) (keyOf(element), element),
+      ];
+      keyed.sort(((K, E) a, (K, E) b) => compare(a.$1, b.$1));
+      for (int index = 0; index < keyed.length; index += 1) {
+        _list[index] = keyed[index].$2;
+      }
     });
   }
 
@@ -230,7 +251,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
     bool result = false;
 
     _workOnOriginalList(() {
-      result = super.remove(element);
+      result = _list.remove(element);
     });
 
     return result;
@@ -238,11 +259,11 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   @override
   void removeWhere(bool Function(E element) test) {
-    final List<E> list = _effectiveList;
+    final Set<E> shown = _effectiveList.toSet();
 
     _workOnOriginalList(() {
-      super.removeWhere((E element) {
-        return _isInList(element, list) && test(element);
+      _list.removeWhere((E element) {
+        return shown.contains(element) && test(element);
       });
     });
   }
@@ -250,18 +271,17 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
   @override
   void removeWhereFromOriginal(bool Function(E element) test) {
     _workOnOriginalList(() {
-      super.removeWhere(test);
+      _list.removeWhere(test);
     });
   }
 
   @override
   void retainWhere(bool Function(E element) test) {
-    final List<E> list = _effectiveList;
+    final Set<E> shown = _effectiveList.toSet();
 
     _workOnOriginalList(() {
-      super.retainWhere((E element) {
-        final bool isInList = _isInList(element, list);
-        return !isInList || (_isInList(element, list) && test(element));
+      _list.retainWhere((E element) {
+        return !shown.contains(element) || test(element);
       });
     });
   }
@@ -269,18 +289,16 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
   @override
   void retainWhereFromOriginal(bool Function(E element) test) {
     _workOnOriginalList(() {
-      super.retainWhere(test);
+      _list.retainWhere(test);
     });
   }
 
   @override
   void clear() {
-    final List<E> list = _effectiveList;
+    final Set<E> shown = _effectiveList.toSet();
 
     _workOnOriginalList(() {
-      super.removeWhere((E element) {
-        return _isInList(element, list);
-      });
+      _list.removeWhere(shown.contains);
     });
   }
 
@@ -301,7 +319,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
     late E result;
 
     _workOnOriginalList(() {
-      result = super.removeLast();
+      result = _list.removeLast();
     });
 
     return result;
@@ -337,7 +355,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
     final int originalIndex = _toOriginalIndexForInsert(index);
 
     _workOnOriginalList(() {
-      super.insert(originalIndex, element);
+      _list.insert(originalIndex, element);
     });
   }
 
@@ -348,7 +366,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
     late E result;
 
     _workOnOriginalList(() {
-      result = super.removeAt(originalIndex);
+      result = _list.removeAt(originalIndex);
     });
 
     return result;
@@ -359,7 +377,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
     final int originalIndex = _toOriginalIndexForInsert(index);
 
     _workOnOriginalList(() {
-      super.insertAll(originalIndex, iterable);
+      _list.insertAll(originalIndex, iterable);
     });
   }
 
@@ -412,9 +430,9 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
     final FilteredListRange? storeRange = _range;
 
-    setFilter(null);
-
-    setFilterRange(null);
+    // Lift the filter and range without filtering an empty result first.
+    _filter = null;
+    _range = null;
 
     try {
       callback();
@@ -444,13 +462,10 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
     final E originalValue = _effectiveList[index];
 
-    final Iterable<int> valueIndexes = _list
-        .asMap()
-        .entries
-        .map(
-          (MapEntry<int, E> e) => _compare(e.value, originalValue) ? e.key : -1,
-        )
-        .where((int element) => element != -1);
+    final List<int> valueIndexes = <int>[
+      for (int i = 0; i < _list.length; i += 1)
+        if (_compare(_list[i], originalValue)) i,
+    ];
 
     final int found = valueIndexes.length;
 

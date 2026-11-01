@@ -189,17 +189,19 @@ mixin RowGroupState implements IPlutoGridState {
   }
 
   @override
-  Iterable<PlutoRow> get iterateAllRowAndGroup sync* {
-    for (final PlutoRow row in _iterateRowAndGroup(iterateAllMainRowGroup)) {
-      yield row;
-    }
+  Iterable<PlutoRow> get iterateAllRowAndGroup {
+    final List<PlutoRow> rows = refRows.originalList;
+    return _hasGroupRow(rows)
+        ? _iterateRowAndGroup(rows.where(isMainRow))
+        : rows.where(isMainRow);
   }
 
   @override
-  Iterable<PlutoRow> get iterateAllRow sync* {
-    for (final PlutoRow row in _iterateRow(iterateAllMainRowGroup)) {
-      yield row;
-    }
+  Iterable<PlutoRow> get iterateAllRow {
+    final List<PlutoRow> rows = refRows.originalList;
+    return _hasGroupRow(rows)
+        ? _iterateRow(rows.where(isMainRow))
+        : rows.where(isMainRow);
   }
 
   @override
@@ -227,24 +229,25 @@ mixin RowGroupState implements IPlutoGridState {
   }
 
   @override
-  Iterable<PlutoRow> get iterateRowAndGroup sync* {
-    for (final PlutoRow row in _iterateRowAndGroup(
-      iterateMainRowGroup,
-      iterateAll: false,
-    )) {
-      yield row;
+  Iterable<PlutoRow> get iterateRowAndGroup {
+    if (!_hasGroupRow(refRows)) {
+      return refRows.where(isMainRow);
     }
+    return _iterateRowAndGroup(iterateMainRowGroup, iterateAll: false);
   }
 
   @override
-  Iterable<PlutoRow> get iterateRow sync* {
-    for (final PlutoRow row in _iterateRow(
-      iterateMainRowGroup,
-      iterateAll: false,
-    )) {
-      yield row;
+  Iterable<PlutoRow> get iterateRow {
+    if (!_hasGroupRow(refRows)) {
+      return refRows.where(isMainRow);
     }
+    return _iterateRow(iterateMainRowGroup, iterateAll: false);
   }
+
+  /// Without group rows the group traversal yields the rows as they are; it
+  /// goes through nested generators for each of them, so it is skipped then.
+  static bool _hasGroupRow(List<PlutoRow> rows) =>
+      rows.any((PlutoRow row) => row.type.isGroup);
 
   bool get _previousEnabledRowGroups => _state._previousEnabledRowGroups;
 

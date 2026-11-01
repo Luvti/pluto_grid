@@ -290,7 +290,10 @@ class PlutoColumnTypeText extends PlutoColumnType {
 
   @override
   int compare(dynamic a, dynamic b) {
-    return _compareWithNull(a, b, () => a.toString().compareTo(b.toString()));
+    if (a == null || b == null) {
+      return _compareNulls(a, b);
+    }
+    return a.toString().compareTo(b.toString());
   }
 
   @override
@@ -315,7 +318,10 @@ class PlutoColumnTypeBool extends PlutoColumnType {
 
   @override
   int compare(dynamic a, dynamic b) {
-    return _compareWithNull(a, b, () => a.toString().compareTo(b.toString()));
+    if (a == null || b == null) {
+      return _compareNulls(a, b);
+    }
+    return a.toString().compareTo(b.toString());
   }
 
   @override
@@ -503,9 +509,10 @@ class PlutoColumnTypeSelect
 
   @override
   int compare(dynamic a, dynamic b) {
-    return _compareWithNull(a, b, () {
-      return items.indexOf(a).compareTo(items.indexOf(b));
-    });
+    if (a == null || b == null) {
+      return _compareNulls(a, b);
+    }
+    return items.indexOf(a).compareTo(items.indexOf(b));
   }
 
   @override
@@ -593,14 +600,13 @@ class PlutoColumnTypeDate
 
   @override
   int compare(dynamic a, dynamic b) {
-    return _compareWithNull(
-      a,
-      b,
-      // Sort values are dates: compare them without formatting both as text.
-      () => a is DateTime && b is DateTime
-          ? a.compareTo(b)
-          : a.toString().compareTo(b.toString()),
-    );
+    if (a == null || b == null) {
+      return _compareNulls(a, b);
+    }
+    // Sort values are dates: compare them without formatting both as text.
+    return a is DateTime && b is DateTime
+        ? a.compareTo(b)
+        : a.toString().compareTo(b.toString());
   }
 
   @override
@@ -687,7 +693,10 @@ class PlutoColumnTypeTime
 
   @override
   int compare(dynamic a, dynamic b) {
-    return _compareWithNull(a, b, () => a.toString().compareTo(b.toString()));
+    if (a == null || b == null) {
+      return _compareNulls(a, b);
+    }
+    return a.toString().compareTo(b.toString());
   }
 
   @override
@@ -784,12 +793,11 @@ mixin PlutoColumnTypeWithNumberFormat {
   }
 
   int compare(dynamic a, dynamic b) {
-    return _compareWithNull(
-      a,
-      b,
-      () => (a is num ? a : toNumber(a.toString())).compareTo(
-        b is num ? b : toNumber(b.toString()),
-      ),
+    if (a == null || b == null) {
+      return _compareNulls(a, b);
+    }
+    return (a is num ? a : toNumber(a.toString())).compareTo(
+      b is num ? b : toNumber(b.toString()),
     );
   }
 
@@ -958,16 +966,16 @@ class _NonNumericPattern {
       _patterns.putIfAbsent(allowed, () => RegExp('[^$allowed]'));
 }
 
-int _compareWithNull(dynamic a, dynamic b, int Function() resolve) {
-  if (a == null || b == null) {
-    return a == b
-        ? 0
-        : a == null
-        ? -1
-        : 1;
-  }
-
-  return resolve();
+/// Order of two values when at least one is null: nulls first.
+///
+/// Sorting compares millions of pairs; the comparisons check for null inline
+/// instead of passing a closure here for every pair.
+int _compareNulls(dynamic a, dynamic b) {
+  return a == b
+      ? 0
+      : a == null
+      ? -1
+      : 1;
 }
 
 mixin PlutoColumnTypeWithDoubleFormat {
@@ -1017,12 +1025,11 @@ mixin PlutoColumnTypeWithDoubleFormat {
   }
 
   int compare(dynamic a, dynamic b) {
-    return _compareWithNull(
-      a,
-      b,
-      () => (a is double ? a : toDouble(a.toString())).compareTo(
-        b is double ? b : toDouble(b.toString()),
-      ),
+    if (a == null || b == null) {
+      return _compareNulls(a, b);
+    }
+    return (a is double ? a : toDouble(a.toString())).compareTo(
+      b is double ? b : toDouble(b.toString()),
     );
   }
 

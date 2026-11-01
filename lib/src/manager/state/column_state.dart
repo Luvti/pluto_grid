@@ -804,7 +804,10 @@ mixin ColumnState implements IPlutoGridState {
     if (enabledRowGroups) {
       sortRowGroup(column: column, compare: compare);
     } else {
-      refRows.sort(compare);
+      refRows.sortByKey<dynamic>(
+        (PlutoRow row) => row.cells[column.field]?.valueForSorting,
+        column.type.compare,
+      );
     }
 
     notifyListeners(notify, sortAscending.hashCode);
@@ -826,7 +829,11 @@ mixin ColumnState implements IPlutoGridState {
     if (enabledRowGroups) {
       sortRowGroup(column: column, compare: compare);
     } else {
-      refRows.sort(compare);
+      final PlutoColumnType type = column.type;
+      refRows.sortByKey<dynamic>(
+        (PlutoRow row) => row.cells[column.field]?.valueForSorting,
+        (dynamic a, dynamic b) => type.compare(b, a),
+      );
     }
 
     notifyListeners(notify, sortDescending.hashCode);
@@ -853,6 +860,8 @@ mixin ColumnState implements IPlutoGridState {
     if (enabledRowGroups) {
       sortRowGroup(column: column, compare: compare);
     } else {
+      // sortIdx is a field: reading it in each comparison is cheaper than
+      // collecting keys first.
       refRows.sort(compare);
     }
 
