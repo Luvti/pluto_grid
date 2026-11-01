@@ -19,6 +19,7 @@ class PlutoCell {
        _flags = _rawSortValueFlag {
     if (key != null) {
       _keys[this] = key;
+      _cellsByKey[key] = this;
       _flags |= _keyFlag;
     }
     if (onChanged != null) {
@@ -27,6 +28,15 @@ class PlutoCell {
   }
 
   static final Expando<Key> _keys = Expando<Key>('PlutoCell.key');
+
+  /// The cell each key was given to; a key identifies one cell.
+  static final Expando<PlutoCell> _cellsByKey = Expando<PlutoCell>(
+    'PlutoCell.byKey',
+  );
+
+  /// The cell [key] belongs to, when it is a key this cell API created or was
+  /// given. Finding its position then needs only the cell's own row.
+  static PlutoCell? withKey(Key key) => _cellsByKey[key];
 
   static final Expando<Function> _onChangedCallbacks = Expando<Function>(
     'PlutoCell.onChanged',
@@ -73,10 +83,11 @@ class PlutoCell {
   Function({dynamic value, dynamic referenceValue})? get onChanged =>
       (_flags & _onChangedFlag) == 0
       ? null
-      : _onChangedCallbacks[this] as Function({
-          dynamic value,
-          dynamic referenceValue,
-        })?;
+      : _onChangedCallbacks[this]
+            as Function({
+              dynamic value,
+              dynamic referenceValue,
+            })?;
 
   set onChanged(Function({dynamic value, dynamic referenceValue})? callback) {
     _onChangedCallbacks[this] = callback;
@@ -94,6 +105,7 @@ class PlutoCell {
     }
     final Key key = UniqueKey();
     _keys[this] = key;
+    _cellsByKey[key] = this;
     _flags |= _keyFlag;
     return key;
   }

@@ -133,6 +133,24 @@ mixin CellState implements IPlutoGridState {
       return null;
     }
 
+    // A key identifies one cell, and the cell knows its row: search that row
+    // instead of every cell of the grid (7.7 million in a 160k x 48 table).
+    final PlutoCell? cell = PlutoCell.withKey(cellKey);
+    if (cell != null) {
+      // A cell outside the grid (its row removed and cleared) has no position.
+      if (!cell.initialized) {
+        return null;
+      }
+      final int rowIdx = refRows.indexOf(cell.row);
+      if (rowIdx < 0) {
+        return null;
+      }
+      final int? columnIdx = columnIdxByCellKeyAndRowIdx(cellKey, rowIdx);
+      return columnIdx == null
+          ? null
+          : PlutoGridCellPosition(columnIdx: columnIdx, rowIdx: rowIdx);
+    }
+
     final int length = refRows.length;
 
     for (int rowIdx = 0; rowIdx < length; rowIdx += 1) {
