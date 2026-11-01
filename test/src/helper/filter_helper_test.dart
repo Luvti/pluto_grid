@@ -185,6 +185,102 @@ void main() {
         );
       });
     });
+
+    group('null cell values', () {
+      final List<PlutoColumn> columns = <PlutoColumn>[
+        PlutoColumn(title: 'text', field: 'text', type: PlutoColumnType.text()),
+        PlutoColumn(
+          title: 'number',
+          field: 'number',
+          type: PlutoColumnType.number(),
+        ),
+      ];
+
+      PlutoRow<dynamic> rowOf(Object? text, Object? number) {
+        final PlutoRow<dynamic> row = PlutoRow<dynamic>(
+          cells: <String, PlutoCell>{
+            'text': PlutoCell(value: text),
+            'number': PlutoCell(value: number),
+          },
+        );
+        PlutoGridStateManager.initializeRows(columns, <PlutoRow<dynamic>>[row]);
+        return row;
+      }
+
+      // A null field filters every column.
+      bool keeps(
+        PlutoRow<dynamic> row,
+        String? field,
+        PlutoFilterType filterType,
+        String search,
+      ) => FilterHelper.convertRowsToFilter(<PlutoRow<dynamic>>[
+        FilterHelper.createFilterRow(
+          columnField: field,
+          filterType: filterType,
+          filterValue: search,
+        ),
+      ], columns)!(row);
+
+      // A null cell reads as empty text, as a single column already read it:
+      // it keeps a row only for a negated comparison.
+      const Map<PlutoFilterType, bool> keepsNull = <PlutoFilterType, bool>{
+        PlutoFilterTypeContains(): false,
+        PlutoFilterTypeNotContains(): true,
+        PlutoFilterTypeEquals(): false,
+        PlutoFilterTypeNotEquals(): true,
+        PlutoFilterTypeStartsWith(): false,
+        PlutoFilterTypeEndsWith(): false,
+      };
+
+      for (final MapEntry<PlutoFilterType, bool> entry in keepsNull.entries) {
+        test('${entry.key.title}: keeps a row of null cells ${entry.value} '
+            'in one column and in every column', () {
+          final PlutoRow<dynamic> row = rowOf(null, null);
+
+          expect(
+            <bool>[
+              keeps(row, 'text', entry.key, '5'),
+              keeps(row, 'number', entry.key, '5'),
+              keeps(row, null, entry.key, '5'),
+            ],
+            <bool>[entry.value, entry.value, entry.value],
+          );
+        });
+      }
+
+      test('text comparisons read a null base as empty text', () {
+        for (final MapEntry<PlutoFilterType, bool> entry in keepsNull.entries) {
+          expect(
+            entry.key.compare(
+              baseObject: null,
+              base: null,
+              searchObject: null,
+              search: '5',
+              column: columns.first,
+            ),
+            entry.value,
+            reason: entry.key.title,
+          );
+        }
+      });
+
+      test('every column finds a value next to a null cell', () {
+        const PlutoFilterType contains = PlutoFilterTypeContains();
+
+        expect(keeps(rowOf(null, 15), null, contains, '5'), isTrue);
+        expect(keeps(rowOf('a5', null), null, contains, '5'), isTrue);
+        expect(keeps(rowOf(null, 15), null, contains, 'a'), isFalse);
+      });
+
+      test('a number column formats a null value as its default value', () {
+        final PlutoRow<dynamic> row = rowOf(null, null);
+        const PlutoFilterType contains = PlutoFilterTypeContains();
+
+        expect(keeps(row, 'number', contains, '0'), isTrue);
+        expect(keeps(row, null, contains, '0'), isTrue);
+        expect(row.cells['number']!.currentValue, isNull);
+      });
+    });
   });
 
   group('convertRowsToMap', () {

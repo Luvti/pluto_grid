@@ -204,6 +204,49 @@ void main() {
       expect(found, findsOneWidget);
     });
 
+    // Null values are skipped by every aggregate but count.
+    FilteredList<PlutoRow<dynamic>> rowsOf(List<int?> values) =>
+        FilteredList<PlutoRow<dynamic>>(
+          initialList: <PlutoRow<dynamic>>[
+            for (final int? value in values)
+              PlutoRow<dynamic>(
+                cells: <String, PlutoCell>{'column': PlutoCell(value: value)},
+              ),
+          ],
+        );
+
+    for (final (PlutoAggregateColumnType type, String text)
+        in <(PlutoAggregateColumnType, String)>[
+          (PlutoAggregateColumnType.sum, '4,000'),
+          (PlutoAggregateColumnType.average, '2,000'),
+          (PlutoAggregateColumnType.min, '1,000'),
+          (PlutoAggregateColumnType.max, '3,000'),
+          (PlutoAggregateColumnType.count, '4'),
+        ]) {
+      buildWidget(
+        column: columns.first,
+        rows: rowsOf(<int?>[null, 3000, null, 1000]),
+        type: type,
+      ).test('null values: ${type.name} is $text', (WidgetTester tester) async {
+        expect(find.text(text), findsOneWidget);
+      });
+    }
+
+    for (final PlutoAggregateColumnType type in <PlutoAggregateColumnType>[
+      PlutoAggregateColumnType.min,
+      PlutoAggregateColumnType.max,
+    ]) {
+      buildWidget(
+        column: columns.first,
+        rows: rowsOf(<int?>[null, null]),
+        type: type,
+      ).test('only null values: ${type.name} is empty', (
+        WidgetTester tester,
+      ) async {
+        expect(find.text(''), findsOneWidget);
+      });
+    }
+
     buildWidget(
       column: columns.first,
       rows: FilteredList<PlutoRow>(

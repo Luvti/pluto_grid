@@ -441,7 +441,10 @@ class _AggregateCalculator {
         }
       case PlutoAggregateColumnType.min:
       case PlutoAggregateColumnType.max:
-        final num number = cell!.currentValue as num;
+        final num? number = cell?.currentValue as num?;
+        if (number == null) {
+          break;
+        }
         if (_extreme == null ||
             number.isNaN ||
             (type == PlutoAggregateColumnType.min

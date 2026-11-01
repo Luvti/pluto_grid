@@ -193,19 +193,19 @@ List<String> _operations(_CellsOf cellsOf) {
     g.filter(filter.$1, filter.$2, filter.$3);
     out.add('filter ${filter.$1} ${filter.$3} | ${_ids(m.refRows)}');
   }
-  // `contains` in every column throws on a null value: a grid without nulls.
-  final _Grid all = _Grid(cellsOf, nulls: false);
-  all.filter(
+  out.add(
+    'null numbers | ${_ids(m.refRows.originalListView.where((PlutoRow<dynamic> row) => row.cells['number']!.currentValue == null))}',
+  );
+  g.filter(
     FilterHelper.filterFieldAllColumns,
     const PlutoFilterTypeContains(),
     '7',
   );
-  out.add('filter all columns 7 | ${_ids(all.manager.refRows)}');
-  all.filter(null, null, null);
-  // Like `contains`, min and max throw on a null value.
+  out.add('filter all columns 7 | ${_ids(m.refRows)}');
+  g.filter(null, null, null);
   for (final String field in <String>['number', 'id']) {
-    final PlutoColumn column = all.column(field);
-    final FilteredList<PlutoRow<dynamic>> rows = all.manager.refRows;
+    final PlutoColumn column = g.column(field);
+    final FilteredList<PlutoRow<dynamic>> rows = m.refRows;
     out.add(
       'aggregate $field sum=${PlutoAggregateHelper.sum(rows: rows, column: column)} '
       'avg=${PlutoAggregateHelper.average(rows: rows, column: column)} '
@@ -214,7 +214,6 @@ List<String> _operations(_CellsOf cellsOf) {
       'count=${PlutoAggregateHelper.count(rows: rows, column: column)}',
     );
   }
-  all.dispose();
   g.filter('number', const PlutoFilterTypeLessThan(), '5');
   m.sortDescending(g.column('date'), notify: false);
   out.add('filtered desc date | ${_ids(m.refRows)}');
@@ -465,14 +464,10 @@ String _linked(PlutoRow<dynamic> row, String field, PlutoGridStateManager m) {
 }
 
 class _Grid {
-  _Grid(
-    this.cellsOf, {
-    PlutoOnChangedEventCallback? onChanged,
-    this.nulls = true,
-  }) {
+  _Grid(this.cellsOf, {PlutoOnChangedEventCallback? onChanged}) {
     manager = PlutoGridStateManager(
       columns: columns,
-      rows: rows(cellsOf, 0, rowCount, nulls: nulls),
+      rows: rows(cellsOf, 0, rowCount),
       gridFocusNode: _focus,
       scroll: PlutoGridScrollController(),
       onChanged: onChanged,
@@ -489,7 +484,6 @@ class _Grid {
   ];
 
   final _CellsOf cellsOf;
-  final bool nulls;
   final FocusNode _focus = FocusNode();
   final List<PlutoColumn> columns = newColumns();
   late final PlutoGridStateManager manager;
@@ -514,26 +508,19 @@ class _Grid {
     ),
   ];
 
-  static List<Object?> valuesOf(int id, {bool nulls = true}) => <Object?>[
+  static List<Object?> valuesOf(int id) => <Object?>[
     id,
-    nulls && id % 11 == 0 ? null : (id * 7) % 10 + (id % 4) / 10,
+    id % 11 == 0 ? null : (id * 7) % 10 + (id % 4) / 10,
     'item ${String.fromCharCode(97 + (id * 5) % 26)}${id % 3}',
     '2026-10-${'${1 + (id * 3) % 28}'.padLeft(2, '0')}',
     <String>['a', 'b', 'c'][(id * 2) % 3],
   ];
 
-  static List<PlutoRow<dynamic>> rows(
-    _CellsOf cellsOf,
-    int from,
-    int to, {
-    bool nulls = true,
-  }) => <PlutoRow<dynamic>>[
-    for (int id = from; id < to; id++)
-      PlutoRow<dynamic>(
-        cells: cellsOf(fields, valuesOf(id, nulls: nulls)),
-        data: id,
-      ),
-  ];
+  static List<PlutoRow<dynamic>> rows(_CellsOf cellsOf, int from, int to) =>
+      <PlutoRow<dynamic>>[
+        for (int id = from; id < to; id++)
+          PlutoRow<dynamic>(cells: cellsOf(fields, valuesOf(id)), data: id),
+      ];
 
   List<PlutoRow<dynamic>> newRows(List<int> ids) => <PlutoRow<dynamic>>[
     for (final int id in ids)
@@ -771,8 +758,9 @@ const List<String> _expectedOperations = <String>[
   'filter text b | 21',
   'filter date 2026-10-15 | 5,6,7,8,9,14,15,16,17,18,24,25,26,27',
   'filter select c | 1,4,7,10,13,16,19,22,25,28',
-  'filter all columns 7 | 1,2,7,11,17,18,21,24,27',
-  'aggregate number sum=139.3 avg=4.6 min=0.0 max=9.3 count=30',
+  'null numbers | 0,11,22',
+  'filter all columns 7 | 1,2,7,17,18,21,24,27',
+  'aggregate number sum=127.8 avg=4.7 min=0.0 max=9.3 count=30',
   'aggregate id sum=435 avg=15 min=0 max=29 count=30',
   'filtered desc date | 9,26,16,6,23,13,22,3,12,2,11,20,29,10,19,0',
   'edited 5 number=99 state=updated changed row=5 column=1 99 <- 5.1',

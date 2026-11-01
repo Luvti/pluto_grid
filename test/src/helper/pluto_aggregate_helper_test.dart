@@ -126,6 +126,55 @@ void main() {
     });
   });
 
+  group('null values', () {
+    final PlutoColumn column = PlutoColumn(
+      title: 'value',
+      field: 'value',
+      type: PlutoColumnType.number(),
+    );
+
+    List<PlutoRow<dynamic>> rowsOf(List<int?> values) => <PlutoRow<dynamic>>[
+      for (final int? value in values)
+        PlutoRow<dynamic>(
+          cells: <String, PlutoCell>{'value': PlutoCell(value: value)},
+        ),
+    ];
+
+    final Map<String, _Aggregate> aggregates = <String, _Aggregate>{
+      'sum': PlutoAggregateHelper.sum,
+      'average': PlutoAggregateHelper.average,
+      'min': PlutoAggregateHelper.min,
+      'max': PlutoAggregateHelper.max,
+      'count': PlutoAggregateHelper.count,
+    };
+
+    String aggregateAll(
+      List<PlutoRow<dynamic>> rows, {
+      PlutoAggregateFilter? filter,
+    }) => aggregates.entries
+        .map(
+          (MapEntry<String, _Aggregate> entry) =>
+              '${entry.key}=${entry.value(rows: rows, column: column, filter: filter)}',
+        )
+        .join(' ');
+
+    test('every aggregate skips null values; count counts the rows', () {
+      final List<PlutoRow<dynamic>> rows = rowsOf(<int?>[null, 3, null, 1, 2]);
+      expect(aggregateAll(rows), 'sum=6 average=2 min=1 max=3 count=5');
+      expect(
+        aggregateAll(rows, filter: (PlutoCell cell) => cell.value != 2),
+        'sum=4 average=2 min=1 max=3 count=4',
+      );
+    });
+
+    test('rows of only null values have no minimum or maximum', () {
+      expect(
+        aggregateAll(rowsOf(<int?>[null, null])),
+        'sum=0 average=null min=null max=null count=2',
+      );
+    });
+  });
+
   group('sum', () {
     test('숫자 컬럼이 아닌경우 0이 리턴 되어야 한다.', () {
       final column = PlutoColumn(

@@ -103,9 +103,13 @@ class PlutoAggregateHelper {
           )
         : rows;
 
-    final Iterable<num> mapValues = foundItems.map(
-      (PlutoRow<dynamic> e) => e.peekCell(column.field)!.currentValue,
-    );
+    // Null values are skipped, as in [sum] and [average].
+    final Iterable<num> mapValues = foundItems
+        .map(
+          (PlutoRow<dynamic> e) =>
+              e.peekCell(column.field)!.currentValue as num?,
+        )
+        .nonNulls;
 
     return mapValues.minOrNull;
   }
@@ -126,9 +130,13 @@ class PlutoAggregateHelper {
           )
         : rows;
 
-    final Iterable<num> mapValues = foundItems.map(
-      (PlutoRow<dynamic> e) => e.peekCell(column.field)!.currentValue,
-    );
+    // Null values are skipped, as in [sum] and [average].
+    final Iterable<num> mapValues = foundItems
+        .map(
+          (PlutoRow<dynamic> e) =>
+              e.peekCell(column.field)!.currentValue as num?,
+        )
+        .nonNulls;
 
     return mapValues.maxOrNull;
   }

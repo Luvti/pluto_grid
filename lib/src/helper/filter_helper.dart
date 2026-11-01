@@ -176,7 +176,7 @@ class FilterHelper {
                 flagAllColumns,
                 compareByFilterType(
                   filterType: filter.filterType,
-                  base: baseValue?.toString(),
+                  base: baseValue?.toString() ?? '',
                   baseValue: baseValue,
                   baseObject: value.filterValue,
                   search: filter.search,
@@ -393,6 +393,8 @@ class FilterHelper {
   }
 
   /// Whether [search] is contains in [base].
+  ///
+  /// This and the other text comparisons read a null [base] as empty text.
   static bool compareContains({
     required dynamic baseObject,
     required String? base,
@@ -400,7 +402,7 @@ class FilterHelper {
     required String? search,
     required PlutoColumn column,
   }) {
-    return _SearchPatterns.anywhere(search!).hasMatch(base!);
+    return _SearchPatterns.anywhere(search!).hasMatch(base ?? '');
   }
 
   /// Whether [search] is not contains in [base].
@@ -411,7 +413,7 @@ class FilterHelper {
     required String? search,
     required PlutoColumn column,
   }) {
-    return !_SearchPatterns.anywhere(search!).hasMatch(base!);
+    return !_SearchPatterns.anywhere(search!).hasMatch(base ?? '');
   }
 
   static bool compareContainsSet({
@@ -541,7 +543,7 @@ class FilterHelper {
     required String? search,
     required PlutoColumn column,
   }) {
-    return _SearchPatterns.whole(search!).hasMatch(base!);
+    return _SearchPatterns.whole(search!).hasMatch(base ?? '');
   }
 
   /// Whether [search] is not equals to [base].
@@ -552,7 +554,7 @@ class FilterHelper {
     required String? search,
     required PlutoColumn column,
   }) {
-    return !_SearchPatterns.whole(search!).hasMatch(base!);
+    return !_SearchPatterns.whole(search!).hasMatch(base ?? '');
   }
 
   /// Whether [base] starts with [search].
@@ -563,7 +565,7 @@ class FilterHelper {
     required String? search,
     required PlutoColumn column,
   }) {
-    return _SearchPatterns.start(search!).hasMatch(base!);
+    return _SearchPatterns.start(search!).hasMatch(base ?? '');
   }
 
   /// Whether [base] ends with [search].
@@ -574,7 +576,7 @@ class FilterHelper {
     required String? search,
     required PlutoColumn column,
   }) {
-    return _SearchPatterns.end(search!).hasMatch(base!);
+    return _SearchPatterns.end(search!).hasMatch(base ?? '');
   }
 
   static bool compareGreaterThan({
