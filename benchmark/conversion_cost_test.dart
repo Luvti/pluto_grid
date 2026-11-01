@@ -48,7 +48,39 @@ class _Bench {
     type: PlutoColumnType.text(),
   );
 
+  final PlutoColumn rank = PlutoColumn(
+    title: 'rank',
+    field: 'rank',
+    type: PlutoColumnType.number(),
+  );
+  final PlutoColumn week = PlutoColumn(
+    title: 'week',
+    field: 'week',
+    type: PlutoColumnType.date(format: 'dd.MM.yyyy'),
+  );
+
   late final List<PlutoRow<dynamic>> rows = _rows();
+
+  static Object _weekDate(int index) => '2026-10-0${1 + index % 7}';
+
+  /// Fresh initialized cells, so every pass converts each cell once.
+  List<PlutoCell> _repeatedCells(
+    PlutoColumn column,
+    Object Function(int) value,
+  ) {
+    final List<PlutoRow<dynamic>> fresh = <PlutoRow<dynamic>>[
+      for (int index = 0; index < rowCount; index++)
+        PlutoRow<dynamic>(
+          cells: <String, PlutoCell>{
+            column.field: PlutoCell(value: value(index)),
+          },
+        ),
+    ];
+    PlutoGridStateManager.initializeRows(<PlutoColumn>[column], fresh);
+    return <PlutoCell>[
+      for (final PlutoRow<dynamic> row in fresh) row.cells[column.field]!,
+    ];
+  }
 
   List<PlutoRow<dynamic>> _rows() {
     final List<PlutoRow<dynamic>> result = <PlutoRow<dynamic>>[
@@ -70,6 +102,7 @@ class _Bench {
               value: '',
               filterValue: <String?>{'a$index', 'b${index % 10}'},
             ),
+            'rank': PlutoCell(value: 1 + index % 200),
           },
         ),
     ];
@@ -78,6 +111,7 @@ class _Bench {
       text,
       date,
       set,
+      rank,
     ], result);
     return result;
   }
@@ -92,7 +126,7 @@ class _Bench {
               filterValue: search,
             ),
           ],
-          <PlutoColumn>[number, text, date, set],
+          <PlutoColumn>[number, text, date, set, rank],
         )!;
     int kept = 0;
     for (final PlutoRow<dynamic> row in rows) {
@@ -149,6 +183,33 @@ class _Bench {
       'numberCompareValue': _ms(() {
         for (int index = 0; index < rowCount; index++) {
           number.type.makeCompareValue(index * 1.5);
+        }
+      }),
+      // Table values repeat: ranks 1-200 and seven dates for every keyword.
+      'rankFormat': _ms(() {
+        for (int index = 0; index < rowCount; index++) {
+          number.type.applyFormat(1 + index % 200);
+        }
+      }),
+      'rankEquals': _ms(
+        () => _filter(rank, const PlutoFilterTypeEquals(), '15'),
+      ),
+      'rankFormatOnInit': _ms(() {
+        for (final PlutoCell cell in _repeatedCells(
+          rank,
+          (int index) => 1 + index % 200,
+        )) {
+          cell.valueFormatted;
+        }
+      }),
+      'weekDateSortValues': _ms(() {
+        for (final PlutoCell cell in _repeatedCells(week, _weekDate)) {
+          cell.valueForSorting;
+        }
+      }),
+      'weekDateFormatOnInit': _ms(() {
+        for (final PlutoCell cell in _repeatedCells(week, _weekDate)) {
+          cell.valueFormatted;
         }
       }),
     };

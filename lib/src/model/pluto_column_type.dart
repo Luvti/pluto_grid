@@ -559,6 +559,12 @@ class PlutoColumnTypeDate
   @override
   final intl.DateFormat headerDateFormat;
 
+  /// Dates repeat across the rows of a table (seven dates for 10k keywords):
+  /// each text is parsed and each date formatted once, and equal cells share
+  /// the resulting DateTime and String.
+  final _Memo<String, Object> _compareDates = _Memo<String, Object>();
+  final _Memo<Object, String> _formattedDates = _Memo<Object, String>();
+
   @override
   bool isValid(dynamic value) {
     if (value == null) {
@@ -599,6 +605,19 @@ class PlutoColumnTypeDate
 
   @override
   dynamic makeCompareValue(dynamic v) {
+    if (v is! String) {
+      return _compareValue(v);
+    }
+    final Object? cached = _compareDates[v];
+    if (cached != null) {
+      return identical(cached, _Memo.none) ? null : cached;
+    }
+    final DateTime? date = _compareValue(v);
+    _compareDates.store(v, date ?? _Memo.none);
+    return date;
+  }
+
+  DateTime? _compareValue(dynamic v) {
     DateTime? dateFormatValue;
 
     try {
@@ -621,6 +640,14 @@ class PlutoColumnTypeDate
 
   @override
   String applyFormat(dynamic value) {
+    if (value is! String && value is! DateTime) {
+      return _format(value);
+    }
+    return _formattedDates[value as Object] ??
+        _formattedDates.store(value, _format(value));
+  }
+
+  String _format(dynamic value) {
     if (value == null || value.toString().isEmpty) {
       return '';
     }
@@ -633,7 +660,8 @@ class PlutoColumnTypeDate
       return '';
     }
 
-    return dateFormat.format(DateTime.parse(value.toString()));
+    // Parsing the text again gave back the same date.
+    return dateFormat.format(parseValue);
   }
 }
 
@@ -702,6 +730,12 @@ abstract class PlutoColumnTypeHasPopupIcon {
 mixin PlutoColumnTypeWithNumberFormat {
   intl.NumberFormat get numberFormat;
 
+  /// Table numbers repeat (ranks, counts): each one is formatted and each
+  /// formatted text parsed once, and equal cells share the result.
+  final _Memo<int, String> _formattedInts = _Memo<int, String>();
+  final _Memo<double, String> _formattedDoubles = _Memo<double, String>();
+  final _Memo<String, num> _parsedNumbers = _Memo<String, num>();
+
   bool get negative;
 
   int get decimalPoint;
@@ -743,6 +777,18 @@ mixin PlutoColumnTypeWithNumberFormat {
   }
 
   String applyFormat(dynamic value) {
+    if (value is int) {
+      return _formattedInts[value] ??
+          _formattedInts.store(value, _formatNumber(value));
+    }
+    if (value is double && _Memo.isPlain(value)) {
+      return _formattedDoubles[value] ??
+          _formattedDoubles.store(value, _formatNumber(value));
+    }
+    return _formatNumber(value);
+  }
+
+  String _formatNumber(dynamic value) {
     num? number = value is num
         ? value
         : num.tryParse(
@@ -767,6 +813,11 @@ mixin PlutoColumnTypeWithNumberFormat {
     if (formatted == null || formatted.isEmpty) {
       return defaultValue;
     }
+    return _parsedNumbers[formatted] ??
+        _parsedNumbers.store(formatted, _parseNumber(formatted));
+  }
+
+  num _parseNumber(String formatted) {
     String match = '0-9\\-${numberFormat.symbols.DECIMAL_SEP}';
 
     if (negative) {
@@ -797,6 +848,59 @@ mixin PlutoColumnTypeWithNumberFormat {
   }
 }
 
+/// Conversion results of one column type by value.
+///
+/// Holds up to [_maxEntries] values. A column whose values barely repeat
+/// would only pay map lookups and inserts, so when a full memo saw few hits
+/// the next [_bypassCalls] conversions skip it.
+class _Memo<K extends Object, V extends Object> {
+  static const int _maxEntries = 1024;
+  static const int _minHits = _maxEntries ~/ 4;
+  static const int _bypassCalls = _maxEntries * 16;
+
+  /// Stored for a conversion whose result is null.
+  static final Object none = Object();
+
+  final Map<K, V> _values = <K, V>{};
+  int _hits = 0;
+  int _bypass = 0;
+  bool _skipStore = false;
+
+  V? operator [](K key) {
+    if (_bypass > 0) {
+      _bypass--;
+      _skipStore = true;
+      return null;
+    }
+    _skipStore = false;
+    final V? cached = _values[key];
+    if (cached != null) {
+      _hits++;
+    }
+    return cached;
+  }
+
+  /// Stores the conversion of the key looked up last and returns it.
+  V store(K key, V value) {
+    if (_skipStore) {
+      return value;
+    }
+    if (_values.length >= _maxEntries) {
+      if (_hits < _minHits) {
+        _bypass = _bypassCalls;
+      }
+      _values.clear();
+      _hits = 0;
+    }
+    return _values[key] = value;
+  }
+
+  /// Whether [value] can be a key: NaN equals nothing, and -0.0 equals 0 but
+  /// formats differently.
+  static bool isPlain(double value) =>
+      value.isFinite && !(value == 0 && value.isNegative);
+}
+
 /// Compiled patterns of characters a number column drops before parsing.
 ///
 /// `toNumber` runs for every formatted cell and every compared filter value; a
@@ -822,6 +926,10 @@ int _compareWithNull(dynamic a, dynamic b, int Function() resolve) {
 
 mixin PlutoColumnTypeWithDoubleFormat {
   intl.NumberFormat get numberFormat;
+
+  /// See [PlutoColumnTypeWithNumberFormat]: repeated values convert once.
+  final _Memo<double, String> _formattedDoubles = _Memo<double, String>();
+  final _Memo<String, double> _parsedDoubles = _Memo<String, double>();
 
   bool get negative;
 
@@ -862,6 +970,17 @@ mixin PlutoColumnTypeWithDoubleFormat {
   }
 
   String applyFormat(dynamic value) {
+    if (value is num) {
+      final double number = value.toDouble();
+      if (_Memo.isPlain(number)) {
+        return _formattedDoubles[number] ??
+            _formattedDoubles.store(number, _formatDouble(number));
+      }
+    }
+    return _formatDouble(value);
+  }
+
+  String _formatDouble(dynamic value) {
     double number = value is num
         ? value.toDouble()
         : double.tryParse(
@@ -881,6 +1000,11 @@ mixin PlutoColumnTypeWithDoubleFormat {
 
   /// Convert [String] converted to [applyFormat] to [number].
   double toDouble(String formatted) {
+    return _parsedDoubles[formatted] ??
+        _parsedDoubles.store(formatted, _parseDouble(formatted));
+  }
+
+  double _parseDouble(String formatted) {
     String match = '0-9\\-${numberFormat.symbols.DECIMAL_SEP}';
 
     if (negative) {
