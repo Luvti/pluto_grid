@@ -735,6 +735,31 @@ mixin PlutoColumnTypeWithNumberFormat {
   final _Memo<int, String> _formattedInts = _Memo<int, String>();
   final _Memo<double, String> _formattedDoubles = _Memo<double, String>();
   final _Memo<String, num> _parsedNumbers = _Memo<String, num>();
+  final _Memo<int, num> _shownInts = _Memo<int, num>();
+  final _Memo<double, num> _shownDoubles = _Memo<double, num>();
+
+  /// [value] as the column shows it: [applyFormat] read back by [toNumber]
+  /// (a `#,###` column shows 1.4 as 1).
+  num formattedNumber(num value) {
+    if (value is int) {
+      return _shownInts[value] ??
+          _shownInts.store(value, toNumber(applyFormat(value)));
+    }
+    final double number = value.toDouble();
+    if (_Memo.isPlain(number)) {
+      return _shownDoubles[number] ??
+          _shownDoubles.store(number, toNumber(applyFormat(number)));
+    }
+    return toNumber(applyFormat(value));
+  }
+
+  /// Whether [toNumber] reads [value]'s own text back as [value]: always for an
+  /// int, for a double written without an exponent when the decimal separator
+  /// is a dot.
+  bool readsBackAsItself(num value) => PlutoColumnTypeNumberText.readsBack(
+    value,
+    numberFormat.symbols.DECIMAL_SEP,
+  );
 
   bool get negative;
 
@@ -901,6 +926,27 @@ class _Memo<K extends Object, V extends Object> {
       value.isFinite && !(value == 0 && value.isNegative);
 }
 
+/// How number columns read a number's own text (`toString`) back.
+class PlutoColumnTypeNumberText {
+  /// Whether [value]'s text, read by a number column whose decimal separator
+  /// is [decimalSeparator], gives [value] back.
+  ///
+  /// Number columns drop every character but digits, minus signs and their
+  /// decimal separator. An int's text keeps all of them; a double's text does
+  /// with a dot separator and without an exponent (1e-6 <= |value| < 1e21).
+  static bool readsBack(num value, String decimalSeparator) {
+    if (value is int) {
+      return true;
+    }
+    final double number = value.toDouble();
+    if (!number.isFinite || decimalSeparator != '.') {
+      return false;
+    }
+    final double magnitude = number.abs();
+    return number == 0 || (magnitude >= 1e-6 && magnitude < 1e21);
+  }
+}
+
 /// Compiled patterns of characters a number column drops before parsing.
 ///
 /// `toNumber` runs for every formatted cell and every compared filter value; a
@@ -930,6 +976,23 @@ mixin PlutoColumnTypeWithDoubleFormat {
   /// See [PlutoColumnTypeWithNumberFormat]: repeated values convert once.
   final _Memo<double, String> _formattedDoubles = _Memo<double, String>();
   final _Memo<String, double> _parsedDoubles = _Memo<String, double>();
+  final _Memo<double, double> _shownDoubles = _Memo<double, double>();
+
+  /// [value] as the column shows it: [applyFormat] read back by [toDouble].
+  double formattedDouble(num value) {
+    final double number = value.toDouble();
+    if (_Memo.isPlain(number)) {
+      return _shownDoubles[number] ??
+          _shownDoubles.store(number, toDouble(applyFormat(number)));
+    }
+    return toDouble(applyFormat(value));
+  }
+
+  /// Whether [toDouble] reads [value]'s own text back as [value].
+  bool readsBackAsItself(num value) => PlutoColumnTypeNumberText.readsBack(
+    value,
+    numberFormat.symbols.DECIMAL_SEP,
+  );
 
   bool get negative;
 

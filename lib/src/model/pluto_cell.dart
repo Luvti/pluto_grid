@@ -259,18 +259,23 @@ class PlutoCell {
     if (_column == null) {
       return;
     }
-    _value = _column!.type.applyFormat(_value);
+    final Object type = _column!.type;
+    final dynamic value = _value;
 
-    if (_column!.type is PlutoColumnTypeWithNumberFormat) {
-      _value = (_column!.type as PlutoColumnTypeWithNumberFormat).toNumber(
-        _value,
-      );
-    }
+    if (type is PlutoColumnTypeWithNumberFormat && value is num) {
+      _value = type.formattedNumber(value);
+    } else if (type is PlutoColumnTypeWithDoubleFormat && value is num) {
+      _value = type.formattedDouble(value);
+    } else {
+      _value = _column!.type.applyFormat(value);
 
-    if (_column!.type is PlutoColumnTypeWithDoubleFormat) {
-      _value = (_column!.type as PlutoColumnTypeWithDoubleFormat).toDouble(
-        _value,
-      );
+      if (type is PlutoColumnTypeWithNumberFormat) {
+        _value = type.toNumber(_value);
+      }
+
+      if (type is PlutoColumnTypeWithDoubleFormat) {
+        _value = type.toDouble(_value);
+      }
     }
 
     _flags &= ~_formatOnInitFlag;

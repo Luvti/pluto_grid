@@ -191,6 +191,11 @@ class FilterHelper {
         } else {
           final PlutoCell? cell = row.cells[filter.field];
           final dynamic baseValue = cell?.currentValue;
+          final bool? numeric = filter.compareNumber(baseValue);
+          if (numeric != null) {
+            flag = compareAnd(flag, numeric);
+            continue;
+          }
           flag = compareAnd(
             flag,
             compareByFilterType(
@@ -1396,6 +1401,18 @@ class _PreparedFilter {
   /// would otherwise rebuild from [searchObject] or [search] for every row.
   final dynamic columnSearchObject;
 
+  late final _NumericComparison? _numeric = _NumericComparison.of(
+    filterType: filterType,
+    column: column,
+    search: search,
+    normalizedSearch: normalizedSearch,
+  );
+
+  /// The result of a >, >=, < or <= filter on a number column for a number,
+  /// or null when [value] needs the text comparison.
+  bool? compareNumber(dynamic value) =>
+      value is num ? _numeric?.keeps(value) : null;
+
   static String? _normalizedSearch(PlutoColumn? column, String search) {
     final Object? type = column?.type;
     final String? separator = type is PlutoColumnTypeWithNumberFormat
@@ -1463,5 +1480,93 @@ class _SearchPatterns {
       pattern(RegExp.escape(search)),
       caseSensitive: false,
     );
+  }
+}
+
+/// A >, >=, < or <= filter on a number column, compared as numbers.
+///
+/// [FilterHelper.compareByFilterType] keeps a row when either the cell's
+/// formatted text or its own text compares with the search. Both read back as
+/// numbers, so they are compared as numbers directly: the formatted value via
+/// [PlutoColumnTypeWithNumberFormat.formattedNumber], the own text as the value
+/// itself when it reads back unchanged (otherwise the text path decides).
+class _NumericComparison {
+  _NumericComparison._({
+    required this.shown,
+    required this.readsBack,
+    required this.search,
+    required this.normalizedSearch,
+    required this.test,
+  });
+
+  static _NumericComparison? of({
+    required PlutoFilterType filterType,
+    required PlutoColumn? column,
+    required String search,
+    required String? normalizedSearch,
+  }) {
+    final bool Function(int compare)? test = _test(filterType.compare);
+    final Object? type = column?.type;
+    if (test == null || normalizedSearch == null) {
+      return null;
+    }
+    if (type is PlutoColumnTypeWithNumberFormat) {
+      return _NumericComparison._(
+        shown: type.formattedNumber,
+        readsBack: type.readsBackAsItself,
+        search: type.toNumber(search),
+        normalizedSearch: type.toNumber(normalizedSearch),
+        test: test,
+      );
+    }
+    if (type is PlutoColumnTypeWithDoubleFormat) {
+      return _NumericComparison._(
+        shown: type.formattedDouble,
+        readsBack: type.readsBackAsItself,
+        search: type.toDouble(search),
+        normalizedSearch: type.toDouble(normalizedSearch),
+        test: test,
+      );
+    }
+    return null;
+  }
+
+  static bool Function(int compare)? _test(PlutoCompareFunction compare) {
+    if (identical(compare, FilterHelper.compareGreaterThan)) {
+      return _greater;
+    }
+    if (identical(compare, FilterHelper.compareGreaterThanOrEqualTo)) {
+      return _greaterOrEqual;
+    }
+    if (identical(compare, FilterHelper.compareLessThan)) {
+      return _less;
+    }
+    if (identical(compare, FilterHelper.compareLessThanOrEqualTo)) {
+      return _lessOrEqual;
+    }
+    return null;
+  }
+
+  static bool _greater(int compare) => compare == 1;
+
+  static bool _greaterOrEqual(int compare) => compare > -1;
+
+  static bool _less(int compare) => compare == -1;
+
+  static bool _lessOrEqual(int compare) => compare < 1;
+
+  final num Function(num value) shown;
+  final bool Function(num value) readsBack;
+  final num search;
+  final num normalizedSearch;
+  final bool Function(int compare) test;
+
+  /// Whether a row with [value] is kept, or null for the text comparison.
+  bool? keeps(num value) {
+    if (!readsBack(value)) {
+      return null;
+    }
+    return test(shown(value).compareTo(search)) ||
+        test(value.compareTo(normalizedSearch));
   }
 }

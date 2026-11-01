@@ -194,6 +194,9 @@ class _Bench {
       'rankEquals': _ms(
         () => _filter(rank, const PlutoFilterTypeEquals(), '15'),
       ),
+      'rankGreaterThan': _ms(
+        () => _filter(rank, const PlutoFilterTypeGreaterThan(), '100'),
+      ),
       'rankFormatOnInit': _ms(() {
         for (final PlutoCell cell in _repeatedCells(
           rank,
