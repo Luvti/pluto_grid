@@ -587,7 +587,14 @@ class PlutoColumnTypeDate
 
   @override
   int compare(dynamic a, dynamic b) {
-    return _compareWithNull(a, b, () => a.toString().compareTo(b.toString()));
+    return _compareWithNull(
+      a,
+      b,
+      // Sort values are dates: compare them without formatting both as text.
+      () => a is DateTime && b is DateTime
+          ? a.compareTo(b)
+          : a.toString().compareTo(b.toString()),
+    );
   }
 
   @override
@@ -728,17 +735,23 @@ mixin PlutoColumnTypeWithNumberFormat {
   }
 
   dynamic makeCompareValue(dynamic v) {
-    return v.runtimeType != num
-        ? num.tryParse(v.toString()) ?? defaultValue
-        : v;
+    // A number is its own comparison value; parsing its string gives it back.
+    if (v is num) {
+      return v;
+    }
+    return num.tryParse(v.toString()) ?? defaultValue;
   }
 
   String applyFormat(dynamic value) {
-    num? number =
-        num.tryParse(
-          value.toString().replaceAll(numberFormat.symbols.DECIMAL_SEP, '.'),
-        ) ??
-        defaultValue;
+    num? number = value is num
+        ? value
+        : num.tryParse(
+                value.toString().replaceAll(
+                  numberFormat.symbols.DECIMAL_SEP,
+                  '.',
+                ),
+              ) ??
+              defaultValue;
 
     if (number != null && negative == false && number < 0) {
       number = defaultValue;
@@ -760,10 +773,13 @@ mixin PlutoColumnTypeWithNumberFormat {
       match += numberFormat.symbols.MINUS_SIGN;
     }
 
+    final RegExp other = _NonNumericPattern.of(match);
     // ignore: parameter_assignments
-    formatted = formatted
-        .replaceAll(RegExp('[^$match]'), '')
-        .replaceFirst(numberFormat.symbols.DECIMAL_SEP, '.');
+    formatted =
+        (other.hasMatch(formatted)
+                ? formatted.replaceAll(other, '')
+                : formatted)
+            .replaceFirst(numberFormat.symbols.DECIMAL_SEP, '.');
 
     final num formattedNumber = num.tryParse(formatted) ?? defaultValue;
 
@@ -779,6 +795,17 @@ mixin PlutoColumnTypeWithNumberFormat {
     }
     return num.tryParse(s.toString()) != null;
   }
+}
+
+/// Compiled patterns of characters a number column drops before parsing.
+///
+/// `toNumber` runs for every formatted cell and every compared filter value; a
+/// column type has one pattern, so compiling it once per call was the cost.
+class _NonNumericPattern {
+  static final Map<String, RegExp> _patterns = <String, RegExp>{};
+
+  static RegExp of(String allowed) =>
+      _patterns.putIfAbsent(allowed, () => RegExp('[^$allowed]'));
 }
 
 int _compareWithNull(dynamic a, dynamic b, int Function() resolve) {
@@ -835,11 +862,15 @@ mixin PlutoColumnTypeWithDoubleFormat {
   }
 
   String applyFormat(dynamic value) {
-    double number =
-        double.tryParse(
-          value.toString().replaceAll(numberFormat.symbols.DECIMAL_SEP, '.'),
-        ) ??
-        defaultValue;
+    double number = value is num
+        ? value.toDouble()
+        : double.tryParse(
+                value.toString().replaceAll(
+                  numberFormat.symbols.DECIMAL_SEP,
+                  '.',
+                ),
+              ) ??
+              defaultValue;
 
     if (negative == false && number < 0) {
       number = defaultValue;
@@ -856,10 +887,13 @@ mixin PlutoColumnTypeWithDoubleFormat {
       match += numberFormat.symbols.MINUS_SIGN;
     }
 
+    final RegExp other = _NonNumericPattern.of(match);
     // ignore: parameter_assignments
-    formatted = formatted
-        .replaceAll(RegExp('[^$match]'), '')
-        .replaceFirst(numberFormat.symbols.DECIMAL_SEP, '.');
+    formatted =
+        (other.hasMatch(formatted)
+                ? formatted.replaceAll(other, '')
+                : formatted)
+            .replaceFirst(numberFormat.symbols.DECIMAL_SEP, '.');
 
     final double formattedNumber = double.tryParse(formatted) ?? defaultValue;
 

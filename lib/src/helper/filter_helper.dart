@@ -4,8 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
-typedef SetFilterPopupHandler =
-    void Function(PlutoGridStateManager? stateManager);
+typedef SetFilterPopupHandler = void Function(
+  PlutoGridStateManager? stateManager,
+);
 
 class FilterHelper {
   /// A value to identify all column searches when searching filters.
@@ -111,40 +112,75 @@ class FilterHelper {
           ),
     };
 
+    // Filter rows are read once: the returned function runs for every row.
+    final List<_PreparedFilter> filters = <_PreparedFilter>[];
+    for (final PlutoRow? e in rows) {
+      if (e == null) {
+        continue;
+      }
+      final PlutoCell? cellValue = e.cells[filterFieldType];
+      if (cellValue == null) {
+        continue;
+      }
+      final PlutoFilterType? filterType =
+          cellValue.currentValue as PlutoFilterType?;
+      if (filterType == null) {
+        continue;
+      }
+      final dynamic field = e.cells[filterFieldColumn]!.currentValue;
+      final PlutoCell? valueCell = e.cells[filterFieldValue];
+      final String search = valueCell?.currentValue?.toString() ?? '';
+      final dynamic searchObject = valueCell?.filterValue;
+      if (field == filterFieldAllColumns) {
+        filters.add(
+          _PreparedFilter(
+            filterType: filterType,
+            field: field,
+            column: null,
+            search: search,
+            searchObject: searchObject,
+          ),
+        );
+        continue;
+      }
+      final PlutoColumn? foundColumn = capturedColumns[field];
+      if (foundColumn != null) {
+        filters.add(
+          _PreparedFilter(
+            filterType: filterType,
+            field: field,
+            column: foundColumn,
+            search: search,
+            searchObject: searchObject,
+          ),
+        );
+      }
+    }
+
     return (PlutoRow? row) {
       bool? flag;
       if (row == null) {
         return false;
       }
-      for (final PlutoRow? e in rows) {
-        if (e == null) {
-          continue;
-        }
-        final PlutoCell? cellValue = e.cells[filterFieldType];
-        if (cellValue == null) {
-          continue;
-        }
-        final PlutoFilterType? filterType =
-            cellValue.currentValue as PlutoFilterType?;
-        if (filterType == null) {
-          continue;
-        }
-        if (e.cells[filterFieldColumn]!.currentValue == filterFieldAllColumns) {
+      for (final _PreparedFilter filter in filters) {
+        final PlutoColumn? column = filter.column;
+        if (column == null) {
           bool? flagAllColumns;
 
           row.cells.forEach((String key, PlutoCell value) {
             final PlutoColumn? foundColumn = capturedColumns[key];
 
             if (foundColumn != null) {
+              final dynamic baseValue = value.currentValue;
               flagAllColumns = compareOr(
                 flagAllColumns,
                 compareByFilterType(
-                  filterType: filterType,
-                  base: value.currentValue?.toString(),
+                  filterType: filter.filterType,
+                  base: baseValue?.toString(),
+                  baseValue: baseValue,
                   baseObject: value.filterValue,
-                  search:
-                      e.cells[filterFieldValue]?.currentValue?.toString() ?? '',
-                  searchObject: e.cells[filterFieldValue]?.filterValue,
+                  search: filter.search,
+                  searchObject: filter.searchObject,
                   column: foundColumn,
                 ),
               );
@@ -153,30 +189,21 @@ class FilterHelper {
 
           flag = compareAnd(flag, flagAllColumns);
         } else {
-          final PlutoColumn? foundColumn =
-              capturedColumns[e.cells[filterFieldColumn]?.currentValue];
-
-          if (foundColumn != null) {
-            flag = compareAnd(
-              flag,
-              compareByFilterType(
-                filterType: filterType,
-                base:
-                    row
-                        .cells[e.cells[filterFieldColumn]?.currentValue]
-                        ?.currentValue
-                        ?.toString() ??
-                    '',
-                baseObject: row
-                    .cells[e.cells[filterFieldColumn]?.currentValue]
-                    ?.filterValue,
-                search:
-                    e.cells[filterFieldValue]?.currentValue?.toString() ?? '',
-                searchObject: e.cells[filterFieldValue]?.filterValue,
-                column: foundColumn,
-              ),
-            );
-          }
+          final PlutoCell? cell = row.cells[filter.field];
+          final dynamic baseValue = cell?.currentValue;
+          flag = compareAnd(
+            flag,
+            compareByFilterType(
+              filterType: filter.filterType,
+              base: baseValue?.toString() ?? '',
+              baseValue: baseValue,
+              baseObject: cell?.filterValue,
+              search: filter.search,
+              normalizedSearch: filter.normalizedSearch,
+              searchObject: filter.columnSearchObject,
+              column: column,
+            ),
+          );
         }
       }
 
@@ -288,6 +315,9 @@ class FilterHelper {
   }
 
   /// Compare [base] and [search] with [PlutoFilterType.compare].
+  /// [baseValue] is the cell value [base] was made from; formatting a number
+  /// directly gives the same text without parsing it back. [normalizedSearch]
+  /// is [search] with the column's decimal separator replaced by a dot.
   static bool compareByFilterType({
     required PlutoFilterType filterType,
     required dynamic baseObject,
@@ -295,8 +325,13 @@ class FilterHelper {
     required dynamic searchObject,
     required String search,
     required PlutoColumn column,
+    Object? baseValue = _baseFromText,
+    String? normalizedSearch,
   }) {
     bool compare = false;
+    final Object? formatInput = identical(baseValue, _baseFromText)
+        ? base
+        : baseValue;
 
     if (column.type is PlutoColumnTypeWithNumberFormat) {
       final PlutoColumnTypeWithNumberFormat numberColumn =
@@ -305,17 +340,19 @@ class FilterHelper {
       compare =
           compare ||
           filterType.compare(
-            base: numberColumn.applyFormat(base),
+            base: numberColumn.applyFormat(formatInput),
             search: search,
             searchObject: searchObject,
             baseObject: baseObject,
             column: column,
           );
 
-      search = search.replaceFirst(
-        numberColumn.numberFormat.symbols.DECIMAL_SEP,
-        '.',
-      );
+      search =
+          normalizedSearch ??
+          search.replaceFirst(
+            numberColumn.numberFormat.symbols.DECIMAL_SEP,
+            '.',
+          );
     }
 
     if (column.type is PlutoColumnTypeWithDoubleFormat) {
@@ -325,17 +362,19 @@ class FilterHelper {
       compare =
           compare ||
           filterType.compare(
-            base: doubleColumn.applyFormat(base),
+            base: doubleColumn.applyFormat(formatInput),
             search: search,
             searchObject: searchObject,
             baseObject: baseObject,
             column: column,
           );
 
-      search = search.replaceFirst(
-        doubleColumn.numberFormat.symbols.DECIMAL_SEP,
-        '.',
-      );
+      search =
+          normalizedSearch ??
+          search.replaceFirst(
+            doubleColumn.numberFormat.symbols.DECIMAL_SEP,
+            '.',
+          );
     }
 
     return compare ||
@@ -356,7 +395,7 @@ class FilterHelper {
     required String? search,
     required PlutoColumn column,
   }) {
-    return _compareWithRegExp(RegExp.escape(search!), base!);
+    return _SearchPatterns.anywhere(search!).hasMatch(base!);
   }
 
   /// Whether [search] is not contains in [base].
@@ -367,7 +406,7 @@ class FilterHelper {
     required String? search,
     required PlutoColumn column,
   }) {
-    return !_compareWithRegExp(RegExp.escape(search!), base!);
+    return !_SearchPatterns.anywhere(search!).hasMatch(base!);
   }
 
   static bool compareContainsSet({
@@ -497,11 +536,7 @@ class FilterHelper {
     required String? search,
     required PlutoColumn column,
   }) {
-    return _compareWithRegExp(
-      // ignore: prefer_interpolation_to_compose_strings
-      r'^' + RegExp.escape(search!) + r'$',
-      base!,
-    );
+    return _SearchPatterns.whole(search!).hasMatch(base!);
   }
 
   /// Whether [search] is not equals to [base].
@@ -512,11 +547,7 @@ class FilterHelper {
     required String? search,
     required PlutoColumn column,
   }) {
-    return !_compareWithRegExp(
-      // ignore: prefer_interpolation_to_compose_strings
-      r'^' + RegExp.escape(search!) + r'$',
-      base!,
-    );
+    return !_SearchPatterns.whole(search!).hasMatch(base!);
   }
 
   /// Whether [base] starts with [search].
@@ -527,11 +558,7 @@ class FilterHelper {
     required String? search,
     required PlutoColumn column,
   }) {
-    return _compareWithRegExp(
-      // ignore: prefer_interpolation_to_compose_strings
-      r'^' + RegExp.escape(search!),
-      base!,
-    );
+    return _SearchPatterns.start(search!).hasMatch(base!);
   }
 
   /// Whether [base] ends with [search].
@@ -542,11 +569,7 @@ class FilterHelper {
     required String? search,
     required PlutoColumn column,
   }) {
-    return _compareWithRegExp(
-      // ignore: prefer_interpolation_to_compose_strings
-      RegExp.escape(search!) + r'$',
-      base!,
-    );
+    return _SearchPatterns.end(search!).hasMatch(base!);
   }
 
   static bool compareGreaterThan({
@@ -623,13 +646,7 @@ class FilterHelper {
     return true;
   }
 
-  static bool _compareWithRegExp(
-    String pattern,
-    String value, {
-    bool caseSensitive = false,
-  }) {
-    return RegExp(pattern, caseSensitive: caseSensitive).hasMatch(value);
-  }
+  static const Object _baseFromText = _BaseFromText();
 
   static bool compareIsEmpty({
     required dynamic baseObject,
@@ -1124,15 +1141,14 @@ class _PlutoFilterValueCellState extends State<PlutoFilterValueCell> {
 
 /// [base] is the cell values of the column on which the search is based.
 /// [search] is the value entered by the user to search.
-typedef PlutoCompareFunction =
-    bool Function({
-      required dynamic baseObject,
-      required String? base,
-      required dynamic searchObject,
-      required String? search,
-      // required dynamic? searchObject,
-      required PlutoColumn column,
-    });
+typedef PlutoCompareFunction = bool Function({
+  required dynamic baseObject,
+  required String? base,
+  required dynamic searchObject,
+  required String? search,
+  // required dynamic? searchObject,
+  required PlutoColumn column,
+});
 
 abstract class PlutoFilterType {
   String get title => throw UnimplementedError();
@@ -1343,4 +1359,109 @@ class PlutoFilterTypeIsNotEmptySet implements PlutoFilterType {
   PlutoCompareFunction get compare => FilterHelper.compareIsNotEmptySet;
 
   const PlutoFilterTypeIsNotEmptySet();
+}
+
+/// Marks that [FilterHelper.compareByFilterType] got no cell value.
+class _BaseFromText {
+  const _BaseFromText();
+}
+
+/// One filter row, read when the filter function is created.
+class _PreparedFilter {
+  _PreparedFilter({
+    required this.filterType,
+    required this.field,
+    required this.column,
+    required this.search,
+    required this.searchObject,
+  }) : normalizedSearch = _normalizedSearch(column, search),
+       columnSearchObject = _columnSearchObject(
+         filterType: filterType,
+         search: search,
+         searchObject: searchObject,
+       );
+
+  final PlutoFilterType filterType;
+  final dynamic field;
+
+  /// Null for a search in all columns.
+  final PlutoColumn? column;
+  final String search;
+  final dynamic searchObject;
+
+  /// [search] with the column's decimal separator replaced by a dot.
+  final String? normalizedSearch;
+
+  /// [searchObject] for a single column. Set filters get the search set they
+  /// would otherwise rebuild from [searchObject] or [search] for every row.
+  final dynamic columnSearchObject;
+
+  static String? _normalizedSearch(PlutoColumn? column, String search) {
+    final Object? type = column?.type;
+    final String? separator = type is PlutoColumnTypeWithNumberFormat
+        ? type.numberFormat.symbols.DECIMAL_SEP
+        : type is PlutoColumnTypeWithDoubleFormat
+        ? type.numberFormat.symbols.DECIMAL_SEP
+        : null;
+    return separator == null ? null : search.replaceFirst(separator, '.');
+  }
+
+  static dynamic _columnSearchObject({
+    required PlutoFilterType filterType,
+    required String search,
+    required dynamic searchObject,
+  }) {
+    if (filterType is! PlutoFilterTypeContainsSet &&
+        filterType is! PlutoFilterTypeNotContainsSet) {
+      return searchObject;
+    }
+    return FilterHelper._resolveSearchSet(
+          searchObject: searchObject,
+          search: search,
+        ) ??
+        searchObject;
+  }
+}
+
+/// Compiled case-insensitive patterns for text filters.
+///
+/// A filter compares every row with the same search text; compiling its
+/// pattern for each row cost more than the match.
+class _SearchPatterns {
+  static const int _maxPerKind = 64;
+
+  static final Map<String, RegExp> _anywhere = <String, RegExp>{};
+  static final Map<String, RegExp> _whole = <String, RegExp>{};
+  static final Map<String, RegExp> _start = <String, RegExp>{};
+  static final Map<String, RegExp> _end = <String, RegExp>{};
+
+  static RegExp anywhere(String search) =>
+      _cached(_anywhere, search, (String escaped) => escaped);
+
+  static RegExp whole(String search) =>
+      _cached(_whole, search, (String escaped) => '^$escaped\$');
+
+  static RegExp start(String search) =>
+      _cached(_start, search, (String escaped) => '^$escaped');
+
+  static RegExp end(String search) =>
+      _cached(_end, search, (String escaped) => '$escaped\$');
+
+  static RegExp _cached(
+    Map<String, RegExp> cache,
+    String search,
+    String Function(String escaped) pattern,
+  ) {
+    final RegExp? cached = cache[search];
+    if (cached != null) {
+      return cached;
+    }
+    if (cache.length >= _maxPerKind) {
+      cache.clear();
+    }
+    return cache[search] = RegExp(
+      pattern(RegExp.escape(search)),
+      caseSensitive: false,
+    );
+  }
 }
