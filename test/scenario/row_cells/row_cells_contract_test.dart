@@ -333,6 +333,25 @@ List<String> _rowGroups(_CellsOf cellsOf) {
 Future<List<String>> _mounted(WidgetTester tester, _CellsOf cellsOf) async {
   final List<String> out = <String>[];
   final List<PlutoColumn> columns = _Grid.newColumns();
+  // Footers read one column of every row.
+  const Map<String, PlutoAggregateColumnType> footerTypes =
+      <String, PlutoAggregateColumnType>{
+        'id': PlutoAggregateColumnType.average,
+        'number': PlutoAggregateColumnType.sum,
+        'text': PlutoAggregateColumnType.count,
+        'select': PlutoAggregateColumnType.uniqueCount,
+      };
+  for (final PlutoColumn column in columns) {
+    final PlutoAggregateColumnType? type = footerTypes[column.field];
+    if (type != null) {
+      column.footerRenderer = (PlutoColumnFooterRendererContext context) =>
+          PlutoAggregateColumnFooter(
+            rendererContext: context,
+            type: type,
+            format: '#,###.##',
+          );
+    }
+  }
   final List<PlutoRow<dynamic>> rows = _Grid.rows(cellsOf, 0, _Grid.rowCount);
   late final PlutoGridStateManager m;
   await tester.binding.setSurfaceSize(const Size(900, 400));
@@ -370,7 +389,19 @@ Future<List<String>> _mounted(WidgetTester tester, _CellsOf cellsOf) async {
     return 'rendered ${cells.length} cells, $same linked | ${texts.join(' ')}';
   }
 
-  out.add(rendered());
+  String footers() => tester
+      .widgetList<Text>(
+        find.descendant(
+          of: find.byType(PlutoAggregateColumnFooter),
+          matching: find.byType(Text),
+        ),
+      )
+      .map((Text text) => text.textSpan?.toPlainText() ?? text.data)
+      .join(' ');
+
+  out
+    ..add(rendered())
+    ..add('footers | ${footers()}');
   await tester.tap(find.text('item f1'));
   await tester.pump();
   out.add('tapped ${_current(m)}');
@@ -385,7 +416,9 @@ Future<List<String>> _mounted(WidgetTester tester, _CellsOf cellsOf) async {
     ),
   ]);
   await tester.pumpAndSettle();
-  out.add('filter select b | ${rendered()}');
+  out
+    ..add('filter select b | ${rendered()}')
+    ..add('filtered footers | ${footers()}');
   return out;
 }
 
@@ -738,8 +771,10 @@ const List<String> _expectedRowGroups = <String>[
 ];
 
 const List<String> _expectedMounted = <String>[
-  'rendered 40 cells, 40 linked | 0:date=2026-10-01 0:id=0 0:number=0 0:select=a 0:text=item a0 1:date=2026-10-04 1:id=1 1:number=7.1 1:select=c 1:text=item f1 2:date=2026-10-07 2:id=2 2:number=4.2 2:select=b 2:text=item k2',
+  'rendered 35 cells, 35 linked | 0:date=2026-10-01 0:id=0 0:number=0 0:select=a 0:text=item a0 1:date=2026-10-04 1:id=1 1:number=7.1 1:select=c 1:text=item f1 2:date=2026-10-07 2:id=2 2:number=4.2 2:select=b 2:text=item k2',
+  'footers | 15 127.8 30 3',
   'tapped 1 text=item f1 same=true at 1,2',
-  'desc number | rendered 40 cells, 40 linked | 17:date=2026-10-24 17:id=17 17:number=9.1 17:select=b 17:text=item h2 27:date=2026-10-26 27:id=27 27:number=9.3 27:select=a 27:text=item f0 7:date=2026-10-22 7:id=7 7:number=9.3 7:select=c 7:text=item j1',
-  'filter select b | rendered 40 cells, 40 linked | 14:date=2026-10-15 14:id=14 14:number=8.2 14:select=b 14:text=item s2 17:date=2026-10-24 17:id=17 17:number=9.1 17:select=b 17:text=item h2 8:date=2026-10-25 8:id=8 8:number=6 8:select=b 8:text=item o2',
+  'desc number | rendered 35 cells, 35 linked | 17:date=2026-10-24 17:id=17 17:number=9.1 17:select=b 17:text=item h2 27:date=2026-10-26 27:id=27 27:number=9.3 27:select=a 27:text=item f0 7:date=2026-10-22 7:id=7 7:number=9.3 7:select=c 7:text=item j1',
+  'filter select b | rendered 35 cells, 35 linked | 14:date=2026-10-15 14:id=14 14:number=8.2 14:select=b 14:text=item s2 17:date=2026-10-24 17:id=17 17:number=9.1 17:select=b 17:text=item h2 8:date=2026-10-25 8:id=8 8:number=6 8:select=b 8:text=item o2',
+  'filtered footers | 16 39.2 10 1',
 ];
