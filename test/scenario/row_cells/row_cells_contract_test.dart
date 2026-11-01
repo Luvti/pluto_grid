@@ -23,6 +23,7 @@ final Map<String, _CellsOf> _cellMaps = <String, _CellsOf>{
     fields,
     <PlutoCell?>[for (final Object? value in values) PlutoCell(value: value)],
   ),
+  'lazy': _LazyCells.new,
 };
 
 void main() {
@@ -39,6 +40,98 @@ void main() {
       _expectLines(await _mounted(tester, cellMap.value), _expectedMounted);
     });
   }
+
+  test('lazy rows: the grid creates only the cells it reads', () {
+    _LazyCells.created = 0;
+    final List<String> out = <String>[];
+    final _Grid g = _Grid(_LazyCells.new);
+    final PlutoGridStateManager m = g.manager;
+    out.add(
+      'init | created ${_LazyCells.created} | initialized '
+      '${m.refRows.originalListView.where((PlutoRow<dynamic> row) => row.initialized).length}',
+    );
+    m.sortAscending(g.column('number'), notify: false);
+    m.sortDescending(g.column('number'), notify: false);
+    out.add('sorted number twice | created ${_LazyCells.created}');
+    g.filter('text', const PlutoFilterTypeContains(), 'b');
+    out.add('filtered text | created ${_LazyCells.created}');
+    g.filter(null, null, null);
+    m.setCurrentCell(m.refRows[4].cells['date'], 4, notify: false);
+    m.moveCurrentCell(PlutoMoveDirection.right, notify: false);
+    out.add(
+      'current cell moved | created ${_LazyCells.created} | ${_current(m)}',
+    );
+
+    final PlutoRow<dynamic> removed = m.refRows[4];
+    final PlutoCell date = removed.cells['date']!;
+    m.removeRows(<PlutoRow<dynamic>>[removed], notify: false);
+    out.add(
+      'removed row | initialized ${removed.initialized} | read cell '
+      'initialized ${date.initialized} | created ${_LazyCells.created}',
+    );
+    m.appendRows(<PlutoRow<dynamic>>[removed]);
+    out.add(
+      'appended again | initialized ${removed.initialized} | '
+      '${_linked(removed, 'date', m)} ${_linked(removed, 'id', m)} | '
+      'same date cell ${identical(removed.cells['date'], date)}',
+    );
+    g.dispose();
+    expect(out, <String>[
+      'init | created 0 | initialized 30',
+      'sorted number twice | created 30',
+      'filtered text | created 60',
+      // The date and select cells, and the id cell read to find their column.
+      'current cell moved | created 63 | 4 select=c same=true at 4,4',
+      'removed row | initialized false | read cell initialized false | created 63',
+      'appended again | initialized true | linked linked | same date cell true',
+    ]);
+  });
+
+  testWidgets('lazy rows: a mounted grid creates the cells it renders', (
+    WidgetTester tester,
+  ) async {
+    const int rowCount = 1000;
+    _LazyCells.created = 0;
+    final List<PlutoColumn> columns = _Grid.newColumns();
+    late final PlutoGridStateManager m;
+    await tester.binding.setSurfaceSize(const Size(900, 400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Material(
+          child: PlutoGrid(
+            columns: columns,
+            rows: _Grid.rows(_LazyCells.new, 0, rowCount),
+            onLoaded: (PlutoGridOnLoadedEvent event) => m = event.stateManager,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final List<String> out = <String>[
+      'rendered | created ${_LazyCells.created}',
+    ];
+    m.sortDescending(columns[1]);
+    await tester.pumpAndSettle();
+    out.add('sorted number | created ${_LazyCells.created}');
+    m.setFilterWithFilterRows(<PlutoRow<dynamic>>[
+      FilterHelper.createFilterRow(
+        columnField: 'select',
+        filterType: const PlutoFilterTypeEquals(),
+        filterValue: 'b',
+      ),
+    ]);
+    await tester.pumpAndSettle();
+    out.add('filtered select | created ${_LazyCells.created}');
+    expect(out, <String>[
+      // 14 built rows of five cells, out of 5000 cells.
+      'rendered | created 70',
+      // The other 986 number cells and four cells of each of 13 new rows.
+      'sorted number | created 1108',
+      // The select cells not created yet and the cells of new rows.
+      'filtered select | created 2108',
+    ]);
+  });
 }
 
 void _expectLines(List<String> actual, List<String> expected) {
@@ -426,6 +519,125 @@ class _Grid {
   void dispose() {
     manager.dispose();
     _focus.dispose();
+  }
+}
+
+/// Cells created from the row's values when first read.
+class _LazyCells extends MapBase<String, PlutoCell> implements PlutoLazyCells {
+  _LazyCells(this._fields, this._values)
+    : _cells = List<PlutoCell?>.filled(_fields.length, null);
+
+  /// Cells created by all lazy rows.
+  static int created = 0;
+
+  /// Marks the cell of a removed field.
+  static final PlutoCell _removed = PlutoCell();
+
+  final List<String> _fields;
+  final List<Object?> _values;
+  final List<PlutoCell?> _cells;
+  final Map<String, PlutoCell> _extra = <String, PlutoCell>{};
+  PlutoRow<dynamic>? _row;
+  Map<String, PlutoColumn>? _columns;
+
+  @override
+  bool get bound => _row != null;
+
+  @override
+  void bind(PlutoRow<dynamic> row, Map<String, PlutoColumn> columns) {
+    _row = row;
+    _columns = columns;
+    for (int index = 0; index < _fields.length; index++) {
+      final PlutoCell? cell = _cells[index];
+      if (cell != null && !identical(cell, _removed)) {
+        _link(_fields[index], cell);
+      }
+    }
+    _extra.forEach(_link);
+  }
+
+  @override
+  void unbind() {
+    for (final PlutoCell cell in createdCells) {
+      cell.clear();
+    }
+    _row = null;
+    _columns = null;
+  }
+
+  @override
+  Iterable<PlutoCell> get createdCells => <PlutoCell>[
+    for (final PlutoCell? cell in _cells)
+      if (cell != null && !identical(cell, _removed)) cell,
+    ..._extra.values,
+  ];
+
+  void _link(String field, PlutoCell cell) {
+    final PlutoRow<dynamic>? row = _row;
+    final PlutoColumn? column = _columns?[field];
+    if (row != null && column != null) {
+      cell
+        ..setColumn(column)
+        ..setRow(row);
+    }
+  }
+
+  @override
+  PlutoCell? operator [](Object? key) {
+    final int index = _fields.indexOf(key as String? ?? '');
+    if (index < 0) {
+      return _extra[key];
+    }
+    final PlutoCell? cell = _cells[index];
+    if (cell != null) {
+      return identical(cell, _removed) ? null : cell;
+    }
+    created++;
+    final PlutoCell newCell = _cells[index] = PlutoCell(value: _values[index]);
+    _link(_fields[index], newCell);
+    return newCell;
+  }
+
+  @override
+  void operator []=(String key, PlutoCell value) {
+    final int index = _fields.indexOf(key);
+    if (index < 0) {
+      _extra[key] = value;
+    } else {
+      _cells[index] = value;
+    }
+  }
+
+  @override
+  bool containsKey(Object? key) {
+    final int index = _fields.indexOf(key as String? ?? '');
+    return index < 0
+        ? _extra.containsKey(key)
+        : !identical(_cells[index], _removed);
+  }
+
+  @override
+  void clear() {
+    _cells.fillRange(0, _cells.length, _removed);
+    _extra.clear();
+  }
+
+  @override
+  Iterable<String> get keys => <String>[
+    for (int index = 0; index < _fields.length; index++)
+      if (!identical(_cells[index], _removed)) _fields[index],
+    ..._extra.keys,
+  ];
+
+  @override
+  PlutoCell? remove(Object? key) {
+    final int index = _fields.indexOf(key as String? ?? '');
+    if (index < 0) {
+      return _extra.remove(key);
+    }
+    final PlutoCell? removed = this[key];
+    _cells[index] = _removed;
+    return removed;
   }
 }
 

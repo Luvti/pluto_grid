@@ -32,6 +32,7 @@ export './src/model/pluto_cell.dart';
 export './src/model/pluto_column.dart';
 export './src/model/pluto_column_group.dart';
 export './src/model/pluto_column_type.dart';
+export './src/model/pluto_lazy_cells.dart';
 export './src/model/pluto_row.dart';
 export './src/model/pluto_row_type.dart';
 export './src/plugin/pluto_aggregate_column_footer.dart';

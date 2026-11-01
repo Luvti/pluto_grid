@@ -636,12 +636,23 @@ class _ApplyCellForSetColumnRow implements _Apply {
 
   _ApplyCellForSetColumnRow(this.refColumns);
 
+  /// Columns by field for rows that create their cells when first read.
+  late final Map<String, PlutoColumn> _columnsByField = <String, PlutoColumn>{
+    for (final PlutoColumn column in refColumns) column.field: column,
+  };
+
   @override
   bool get apply => true;
 
   @override
   void execute(PlutoRow row) {
     if (row.initialized) {
+      return;
+    }
+
+    final Map<String, PlutoCell> cells = row.cells;
+    if (cells is PlutoLazyCells) {
+      cells.bind(row, _columnsByField);
       return;
     }
 

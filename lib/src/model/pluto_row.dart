@@ -37,6 +37,11 @@ class PlutoRow<T> {
   Key get key => _key;
 
   bool get initialized {
+    final Map<String, PlutoCell> cells = this.cells;
+    if (cells is PlutoLazyCells) {
+      return cells.bound;
+    }
+
     if (cells.isEmpty) {
       return true;
     }
@@ -152,8 +157,13 @@ class PlutoRow<T> {
 
   /// Clears references to help garbage collection when this row is removed.
   void clear() {
-    for (final PlutoCell cell in cells.values) {
-      cell.clear();
+    final Map<String, PlutoCell> cells = this.cells;
+    if (cells is PlutoLazyCells) {
+      cells.unbind();
+    } else {
+      for (final PlutoCell cell in cells.values) {
+        cell.clear();
+      }
     }
     _parent = null;
   }
