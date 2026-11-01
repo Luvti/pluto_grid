@@ -38,7 +38,8 @@ void main() {
           cells: <String, PlutoCell>{
             'number': PlutoCell(
               value: 1,
-              onChanged: ({Object? value, Object? referenceValue}) => values.add(value),
+              onChanged: ({Object? value, Object? referenceValue}) =>
+                  values.add(value),
             ),
             'text': PlutoCell(value: 'a'),
           },
@@ -91,6 +92,67 @@ void main() {
       final UniqueKey key = UniqueKey();
       expect(PlutoCell(key: key).key, same(key));
       expect(PlutoCell(key: key).hasKey(key), isTrue);
+    });
+  });
+
+  group('sort values', () {
+    test('a reinitialized cell still sorts by its unrounded number', () {
+      // Rows of a closed grid are cleared and initialized again by the next
+      // grid; a cell it rendered holds the formatted (rounded) value.
+      final PlutoColumn number = _Manager.column('number');
+      final List<PlutoRow<dynamic>> rows = _Manager.numbers(<int>[0]);
+      final PlutoCell cell = PlutoCell(value: 1.4);
+      rows.first.cells['number'] = cell;
+      PlutoGridStateManager.initializeRows(<PlutoColumn>[number], rows);
+      expect(cell.valueFormatted, 1);
+      expect(cell.valueForSorting, 1.4);
+
+      for (final PlutoRow<dynamic> row in rows) {
+        row.clear();
+      }
+      expect(cell.valueForSorting, 1.4);
+      PlutoGridStateManager.initializeRows(<PlutoColumn>[number], rows);
+      expect(cell.currentValue, 1);
+      expect(cell.valueForSorting, 1.4);
+    });
+
+    test(
+      'an edited cell sorts by its new value, also after reinitialization',
+      () {
+        final PlutoColumn number = _Manager.column('number');
+        final List<PlutoRow<dynamic>> rows = _Manager.numbers(<int>[0]);
+        final PlutoCell cell = PlutoCell(value: 1.4);
+        rows.first.cells['number'] = cell;
+        PlutoGridStateManager.initializeRows(<PlutoColumn>[number], rows);
+        expect(cell.valueForSorting, 1.4);
+
+        cell.value = 2.6;
+        expect(cell.valueForSorting, 2.6);
+        rows.first.clear();
+        PlutoGridStateManager.initializeRows(<PlutoColumn>[number], rows);
+        expect(cell.valueFormatted, 3);
+        expect(cell.valueForSorting, 2.6);
+      },
+    );
+
+    test('a text comparison value is released when the cell is cleared', () {
+      final PlutoColumn text = PlutoColumn(
+        title: 'text',
+        field: 'text',
+        type: PlutoColumnType.text(),
+      );
+      final PlutoCell cell = PlutoCell(value: 7);
+      final PlutoRow<dynamic> row = PlutoRow<dynamic>(
+        cells: <String, PlutoCell>{'text': cell},
+      );
+      PlutoGridStateManager.initializeRows(
+        <PlutoColumn>[text],
+        <PlutoRow<dynamic>>[row],
+      );
+      expect(cell.valueForSorting, '7');
+
+      row.clear();
+      expect(cell.valueForSorting, 7);
     });
   });
 

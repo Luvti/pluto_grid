@@ -307,8 +307,8 @@ class _Scenario {
       descending: '37,38,2,39,0,1',
       aggregates: 'sum=8 avg=1 min=1 max=2',
       editedValue: 0.5,
-      // Stale: row 39 keeps sorting by its first value 1.45.
-      ascendingAfterEdit: '1,0,39,2,38,37 current=1',
+      // Row 39 sorts by its edited value.
+      ascendingAfterEdit: '39,1,0,2,38,37 current=1',
     ),
     const _Scenario(
       name: 'double',
@@ -321,8 +321,8 @@ class _Scenario {
       descending: '37,38,2,39,0,1',
       aggregates: 'sum=0 avg=1.52 min=null max=null',
       editedValue: 0.5,
-      // Stale: row 39 keeps sorting by its first value 1.45.
-      ascendingAfterEdit: '1,0,39,2,38,37 current=0.5',
+      // Row 39 sorts by its edited value.
+      ascendingAfterEdit: '39,1,0,2,38,37 current=0.5',
     ),
     const _Scenario(
       name: 'currency',

@@ -45,6 +45,15 @@ void main() {
               _CellMemoryBenchmark.columnCount,
         );
         expect(lazy['cellBytes'], eager['cellBytes']);
+        // Seven fields per cell: keys and callbacks are kept outside it.
+        expect(
+          lazy['cellBytes'],
+          lessThanOrEqualTo(
+            64 *
+                _CellMemoryBenchmark.rowCount *
+                _CellMemoryBenchmark.columnCount,
+          ),
+        );
         expect(lazy['heapBytes']! < eager['heapBytes']!, isTrue);
       } finally {
         benchmark.dispose();
@@ -80,9 +89,9 @@ class _CellMemoryBenchmark {
           },
         );
     final response = await (await _client.getUrl(uri)).close();
-    final json =
-        jsonDecode(await response.transform(utf8.decoder).join())
-            as Map<String, dynamic>;
+    final json = jsonDecode(
+      await response.transform(utf8.decoder).join(),
+    ) as Map<String, dynamic>;
     if (json['error'] != null) throw StateError('${json['error']}');
     final result = json['result'] as Map<String, dynamic>;
     final stats = <String, int>{

@@ -188,8 +188,8 @@ class _Contract {
         init: 'double(1.4)',
         sort: 'double(1.4)',
         formatted: 'int(1)',
-        // Stale: an edited number keeps sorting by its first value.
-        editSort: 'double(1.4)',
+        // An edited number sorts by its new value.
+        editSort: 'double(14.0)',
         editFormatted: 'int(14)',
       ),
     ),
@@ -200,8 +200,8 @@ class _Contract {
         init: 'int(1234)',
         sort: 'int(1234)',
         formatted: 'int(1234)',
-        // Stale: an edited number keeps sorting by its first value.
-        editSort: 'int(1234)',
+        // An edited number sorts by its new value.
+        editSort: 'int(12340)',
         editFormatted: 'int(12340)',
       ),
     ),
@@ -235,8 +235,8 @@ class _Contract {
         init: 'double(1.44)',
         sort: 'double(1.44)',
         formatted: 'double(1.4)',
-        // Stale: an edited number keeps sorting by its first value.
-        editSort: 'double(1.44)',
+        // An edited number sorts by its new value.
+        editSort: 'double(14.399999999999999)',
         editFormatted: 'double(14.4)',
       ),
     ),
@@ -259,8 +259,8 @@ class _Contract {
         init: 'int(7)',
         sort: 'int(7)',
         formatted: 'double(7.0)',
-        // Stale: an edited number keeps sorting by its first value.
-        editSort: 'int(7)',
+        // An edited number sorts by its new value.
+        editSort: 'int(70)',
         editFormatted: 'double(70.0)',
       ),
     ),
@@ -282,8 +282,8 @@ class _Contract {
         init: 'double(1.4)',
         sort: 'double(1.4)',
         formatted: 'double(1.4)',
-        // Stale: an edited number keeps sorting by its first value.
-        editSort: 'double(1.4)',
+        // An edited number sorts by its new value.
+        editSort: 'double(14.0)',
         editFormatted: 'double(14.0)',
       ),
     ),
@@ -316,8 +316,8 @@ class _Contract {
         init: 'double(1.456)',
         sort: 'double(1.456)',
         formatted: 'double(1.46)',
-        // Stale: an edited number keeps sorting by its first value.
-        editSort: 'double(1.456)',
+        // An edited number sorts by its new value.
+        editSort: 'double(14.559999999999999)',
         editFormatted: 'double(14.56)',
       ),
     ),
